@@ -36,6 +36,19 @@ def fill_empty(data: pd.DataFrame) -> dict:
     return new_values
 
 
+def boolean_df(item_lists: pd.DataFrame, unique_items: Iterable[str]) -> pd.DataFrame:
+    """Возвращает датафрейм со столбцами из `unique_items` типа bool для каждей записи"""
+    # Create empty dict
+    bool_dict = {}
+
+    # Loop through all the tags
+    for item in unique_items:
+        # Apply boolean mask
+        bool_dict[item] = item_lists.apply(lambda x: item in x)
+    # Return the results as a dataframe
+    return pd.DataFrame(bool_dict)
+
+
 if __name__ == '__main__':
     import doctest
 
