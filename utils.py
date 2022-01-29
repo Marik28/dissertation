@@ -36,6 +36,35 @@ def fill_empty(data: pd.DataFrame) -> dict:
     return new_values
 
 
+def fill_empty_temperatures(
+        data: pd.DataFrame,
+        temp_col="T",
+        res_col="R",
+) -> pd.DataFrame:
+    temperatures = list(data[temp_col])
+    resistances = list(data[res_col])
+    new_temperatures = []
+    new_resistances = []
+    assert len(temperatures) == len(resistances)
+    for index in range(1, len(temperatures)):
+        curr_temp = temperatures[index]
+        prev_temp = temperatures[index - 1]
+        temps_diff = abs(curr_temp - prev_temp)
+        for _ in range(temps_diff):
+            new_temperatures.append(prev_temp)
+            prev_temp += 1
+
+        prev_res = resistances[index - 1]
+        curr_res = resistances[index]
+        res_step = (curr_res - prev_res) / temps_diff
+        for _ in range(temps_diff):
+            new_resistances.append(prev_res)
+            prev_res += res_step
+    new_temperatures.append(temperatures[-1])
+    new_resistances.append(resistances[-1])
+    return pd.DataFrame({temp_col: new_temperatures, res_col: new_resistances})
+
+
 def boolean_df(item_lists: pd.DataFrame, unique_items: Iterable[str]) -> pd.DataFrame:
     """Возвращает датафрейм со столбцами из `unique_items` типа bool для каждей записи"""
     # Create empty dict
