@@ -78,6 +78,26 @@ def boolean_df(item_lists: pd.DataFrame, unique_items: Iterable[str]) -> pd.Data
     return pd.DataFrame(bool_dict)
 
 
+def create_dataframe(
+        path_to_pt,
+        possible_values: dict,
+        values: Iterable[Number],
+        step=1000 / 256,
+) -> pd.DataFrame:
+    df = pd.read_csv(path_to_pt)
+    df["calc"] = df["R"].apply(lambda x: find_nearest(values, x))
+    df["error"] = abs(df["R"] - df["calc"])
+    df["code"] = df["calc"].apply(lambda x: possible_values[x])
+    df["R1_code"] = df["code"].apply(lambda x: x[0])
+    df["R2_code"] = df["code"].apply(lambda x: x[1])
+    df["R3_code"] = df["code"].apply(lambda x: x[2])
+    df["R1"] = df["R1_code"].apply(lambda x: step * x + step)
+    df["R2"] = df["R2_code"].apply(lambda x: step * x + step)
+    df["R3"] = df["R3_code"].apply(lambda x: step * x + step)
+    del df["code"]
+    return df
+
+
 if __name__ == '__main__':
     import doctest
 
