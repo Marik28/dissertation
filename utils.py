@@ -66,7 +66,7 @@ def fill_empty_temperatures(
 
 
 def boolean_df(item_lists: pd.DataFrame, unique_items: Iterable[str]) -> pd.DataFrame:
-    """Возвращает датафрейм со столбцами из `unique_items` типа bool для каждей записи"""
+    """Возвращает датафрейм со столбцами из `unique_items` типа bool для каждой записи"""
     # Create empty dict
     bool_dict = {}
 
