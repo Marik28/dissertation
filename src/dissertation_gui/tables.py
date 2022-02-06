@@ -4,11 +4,18 @@ from sqlalchemy import (
     String,
     ForeignKey,
     Float,
+    Enum,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
+from .models.sensors import SensorType
+
 Base = declarative_base()
+
+
+def get_enum_values(enum) -> list[str]:
+    return [str(e.value) for e in enum]
 
 
 class Sensor(Base):
@@ -16,7 +23,10 @@ class Sensor(Base):
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(), nullable=False)
-    type = Column(String(), nullable=False)
+    type = Column(
+        Enum(SensorType, create_constraint=True, values_callable=get_enum_values),
+        nullable=False,
+    )
     trm_code = Column(String(), nullable=False)
 
 
