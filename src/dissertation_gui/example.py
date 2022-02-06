@@ -17,8 +17,18 @@ from pyqtgraph.widgets.PlotWidget import PlotWidget
 from .models.plot import PlotPoint
 from .settings import settings
 
-time_axis: deque[float] = deque(maxlen=100)
-values_axis: deque[float] = deque(maxlen=100)
+
+class PlotManager:
+    def __init__(self, graph_to_manage: PlotWidget):
+        self.graph = graph_to_manage
+        self.time_axis: deque[float] = deque(maxlen=100)
+        self.values_axis: deque[float] = deque(maxlen=100)
+
+    def update(self, point: PlotPoint):
+        self.graph.clear()
+        self.time_axis.append(point.time)
+        self.values_axis.append(point.value)
+        self.graph.plot(self.time_axis, self.values_axis)
 
 
 class PlotThread(QThread):
@@ -38,17 +48,10 @@ ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.u
 plot_thread = PlotThread()
 tab_menu: QTabWidget = ui.tab_menu
 graph: PlotWidget = ui.graph
-
-
-def update_graph(point: PlotPoint):
-    graph.clear()
-    time_axis.append(point.time)
-    values_axis.append(point.value)
-    graph.plot(time_axis, values_axis)
-
+plot_manager = PlotManager(graph)
 
 if __name__ == '__main__':
-    plot_thread.my_signal.connect(update_graph)  # noqa
+    plot_thread.my_signal.connect(plot_manager.update)  # noqa
     plot_thread.start(priority=QThread.Priority.HighPriority)
     ui.show()
     exit(app.exec_())
