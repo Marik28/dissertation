@@ -6,3 +6,4 @@ pyqt5
 pyqt5-tools
 pyqtgraph
 pydantic
+sqlalchemy
