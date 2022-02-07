@@ -45,7 +45,7 @@
      <attribute name="title">
       <string>Датчики</string>
      </attribute>
-     <widget class="QComboBox" name="comboBox">
+     <widget class="SensorsComboBox" name="sensors_combo_box">
       <property name="geometry">
        <rect>
         <x>60</x>
@@ -68,6 +68,26 @@
        <string>Датчик</string>
       </property>
      </widget>
+     <widget class="QTextBrowser" name="sensor_info_text_browser">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>20</y>
+        <width>331</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="sensor_characteristics_table">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>70</y>
+        <width>551</width>
+        <height>361</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -79,6 +99,11 @@
    <extends>QWidget</extends>
    <header>pyqtgraph</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SensorsComboBox</class>
+   <extends>QComboBox</extends>
+   <header>dissertation_gui.example.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
