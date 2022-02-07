@@ -22,15 +22,15 @@ class Sensor(Base):
     __tablename__ = "sensors"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(), nullable=False)
+    name = Column(String(), nullable=False, unique=True)
     type = Column(
         Enum(SensorType, create_constraint=True, values_callable=get_enum_values),
         nullable=False,
     )
-    trm_code = Column(String(), nullable=False)
+    trm_code = Column(String(), nullable=False, unique=True)
 
 
-class ResistanceThermometerCharacteristic(Base):
+class ResistanceThermometerCharacteristics(Base):
     __tablename__ = "resistance_thermometer_characteristics"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
