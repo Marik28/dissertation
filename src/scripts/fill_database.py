@@ -24,7 +24,9 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> list[tables.Sensor]:
 
 def add_characteristics(session: sqlalchemy.orm.Session, sensors: list[tables.Sensor]):
     for sensor in sensors:
-        df = pd.read_csv(settings.base_dir.parent / "data" / "real_sensors" / f"{sensor.name}.csv")
+        if sensor.type == SensorType.UNIFIED_ANALOG_SIGNAL:
+            continue
+        df = pd.read_csv(settings.base_dir.parent / "data" / "sensors_characteristics" / f"{sensor.name}.csv")
         characteristics = [
             tables.ResistanceThermometerCharacteristics(
                 sensor=sensor,
