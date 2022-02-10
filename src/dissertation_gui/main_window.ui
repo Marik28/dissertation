@@ -78,13 +78,13 @@
        </rect>
       </property>
      </widget>
-     <widget class="QTableWidget" name="sensor_characteristics_table">
+     <widget class="CharacteristicsTableWidget" name="sensor_characteristics_table">
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>90</y>
+        <y>80</y>
         <width>551</width>
-        <height>341</height>
+        <height>351</height>
        </rect>
       </property>
      </widget>
@@ -92,7 +92,7 @@
       <property name="geometry">
        <rect>
         <x>320</x>
-        <y>70</y>
+        <y>60</y>
         <width>161</width>
         <height>20</height>
        </rect>
@@ -122,6 +122,11 @@
    <class>SensorsComboBox</class>
    <extends>QComboBox</extends>
    <header>dissertation_gui.widgets.combo_boxes.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CharacteristicsTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>dissertation_gui.widgets.tables.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
