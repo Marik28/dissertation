@@ -32,7 +32,7 @@ with Session() as session:
     sensors_service = SensorsService(session)
     sensor_list = sensors_service.get_sensors()
     sensors_combo_box.set_sensors(sensor_list)
-    sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)  # noqa
+    sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)
     plot_thread.my_signal.connect(plot_manager.update_graph)
 
     plot_thread.start(priority=QThread.Priority.HighPriority)
