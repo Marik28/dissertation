@@ -1,6 +1,5 @@
 import math
 import time
-from collections import deque
 
 from PyQt5.QtCore import (
     QThread,
@@ -13,29 +12,16 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QTextBrowser,
     QTableWidget,
-QHeaderView,
 )
 from PyQt5.uic import loadUi
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from dissertation_gui import tables
+from dissertation_gui.utils.plot_manager import PlotManager
 from .database import Session
 from .models.plot import PlotPoint
 from .services.sensors import SensorsService
 from .settings import settings
-
-
-class PlotManager:
-    def __init__(self, graph_to_manage: PlotWidget):
-        self.graph = graph_to_manage
-        self.time_axis: deque[float] = deque(maxlen=100)
-        self.values_axis: deque[float] = deque(maxlen=100)
-
-    def update(self, point: PlotPoint):
-        self.graph.clear()
-        self.time_axis.append(point.time)
-        self.values_axis.append(point.value)
-        self.graph.plot(self.time_axis, self.values_axis)
 
 
 class PlotThread(QThread):
@@ -86,7 +72,7 @@ if __name__ == '__main__':
         sensor_list = sensors_service.get_sensors()
         sensors_combo_box.set_sensors(sensor_list)
         sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)  # noqa
-        plot_thread.my_signal.connect(plot_manager.update)  # noqa
+        plot_thread.my_signal.connect(plot_manager.update_graph)  # noqa
 
         plot_thread.start(priority=QThread.Priority.HighPriority)
         ui.show()
