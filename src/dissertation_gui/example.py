@@ -1,6 +1,3 @@
-import math
-import time
-
 from PyQt5.QtCore import (
     QThread,
     pyqtSignal,
@@ -17,23 +14,11 @@ from PyQt5.uic import loadUi
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from dissertation_gui import tables
+from dissertation_gui.threads.plot import ExamplePlotThread
 from dissertation_gui.utils.plot_manager import PlotManager
 from .database import Session
-from .models.plot import PlotPoint
 from .services.sensors import SensorsService
 from .settings import settings
-
-
-class PlotThread(QThread):
-    my_signal = pyqtSignal(PlotPoint)
-
-    def run(self) -> None:
-        start_time = time.time()
-        while True:
-            now = time.time() - start_time
-            value = math.sin(now)
-            self.my_signal.emit(PlotPoint(time=now, value=value))  # noqa
-            time.sleep(0.1)
 
 
 class SensorsComboBox(QComboBox):
@@ -58,7 +43,7 @@ class SensorsComboBox(QComboBox):
 
 app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
-plot_thread = PlotThread()
+plot_thread = ExamplePlotThread()
 tab_menu: QTabWidget = ui.tab_menu
 graph: PlotWidget = ui.graph
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
