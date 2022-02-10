@@ -50,7 +50,7 @@
        <rect>
         <x>60</x>
         <y>30</y>
-        <width>69</width>
+        <width>211</width>
         <height>22</height>
        </rect>
       </property>
@@ -71,9 +71,9 @@
      <widget class="QTextBrowser" name="sensor_info_text_browser">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>300</x>
         <y>20</y>
-        <width>331</width>
+        <width>381</width>
         <height>31</height>
        </rect>
       </property>
@@ -93,12 +93,12 @@
        <rect>
         <x>320</x>
         <y>60</y>
-        <width>161</width>
+        <width>171</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>Градуирочная характеристика</string>
+       <string>Градуировочная характеристика</string>
       </property>
      </widget>
     </widget>
