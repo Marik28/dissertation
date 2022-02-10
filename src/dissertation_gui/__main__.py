@@ -28,14 +28,13 @@ sensor_info_text_browser: QTextBrowser = ui.sensor_info_text_browser
 sensor_characteristics_table: QTableWidget = ui.sensor_characteristics_table
 plot_manager = PlotManager(graph)
 
-if __name__ == '__main__':
-    with Session() as session:
-        sensors_service = SensorsService(session)
-        sensor_list = sensors_service.get_sensors()
-        sensors_combo_box.set_sensors(sensor_list)
-        sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)  # noqa
-        plot_thread.my_signal.connect(plot_manager.update_graph)
+with Session() as session:
+    sensors_service = SensorsService(session)
+    sensor_list = sensors_service.get_sensors()
+    sensors_combo_box.set_sensors(sensor_list)
+    sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)  # noqa
+    plot_thread.my_signal.connect(plot_manager.update_graph)
 
-        plot_thread.start(priority=QThread.Priority.HighPriority)
-        ui.show()
-        exit(app.exec_())
+    plot_thread.start(priority=QThread.Priority.HighPriority)
+    ui.show()
+    exit(app.exec_())
