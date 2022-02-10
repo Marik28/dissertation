@@ -19,21 +19,21 @@ class CharacteristicsTableWidget(QTableWidget):
         self.service = service
 
     def display_characteristics(self, sensor: tables.Sensor):
-        y_axis = [i for i in range(0, 100, 10)]
-        x_axis = [i for i in range(10)]
+        rows = [i for i in range(0, 100, 10)]
+        columns = [i for i in range(10)]
 
-        self.setColumnCount(len(x_axis))
-        self.setHorizontalHeaderLabels([str(x) for x in x_axis])
-        self.setRowCount(len(y_axis))
-        self.setVerticalHeaderLabels([str(y) for y in y_axis])
+        self.setColumnCount(len(columns))
+        self.setHorizontalHeaderLabels([str(x) for x in columns])
+        self.setRowCount(len(rows))
+        self.setVerticalHeaderLabels([str(y) for y in rows])
 
         sensor_characteristics = self.service.get_characteristics_by_sensor_name(sensor.name)
 
-        for row in sensor_characteristics:
-            temperature = row.temperature
-            resistance = row.resistance
-            y_coord = temperature // 10
-            x_coord = temperature % 10
-            self.setItem(y_coord, x_coord, QTableWidgetItem(str(resistance)))
+        for value in sensor_characteristics:
+            temperature = value.temperature
+            resistance = value.resistance
+            column = temperature // 10
+            row = temperature % 10
+            self.setItem(column, row, QTableWidgetItem(str(resistance)))
 
         self.resizeColumnsToContents()
