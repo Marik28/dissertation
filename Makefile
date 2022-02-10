@@ -4,3 +4,6 @@ install:
 
 notebook:
 	jupyter notebook
+
+make run-gui:
+	cd src; python -m dissertation_gui
