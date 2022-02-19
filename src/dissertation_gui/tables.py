@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -14,7 +16,7 @@ from .models.sensors import SensorType
 Base = declarative_base()
 
 
-def get_enum_values(enum) -> list[str]:
+def get_enum_values(enum) -> List[str]:
     return [str(e.value) for e in enum]
 
 

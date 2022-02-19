@@ -1,3 +1,5 @@
+from typing import List
+
 from PyQt5.QtCore import (
     QThread,
 )
@@ -23,7 +25,7 @@ from .widgets.combo_boxes import SensorsComboBox
 from .widgets.tables import CharacteristicsTableWidget
 
 
-def display_table(table: QTableWidget, sensor_characteristics: list[tables.ResistanceThermometerCharacteristics]):
+def display_table(table: QTableWidget, sensor_characteristics: List[tables.ResistanceThermometerCharacteristics]):
     y_axis = [i for i in range(0, 100, 10)]
     x_axis = [i for i in range(10)]
 

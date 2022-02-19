@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 import sqlalchemy.orm
 import sqlalchemy.orm
@@ -8,7 +10,7 @@ from dissertation_gui.models.sensors import SensorType
 from dissertation_gui.settings import settings
 
 
-def insert_sensors(session: sqlalchemy.orm.Session) -> list[tables.Sensor]:
+def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
     df = pd.read_csv(settings.base_dir.parent / "data" / "sensors.csv")
     sensors_to_add = [
         tables.Sensor(
@@ -22,7 +24,7 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> list[tables.Sensor]:
     return sensors_to_add
 
 
-def add_characteristics(session: sqlalchemy.orm.Session, sensors: list[tables.Sensor]):
+def add_characteristics(session: sqlalchemy.orm.Session, sensors: List[tables.Sensor]):
     for sensor in sensors:
         if sensor.type == SensorType.UNIFIED_ANALOG_SIGNAL:
             continue

@@ -1,3 +1,5 @@
+from typing import List
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QComboBox
 
@@ -9,11 +11,11 @@ class SensorsComboBox(QComboBox):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._sensors: list[tables.Sensor] = []
+        self._sensors: List[tables.Sensor] = []
         self._sensors_as_text = []
         self.currentTextChanged.connect(self.on_text_changed)
 
-    def set_sensors(self, sensors: list[tables.Sensor]):
+    def set_sensors(self, sensors: List[tables.Sensor]):
         self._sensors = sensors
         self._sensors_as_text = [s.name for s in sensors]
         self.addItems(self._sensors_as_text)
