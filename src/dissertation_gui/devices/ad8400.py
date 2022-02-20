@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 import digitalio
 import microcontroller
 from busio import SPI
@@ -15,6 +17,7 @@ class AD8400(BaseDevice):
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
 
+    @contextmanager
     def _begin_transaction(self):
         while not self._spi.try_lock():
             pass
