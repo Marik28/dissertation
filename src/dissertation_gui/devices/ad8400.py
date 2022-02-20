@@ -11,8 +11,13 @@ class AD8400(BaseDevice):
     min_code = 0
     max_code = 255
 
-    def __init__(self, clock: microcontroller.Pin, mosi: microcontroller.Pin, cs: digitalio.DigitalInOut):
+    def __init__(self,
+                 clock: microcontroller.Pin,
+                 mosi: microcontroller.Pin,
+                 cs: digitalio.DigitalInOut,
+                 baudrate: int = 100_000):
         self._spi = SPI(clock=clock, MOSI=mosi)
+        self._baudrate = baudrate
         self._cs = cs
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
@@ -21,6 +26,7 @@ class AD8400(BaseDevice):
     def _begin_transaction(self):
         while not self._spi.try_lock():
             pass
+        self._spi.configure(self._baudrate)
         self._cs.value = False
         yield
         self._cs.value = True
