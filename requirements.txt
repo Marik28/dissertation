@@ -8,3 +8,8 @@ pyqt5-tools
 pyqtgraph
 pydantic
 sqlalchemy
+board
+busio
+digitalio
+microcontroller
+adafruit_mcp4725
