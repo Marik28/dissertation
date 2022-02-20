@@ -48,8 +48,8 @@
      <widget class="SensorsComboBox" name="sensors_combo_box">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>11</y>
+        <x>140</x>
+        <y>10</y>
         <width>211</width>
         <height>41</height>
        </rect>
@@ -60,7 +60,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>41</width>
+        <width>121</width>
         <height>41</height>
        </rect>
       </property>
@@ -71,9 +71,9 @@
      <widget class="QTextBrowser" name="sensor_info_text_browser">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>360</x>
         <y>10</y>
-        <width>381</width>
+        <width>421</width>
         <height>41</height>
        </rect>
       </property>
