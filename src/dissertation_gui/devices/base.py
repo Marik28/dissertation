@@ -12,6 +12,10 @@ class SensorManager:
     def set_temperature(self, temperature: Number) -> None:
         pass
 
+    @abstractmethod
+    def select(self):
+        pass
+
 
 class BaseDevice:
     min_code: int = None
@@ -66,3 +70,4 @@ class SensorEmulator:
 
     def set_manager(self, manager: SensorManager) -> None:
         self._manager = manager
+        self._manager.select()
