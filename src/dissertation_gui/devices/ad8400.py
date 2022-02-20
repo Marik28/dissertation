@@ -22,7 +22,9 @@ class AD8400(BaseDevice):
         self._cs = cs
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
-        self._logger.info(f"{self.get_device_name()} инициализирован пинами {clock=}, {mosi=}, {cs=}; {baudrate=}")
+        self._logger.info(
+            f"{self.get_device_name()} инициализирован пинами clock={clock}, mosi={mosi}, cs={cs}; baudrate={baudrate}"
+        )
 
     @contextmanager
     def _begin_transaction(self):
