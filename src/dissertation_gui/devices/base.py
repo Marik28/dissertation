@@ -7,7 +7,7 @@ from loguru import logger
 Number = Union[float, int]
 
 
-class DeviceManager:
+class SensorManager:
     @abstractmethod
     def set_temperature(self, temperature: Number) -> None:
         pass
@@ -55,7 +55,7 @@ class BaseDevice:
 
 
 class SensorEmulator:
-    def __init__(self, manager: DeviceManager = None):
+    def __init__(self, manager: SensorManager = None):
         self._manager = manager
 
     def perform_set_temperature(self, temperature: Number) -> None:
@@ -64,5 +64,5 @@ class SensorEmulator:
 
         self._manager.set_temperature(temperature)
 
-    def set_manager(self, manager: DeviceManager) -> None:
+    def set_manager(self, manager: SensorManager) -> None:
         self._manager = manager
