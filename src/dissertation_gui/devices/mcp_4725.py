@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 import microcontroller
 from busio import I2C
 
@@ -16,6 +18,7 @@ class MCP4725(BaseDevice):
     def _perform_send_data(self, data: bytes) -> None:
         self._i2c.writeto(self._address, data)
 
+    @contextmanager
     def _begin_transaction(self):
         self._logger.info(f"Отправка данных на {self.get_device_name()} начата")
         while not self._i2c.try_lock():
