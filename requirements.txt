@@ -3,6 +3,7 @@ openpyxl
 numpy
 matplotlib
 notebook
+loguru
 pyqt5
 pyqt5-tools
 pyqtgraph
