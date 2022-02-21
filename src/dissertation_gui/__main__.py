@@ -46,14 +46,14 @@ def display_table(table: QTableWidget, sensor_characteristics: List[tables.Resis
 
 app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
-plot_thread = ExamplePlotThread()
+plot_thread = ExamplePlotThread(frequency=settings.plot_update_frequency)
 tab_menu: QTabWidget = ui.tab_menu
 graph: PlotWidget = ui.graph
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_info_text_browser: QTextBrowser = ui.sensor_info_text_browser
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 
-plot_manager = PlotManager(graph)
+plot_manager = PlotManager(graph, plot_length=settings.plot_points)
 
 with Session() as session:
     sensors_service = SensorsService(session)
