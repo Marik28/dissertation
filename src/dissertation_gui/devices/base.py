@@ -2,6 +2,7 @@ from abc import abstractmethod
 from contextlib import contextmanager
 from typing import Union
 
+from adafruit_blinka import Lockable
 from loguru import logger
 
 Number = Union[float, int]
@@ -21,13 +22,26 @@ class BaseDevice:
     min_code: int = None
     max_code: int = None
 
-    def __init__(self):
+    def __init__(self, protocol: Lockable):
         self._logger = logger
+        self._protocol = protocol
 
-    @abstractmethod
+    def before_transaction(self):
+        pass
+
+    def after_transaction(self):
+        pass
+
     @contextmanager
     def _begin_transaction(self):
-        pass
+        self._logger.info(f"Отправка данных на {self.get_device_name()} начата")
+        while not self._protocol.try_lock():
+            pass
+        self.before_transaction()
+        yield
+        self.after_transaction()
+        self._protocol.unlock()
+        self._logger.info(f"Отправка данных на {self.get_device_name()} закончена")
 
     @abstractmethod
     def _perform_send_data(self, data: bytes) -> None:

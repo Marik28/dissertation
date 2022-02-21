@@ -1,12 +1,14 @@
 import board
 import digitalio
+from busio import SPI
 
 from ..devices.ad8400 import AD8400
 
 cs = digitalio.DigitalInOut(board.CE0)
 sclk = board.SCLK
 mosi = board.MOSI
-ad8400 = AD8400(clock=sclk, mosi=mosi, cs=cs)
+spi = SPI(clock=sclk, MOSI=mosi)
+ad8400 = AD8400(spi, cs=cs)
 
 if __name__ == '__main__':
     import time
