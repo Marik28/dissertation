@@ -9,6 +9,7 @@ pyqt5-tools
 pyqtgraph
 pydantic
 sqlalchemy
+alembic
 board
 busio
 digitalio

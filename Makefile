@@ -5,5 +5,11 @@ install:
 notebook:
 	jupyter notebook
 
-make run-gui:
+run-gui:
 	cd src; python -m dissertation_gui
+
+makemigrations:
+	cd src; alembic revision --autogenerate
+
+migrate:
+	cd src; alembic upgrade head
