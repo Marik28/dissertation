@@ -10,11 +10,11 @@ class SensorManager:
 
     @abstractmethod
     def select(self) -> None:
-        pass
+        """Переключает все релюшки и настраивает интерфейс для использования устройства, если это необходимо"""
 
     @abstractmethod
     def unselect(self) -> None:
-        pass
+        """Подчищает все пины и прочее для того, чтобы использовать другое устройство"""
 
 
 class SensorEmulator:
