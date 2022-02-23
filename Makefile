@@ -13,3 +13,6 @@ makemigrations:
 
 migrate:
 	cd src; alembic upgrade head
+
+fill-database:
+	cd src; python -m scripts.fill_database
