@@ -18,11 +18,19 @@ class AD8400(BaseDevice):
         self._cs = cs
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
-        clock, mosi, _ = protocol._pins
+        clock, mosi, _cs = self.get_used_pins()
         self._logger.info(
             f"{self.get_device_name()} инициализирован пинами clock={protocol},"
-            f" mosi={mosi}, cs={cs}; baudrate={baudrate}"
+            f" mosi={mosi}, cs={_cs}; baudrate={baudrate}"
         )
+
+    def get_used_pins(self):
+        """
+        :return: (clock_pin, mosi_pin, cs)
+        """
+        clock, mosi, _ = self._spi._pins
+        cs = self._cs
+        return clock, mosi, cs
 
     def before_transaction(self):
         self._spi.configure(self._baudrate)
