@@ -39,6 +39,7 @@ class TemperatureCalculationThread(QThread):
         self._temperature_limit = float(new_limit)
         if self._exceeds_limit():
             self._reset_start_time()
+            self._reset_start_temperature()
 
     def run(self) -> None:
         self._reset_start_time()
@@ -63,3 +64,6 @@ class TemperatureCalculationThread(QThread):
             return self._temperature > self._temperature_limit
         else:
             return self._temperature < self._temperature_limit
+
+    def _reset_start_temperature(self):
+        self._start_temperature = self._temperature
