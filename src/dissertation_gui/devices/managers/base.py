@@ -9,7 +9,11 @@ class SensorManager:
         pass
 
     @abstractmethod
-    def select(self):
+    def select(self) -> None:
+        pass
+
+    @abstractmethod
+    def unselect(self) -> None:
         pass
 
 
@@ -24,5 +28,7 @@ class SensorEmulator:
         self._manager.set_temperature(temperature)
 
     def set_manager(self, manager: SensorManager) -> None:
+        if self._manager is not None:
+            self._manager.unselect()
         self._manager = manager
         self._manager.select()
