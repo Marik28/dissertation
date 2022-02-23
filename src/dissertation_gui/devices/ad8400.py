@@ -41,3 +41,13 @@ class AD8400(BaseDevice):
 
     def _perform_send_data(self, data: bytes) -> None:
         self._spi.write(data)
+
+    def __hash__(self) -> int:
+        # TODO реализовать
+        return hash()
+
+    def __eq__(self, other: "AD8400"):
+        if not isinstance(other, AD8400):
+            return NotImplemented
+        # TODO потестировать
+        return self.get_used_pins() == other.get_used_pins()
