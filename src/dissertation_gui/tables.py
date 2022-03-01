@@ -35,7 +35,7 @@ class Sensor(Base):
 
 
 class SensorCharacteristics(Base):
-    __tablename__ = "resistance_thermometer_characteristics"
+    __tablename__ = "sensor_characteristics"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     sensor_id = Column(Integer(), ForeignKey("sensors.id", ondelete="RESTRICT"), nullable=False)
