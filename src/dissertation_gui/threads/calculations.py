@@ -7,7 +7,7 @@ from PyQt5.QtCore import (
 
 
 class TemperatureCalculationThread(QThread):
-    my_signal = pyqtSignal(float)
+    temperature_signal = pyqtSignal(float)
 
     def __init__(self, parent=None, frequency: int = 10):
         """
@@ -53,7 +53,7 @@ class TemperatureCalculationThread(QThread):
             if self._reached_set_temp():
                 self._temperature = self._set_temperature
 
-            self.my_signal.emit(self._temperature)
+            self.temperature_signal.emit(self._temperature)
             time.sleep(self._period)
 
     def _change_direction(self) -> None:
