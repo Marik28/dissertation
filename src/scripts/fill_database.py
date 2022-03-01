@@ -17,6 +17,7 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
             name=row["name"],
             type=SensorType(row["type"]),
             trm_code=row["trm_code"],
+            units=row["units"],
         ) for _, row in df.iterrows()
     ]
     session.add_all(sensors_to_add)
@@ -30,10 +31,10 @@ def add_characteristics(session: sqlalchemy.orm.Session, sensors: List[tables.Se
             continue
         df = pd.read_csv(settings.base_dir.parent / "data" / "sensors_characteristics" / f"{sensor.name}.csv")
         characteristics = [
-            tables.ResistanceThermometerCharacteristics(
+            tables.SensorCharacteristics(
                 sensor=sensor,
                 temperature=float(row["T"]),
-                resistance=float(row["R"]),
+                value=float(row["R"]),
             ) for _, row in df.iterrows()
         ]
         session.add_all(characteristics)

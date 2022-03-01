@@ -52,7 +52,7 @@ class CharacteristicsTableWidget(QTableWidget):
         offset = calculate_offset(sensor_characteristics[0].temperature)
         for value in sensor_characteristics:
             temperature = value.temperature
-            resistance = value.resistance
+            resistance = value.value
             column = abs(temperature) % 10
             row = calculate_row(temperature, offset)
             self.setItem(column, row, QTableWidgetItem(str(resistance)))

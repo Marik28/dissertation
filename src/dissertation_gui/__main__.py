@@ -36,7 +36,7 @@ def display_table(table: QTableWidget, sensor_characteristics: List[tables.Resis
 
     for row in sensor_characteristics:
         temperature = row.temperature
-        resistance = row.resistance
+        resistance = row.value
         y_coord = temperature // 10
         x_coord = temperature % 10
         table.setItem(y_coord, x_coord, QTableWidgetItem(str(resistance)))

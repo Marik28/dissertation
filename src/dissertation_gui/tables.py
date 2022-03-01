@@ -24,20 +24,22 @@ class Sensor(Base):
     __tablename__ = "sensors"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
-    name = Column(String(), nullable=False, unique=True)
+    name = Column(String(255), nullable=False, unique=True)
     type = Column(
-        Enum(SensorType, create_constraint=True, values_callable=get_enum_values),
+        Enum(SensorType, values_callable=get_enum_values),
         nullable=False,
     )
-    trm_code = Column(String(), nullable=False, unique=True)
+    units = Column(String(10), nullable=False)
+    physical_quantity = Column(String(50), nullable=False)
+    trm_code = Column(String(10), nullable=False, unique=True)
 
 
-class ResistanceThermometerCharacteristics(Base):
+class SensorCharacteristics(Base):
     __tablename__ = "resistance_thermometer_characteristics"
 
     id = Column(Integer(), primary_key=True, autoincrement=True)
     sensor_id = Column(Integer(), ForeignKey("sensors.id", ondelete="RESTRICT"), nullable=False)
     temperature = Column(Integer(), nullable=False)
-    resistance = Column(Float(), nullable=False)
+    value = Column(Float(), nullable=False)
 
     sensor = relationship("Sensor")
