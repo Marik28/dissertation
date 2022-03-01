@@ -27,6 +27,7 @@ class CharacteristicsTableWidget(QTableWidget):
     def set_service(self, service: SensorCharacteristicsService):
         self.service = service
 
+    # todo: доделать
     def display_characteristics(self, sensor: tables.Sensor):
         sensor_characteristics = self.service.get_characteristics_by_sensor_name(sensor.name)
         neg_chars = [row for row in sensor_characteristics if row.temperature <= 0]
