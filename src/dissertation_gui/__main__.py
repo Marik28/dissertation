@@ -25,7 +25,7 @@ from .widgets.combo_boxes import SensorsComboBox
 from .widgets.tables import CharacteristicsTableWidget
 
 
-def display_table(table: QTableWidget, sensor_characteristics: List[tables.ResistanceThermometerCharacteristics]):
+def display_table(table: QTableWidget, sensor_characteristics: List[tables.SensorCharacteristics]):
     y_axis = [i for i in range(0, 100, 10)]
     x_axis = [i for i in range(10)]
 
