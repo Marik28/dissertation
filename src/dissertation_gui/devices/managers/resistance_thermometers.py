@@ -11,7 +11,7 @@ class ResistanceThermometerManager(SensorManager):
     def __init__(self, *digipots: AD8400):
         self._digipots = list(digipots)
 
-    def select(self):
+    def select(self) -> None:
         pass
 
     def unselect(self) -> None:

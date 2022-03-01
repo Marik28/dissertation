@@ -25,9 +25,9 @@ class TemperatureCalculationThread(QThread):
 
     def set_k_ratio(self, k: float) -> None:
         """Слот для изменения коэффициента 'k'"""
-        self._k = k
+        self._k = float(k)
 
-    def set_temperature(self, new_set_temperature) -> None:
+    def set_temperature(self, new_set_temperature: float) -> None:
         """Слот для изменения заданной температуры"""
         _new_temperature = float(new_set_temperature)
 
