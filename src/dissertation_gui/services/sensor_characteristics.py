@@ -14,7 +14,6 @@ class SensorCharacteristicsService:
             self.session.query(tables.ResistanceThermometerCharacteristics)
                 .join(tables.ResistanceThermometerCharacteristics.sensor)
                 .filter(tables.ResistanceThermometerCharacteristics.sensor.has(name=sensor))
-                .filter(tables.ResistanceThermometerCharacteristics.temperature >= 0)
                 .order_by(tables.ResistanceThermometerCharacteristics.temperature.asc())
                 .all()
         )
