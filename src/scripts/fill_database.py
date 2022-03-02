@@ -2,10 +2,12 @@ from typing import List
 
 import pandas as pd
 import sqlalchemy.orm
-import sqlalchemy.orm
 
 from dissertation_gui import tables
-from dissertation_gui.database import Session, engine
+from dissertation_gui.database import (
+    Session,
+    engine,
+)
 from dissertation_gui.models.sensors import SensorType
 from dissertation_gui.settings import settings
 
