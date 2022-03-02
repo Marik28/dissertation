@@ -23,6 +23,8 @@ class CharacteristicsTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.service: Optional[SensorCharacteristicsService] = None
+        # todo: добавить подсветку выбранной ячейки
+        # self.cellClicked.connect()
 
     def set_service(self, service: SensorCharacteristicsService):
         self.service = service
