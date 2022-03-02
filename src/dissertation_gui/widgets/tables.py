@@ -27,7 +27,6 @@ class CharacteristicsTableWidget(QTableWidget):
     def set_service(self, service: SensorCharacteristicsService):
         self.service = service
 
-    # todo: доделать
     def display_characteristics(self, sensor: tables.Sensor):
         sensor_characteristics = self.service.get_characteristics_by_sensor_name(sensor.name)
         neg_chars = [row for row in sensor_characteristics if row.temperature <= 0]
@@ -50,12 +49,14 @@ class CharacteristicsTableWidget(QTableWidget):
         self.setVerticalHeaderLabels(vertical_labels)
 
         offset = calculate_offset(sensor_characteristics[0].temperature)
-        for value in sensor_characteristics:
-            temperature = value.temperature
-            resistance = value.value
+        for tuple_ in sensor_characteristics:
+            temperature = tuple_.temperature
+            value = tuple_.value
             column = abs(temperature) % 10
             row = calculate_row(temperature, offset)
-            self.setItem(column, row, QTableWidgetItem(str(resistance)))
+            self.setItem(row, column, QTableWidgetItem(str(value)))
+            if temperature == 0:  # костыль
+                self.setItem(row + 1, column, QTableWidgetItem(str(value)))
 
         self.resizeColumnsToContents()
 
@@ -83,7 +84,10 @@ def calculate_offset(min_value: int) -> int:
 
 def calculate_row(temperature: int, offset: int) -> int:
     row = int(math.copysign(abs(temperature) // 10, temperature))
-    return row + offset
+    result = row + offset
+    if temperature > 0:
+        result += 1
+    return result
 
 
 if __name__ == '__main__':
