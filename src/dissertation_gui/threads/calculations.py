@@ -87,20 +87,22 @@ class TemperatureCalculationThread(QThread):
 
     # TODO протестировать
     def run(self) -> None:
+        thread_start_time = time.time()
         self._reset_start_time()
-        pseudo_time = 0.
         while True:
             if self._reset_time_required():
                 self._reset_start_time()
-            now = time.time() - self._start_time
-            self._temperature = self._start_temperature + self._k * now * self._direction
+            self._temperature = self.calculate_temperature()
 
             if self._reached_set_temp():
                 self._temperature = self._set_temperature
 
-            self.temperature_signal.emit(PlotPoint(time=pseudo_time, value=self._temperature))
-            pseudo_time += 1.
+            self.temperature_signal.emit(PlotPoint(time=time.time() - thread_start_time, value=self._temperature))
             time.sleep(self._update_period)
+
+    def calculate_temperature(self) -> float:
+        now = time.time() - self._start_time
+        return self._start_temperature + self._k * now * self._direction
 
     def _defer_reset_time(self):
         self._reset = True
