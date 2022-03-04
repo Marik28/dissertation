@@ -4,6 +4,7 @@ from PyQt5.QtCore import (
     QThread,
     pyqtSignal,
 )
+
 from ..models.plot import PlotPoint
 
 
@@ -23,6 +24,7 @@ class TemperatureCalculationThread(QThread):
         self._set_temperature = 25.
         self._temperature = 0.
         self._start_temperature = self._temperature
+        self._restart = False
 
     def set_k_ratio(self, k: float) -> None:
         """Слот для изменения коэффициента 'k'"""
@@ -46,16 +48,32 @@ class TemperatureCalculationThread(QThread):
         # 6. d-; nt > st; nt < ct;
         # 7. d-; nt < st; nt < ct;
         # 8. d-; nt < st; nt > ct;
+        print(f"ДО:\t Направление - {self._direction}\t"
+              f"Стартовая температура - {self._start_temperature}\t"
+              f"Текущая температура - {self._temperature}")
         if self._direction_positive():
-            if _new_temperature <= self._temperature:
+            if _new_temperature < self._temperature:
+                print("зашел в 1")
                 self._change_direction()
-                self._reset_start_time()
+                self._defer_restart_time()
                 self._reset_start_temperature()
+            elif _new_temperature > self._temperature:
+                self._defer_restart_time()
+                self._reset_start_temperature()
+                pass
         else:
-            if _new_temperature >= self._temperature:
+            if _new_temperature > self._temperature:
+                print("зашел в 2")
                 self._change_direction()
-                self._reset_start_time()
+                self._defer_restart_time()
                 self._reset_start_temperature()
+            elif _new_temperature < self._temperature:
+                self._defer_restart_time()
+                self._reset_start_temperature()
+        print(f"ПОСЛЕ:\t Направление - {self._direction}\t"
+              f"Стартовая температура - {self._start_temperature}\t"
+              f"Текущая температура - {self._temperature}")
+
         # if _new_temperature > self._set_temperature and not self._direction_positive():
         #     self._change_direction()
         #     self._reset_start_time()
@@ -72,6 +90,8 @@ class TemperatureCalculationThread(QThread):
         self._reset_start_time()
         pseudo_time = 0.
         while True:
+            if self._reset_time_required():
+                self._reset_start_time()
             now = time.time() - self._start_time
             self._temperature = self._start_temperature + self._k * now * self._direction
 
@@ -82,12 +102,19 @@ class TemperatureCalculationThread(QThread):
             pseudo_time += 1.
             time.sleep(self._update_period)
 
+    def _defer_restart_time(self):
+        self._restart = True
+
+    def _reset_time_required(self) -> bool:
+        return self._restart
+
     def _change_direction(self) -> None:
         """Изменяет направление графика на противоположное"""
         self._direction = -self._direction
 
     def _reset_start_time(self) -> None:
         self._start_time = time.time()
+        self._restart = False
 
     def _direction_positive(self) -> bool:
         return self._direction == 1
