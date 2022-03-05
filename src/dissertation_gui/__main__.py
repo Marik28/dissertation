@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
     QSpinBox,
     QDoubleSpinBox,
+    QPushButton,
 )
 from PyQt5.uic import loadUi
 from pyqtgraph.widgets.PlotWidget import PlotWidget
@@ -28,6 +29,7 @@ ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.u
 plot_thread = TemperatureCalculationThread()
 tab_menu: QTabWidget = ui.tab_menu
 graph: PlotWidget = ui.graph
+reset_plot_button: QPushButton = ui.reset_plot_button
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_info_text_browser: QTextBrowser = ui.sensor_info_text_browser
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
@@ -49,6 +51,7 @@ with Session() as session:
     k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
     plot_thread.temperature_signal.connect(plot_manager.update_graph)
     plot_thread.start(priority=QThread.Priority.HighPriority)
+    reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
 
     ui.show()
     exit(app.exec_())
