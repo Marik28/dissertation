@@ -44,9 +44,9 @@ with Session() as session:
     sensor_characteristics_table.set_service(sensors_characteristics_service)
 
     sensor_list = sensors_service.get_sensors()
+    sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
     sensors_combo_box.set_sensors(sensor_list)
     # sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)
-    sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
     temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
     k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
     plot_thread.temperature_signal.connect(plot_manager.update_graph)

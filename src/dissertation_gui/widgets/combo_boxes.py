@@ -20,6 +20,7 @@ class SensorsComboBox(QComboBox):
         self._sensors_as_text = [s.name for s in sensors]
         self.addItems(self._sensors_as_text)
         self.setCurrentText(self._sensors_as_text[0])
+        self.sensor_changed.emit(self._sensors[0])
 
     def on_text_changed(self, text: str):
         sensor = [s for s in self._sensors if s.name == text][0]
