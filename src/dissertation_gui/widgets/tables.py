@@ -1,6 +1,7 @@
 import math
 from typing import Optional
 
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
@@ -23,11 +24,32 @@ class CharacteristicsTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.service: Optional[SensorCharacteristicsService] = None
-        # todo: добавить подсветку выбранной ячейки
-        # self.cellClicked.connect()
+        self.currentCellChanged.connect(self.change_colors)
+        self.default_background = QTableWidgetItem().background()
 
     def set_service(self, service: SensorCharacteristicsService):
         self.service = service
+
+    def change_colors(self, cur_row: int, cur_col: int, prev_row: int, prev_col: int):
+        if cur_row != prev_row:
+            self.change_row_bg_color(prev_row, self.default_background)
+        if cur_col != prev_col:
+            self.change_column_bg_color(prev_col, self.default_background)
+        color = QColor("#DCDCDC")
+        self.change_column_bg_color(cur_col, color)
+        self.change_row_bg_color(cur_row, color)
+
+    def change_column_bg_color(self, column: int, color: QColor):
+        for row in range(self.rowCount()):
+            item = self.item(row, column)
+            if item is not None:
+                item.setBackground(color)
+
+    def change_row_bg_color(self, row: int, color: QColor):
+        for column in range(self.colorCount()):
+            item = self.item(row, column)
+            if item is not None:
+                item.setBackground(color)
 
     def display_characteristics(self, sensor: tables.Sensor):
         sensor_characteristics = self.service.get_characteristics_by_sensor_name(sensor.name)
