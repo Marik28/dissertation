@@ -8,6 +8,19 @@ from PyQt5.QtCore import (
 from ..models.plot import PlotPoint
 
 
+# st - set temp
+# nt - new temp
+# ct - current temp
+# d - direction
+# 1. d+; nt > st; nt > ct; всё ок
+# 2. d+; nt > st; nt < ct; не бывает
+# 3. d+; nt < st; nt > ct; всё ок
+# 4. d+; nt < st; nt < ct; d = -d
+# 5. d-; nt > st; nt > ct; d = -d
+# 6. d-; nt > st; nt < ct;
+# 7. d-; nt < st; nt < ct;
+# 8. d-; nt < st; nt > ct;
+
 class TemperatureCalculationThread(QThread):
     temperature_signal = pyqtSignal(PlotPoint)
 
@@ -32,28 +45,11 @@ class TemperatureCalculationThread(QThread):
         self._reset_start_temperature()
         self._defer_reset_time()
 
-    # fixme
     def set_temperature(self, new_set_temperature: float) -> None:
         """Слот для изменения заданной температуры"""
         _new_temperature = float(new_set_temperature)
-        # st - set temp
-        # nt - new temp
-        # ct - current temp
-        # d - direction
-        # 1. d+; nt > st; nt > ct; всё ок
-        # 2. d+; nt > st; nt < ct; не бывает
-        # 3. d+; nt < st; nt > ct; всё ок
-        # 4. d+; nt < st; nt < ct; d = -d
-        # 5. d-; nt > st; nt > ct; d = -d
-        # 6. d-; nt > st; nt < ct;
-        # 7. d-; nt < st; nt < ct;
-        # 8. d-; nt < st; nt > ct;
-        print(f"ДО:\t Направление - {self._direction}\t"
-              f"Стартовая температура - {self._start_temperature}\t"
-              f"Текущая температура - {self._temperature}")
         if self._direction_positive():
             if _new_temperature < self._temperature:
-                print("зашел в 1")
                 self._change_direction()
                 self._defer_reset_time()
                 self._reset_start_temperature()
@@ -63,26 +59,12 @@ class TemperatureCalculationThread(QThread):
                 pass
         else:
             if _new_temperature > self._temperature:
-                print("зашел в 2")
                 self._change_direction()
                 self._defer_reset_time()
                 self._reset_start_temperature()
             elif _new_temperature < self._temperature:
                 self._defer_reset_time()
                 self._reset_start_temperature()
-        print(f"ПОСЛЕ:\t Направление - {self._direction}\t"
-              f"Стартовая температура - {self._start_temperature}\t"
-              f"Текущая температура - {self._temperature}")
-
-        # if _new_temperature > self._set_temperature and not self._direction_positive():
-        #     self._change_direction()
-        #     self._reset_start_time()
-        #     self._reset_start_temperature()
-        # elif _new_temperature < self._set_temperature and self._direction_positive():
-        #     self._change_direction()
-        #     self._reset_start_time()
-        #     self._reset_start_temperature()
-
         self._set_temperature = _new_temperature
 
     # TODO протестировать
