@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QDoubleSpinBox,
     QPushButton,
+    QCheckBox,
 )
 from PyQt5.uic import loadUi
 from pyqtgraph.widgets.PlotWidget import PlotWidget
@@ -35,6 +36,7 @@ sensor_info_text_browser: QTextBrowser = ui.sensor_info_text_browser
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 temp_spin_box: QSpinBox = ui.temp_spin_box
 k_spin_box: QDoubleSpinBox = ui.k_spin_box
+bursts_check_box: QCheckBox = ui.bursts_check_box
 plot_manager = PlotManager(graph, plot_length=settings.plot_points)
 
 with Session() as session:
@@ -49,6 +51,7 @@ with Session() as session:
     # sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)
     temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
     k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
+    bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
     plot_thread.temperature_signal.connect(plot_manager.update_graph)
     plot_thread.start(priority=QThread.Priority.HighPriority)
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())

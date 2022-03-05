@@ -1,3 +1,4 @@
+import random
 import time
 
 from PyQt5.QtCore import (
@@ -38,6 +39,13 @@ class TemperatureCalculationThread(QThread):
         self._temperature = 0.
         self._start_temperature = self._temperature
         self._reset = False
+        self._enable_bursts = False
+
+    def set_enable_bursts(self, new_val: int):
+        self._enable_bursts = bool(new_val)
+
+    def bursts_enabled(self) -> bool:
+        return self._enable_bursts
 
     def set_k_ratio(self, k: float) -> None:
         """Слот для изменения коэффициента 'k'"""
@@ -78,6 +86,14 @@ class TemperatureCalculationThread(QThread):
 
             if self._reached_set_temp():
                 self._temperature = self._set_temperature
+            # TODO: реализовать помехи
+            if self.bursts_enabled():
+                burst = random.choice([1, -1]) * random.random() * 2
+                self.temperature_signal.emit(
+                    PlotPoint(
+                        time=time.time() - thread_start_time,
+                        value=self._temperature * burst),
+                )
 
             self.temperature_signal.emit(PlotPoint(time=time.time() - thread_start_time, value=self._temperature))
             time.sleep(self._update_period)
