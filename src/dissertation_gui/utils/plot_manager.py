@@ -45,10 +45,10 @@ class ThermoRegulatorInfoPlotManager:
         self._measured_temp_curve = self._create_curve("Измеренная температура", "b")
         self._set_temp_curve = self._create_curve("Заданная температура", "r")
 
-    def _create_curve(self, name: str, color: str) -> CurveManager:
+    def _create_curve(self, name: str, color: str, width: int = 2) -> CurveManager:
         self._plot_widget.addLegend()
         return CurveManager(
-            self._plot_widget.plot(name=name, pen=mkPen(color=color)),
+            self._plot_widget.plot(name=name, pen=mkPen(color=color, width=width)),
             self._max_points,
         )
 
