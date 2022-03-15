@@ -12,7 +12,7 @@ from pymodbus.client.sync import BaseModbusClient
 #   - Уставка
 
 class ThermoRegulatorInfoThread(QThread):
-    """Поток для периодического опроса ТРМ-а"""
+    """Поток для периодического опроса ТРМ-а по Modbus"""
 
     def __init__(self, client: BaseModbusClient, frequency: int = 1, parent=None):
         """
@@ -28,6 +28,6 @@ class ThermoRegulatorInfoThread(QThread):
     def run(self) -> None:
         while True:
             # TODO реализовать
-            with self._client:
-                pass
+            with self._client as client:
+                client.read_input_registers()
             time.sleep(self._update_period)
