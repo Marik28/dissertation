@@ -1,4 +1,5 @@
 import enum
+from typing import List
 
 from pymodbus.client.sync import BaseModbusClient
 
@@ -13,10 +14,19 @@ class TRMModbusDataType(enum.Enum):
     FLOAT_32 = "float32"
     CHAR_8 = "Char[8]"
     HEX_WORD = "Hex word"
-    BINARY = "Binary"
+    BINARY = "binary"
 
 
-bytes_len = {  # fixme нормальное название
+trm_datatype_to_python_type = {
+    TRMModbusDataType.INT_16: int,
+    TRMModbusDataType.SIGNED_INT_16: int,
+    TRMModbusDataType.FLOAT_32: float,
+    TRMModbusDataType.CHAR_8: str,
+    TRMModbusDataType.HEX_WORD: int,
+    TRMModbusDataType.BINARY: int,
+}
+
+type_register_lens = {  # fixme нормальное название
     TRMModbusDataType.INT_16: 1,
     TRMModbusDataType.SIGNED_INT_16: 1,
     TRMModbusDataType.FLOAT_32: 2,
@@ -52,15 +62,35 @@ def cast_hex_word(raw_value: bytes) -> int:
 
 
 class TRMModbusRegister:  # TODO: реализовать
-    def __init__(self, address: int, datatype: TRMModbusDataType):
-        self._address = address
-        self._count = bytes_len[datatype]
+    datatype = None
 
-    def cast(self, data: bytes):
+    def __init__(self, address: int, client: BaseModbusClient):
+        self._address = address
+        self._count = type_register_lens[self.datatype]
+        self._client = client
+
+    def decode(self, data: List[bytes]):  # как понимаю, после чтения с трм-а, возвращается массив байт
         ...
+
+    def read(self):
+        ...
+
+    def _read(self) -> bytes:
+        return self._client.read_input_registers(self._address, self._count)
 
 
 class TRMModbusClient:  # TODO: реализовать
+    """
+    Настройка обмена данными осуществляется параметрами группы COMM:
+        - PROT – протокол обмена данными (ОВЕН, ModBus-RTU, ModBus-ASCII);
+        - bPS – скорость обмена в сети, допустимые значения – 2400, 4800, 9600, 14400 19200, 28800, 38400, 57600, 115200 бит/с;
+        - Addr – базовый адрес прибора, диапазон значений:
+
+          - 0…255 при Prot = OWEN и A.LEN = 8;
+          - 0…2047 при Prot = OWEN и A.LEN = 11;
+          - 1…247 при Prot = M.RTU или M.ASC.
+    """
+
     def __init__(self, modbus_client: BaseModbusClient):
         self._client = modbus_client
 

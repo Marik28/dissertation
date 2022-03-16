@@ -11,6 +11,7 @@ from pymodbus.client.sync import BaseModbusClient
 #   - Способ управления для выхода (холодильник/нагреватель)
 #   - Уставка
 
+# TODO проверить параметр 'handle_local_echo=' у ModbusSerialClient
 class ThermoRegulatorInfoThread(QThread):
     """Поток для периодического опроса ТРМ-а по Modbus"""
 
