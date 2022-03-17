@@ -76,14 +76,16 @@ class TRMModbusRegister:  # TODO: реализовать
         ...
 
     def _read(self) -> bytes:
-        return self._client.read_input_registers(self._address, self._count)
+        # unit - адрес устройства, к которому обращаемся
+        return self._client.read_input_registers(self._address, self._count, unit=0x01)
 
 
 class TRMModbusClient:  # TODO: реализовать
     """
     Настройка обмена данными осуществляется параметрами группы COMM:
         - PROT – протокол обмена данными (ОВЕН, ModBus-RTU, ModBus-ASCII);
-        - bPS – скорость обмена в сети, допустимые значения – 2400, 4800, 9600, 14400 19200, 28800, 38400, 57600, 115200 бит/с;
+        - bPS – скорость обмена в сети, допустимые значения –
+          2400, 4800, 9600, 14400 19200, 28800, 38400, 57600, 115200 бит/с;
         - Addr – базовый адрес прибора, диапазон значений:
 
           - 0…255 при Prot = OWEN и A.LEN = 8;
@@ -92,6 +94,7 @@ class TRMModbusClient:  # TODO: реализовать
     """
 
     def __init__(self, modbus_client: BaseModbusClient):
+        """ при создании клиента нужно указывать `baudrate = ...`"""
         self._client = modbus_client
 
     def read_register(self, register: TRMModbusRegister):
