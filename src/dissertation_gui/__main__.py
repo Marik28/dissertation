@@ -27,6 +27,7 @@ from .utils.plot_manager import ThermoRegulatorInfoPlotManager, PlotManager
 from .widgets.combo_boxes import SensorsComboBox
 from .widgets.tables import CharacteristicsTableWidget
 
+logger.add("logs.log", rotation="10 MB", compression="zip")
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола

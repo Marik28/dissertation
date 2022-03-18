@@ -1,6 +1,7 @@
 import enum
 from typing import List
 
+import pandas as pd
 from pymodbus.client.sync import BaseModbusClient
 
 
@@ -11,7 +12,7 @@ class TRMModbusDataType(enum.Enum):
     """
     INT_16 = "Int16"
     SIGNED_INT_16 = "Signed Int16"
-    FLOAT_32 = "float32"
+    FLOAT_32 = "Float32"
     CHAR_8 = "Char[8]"
     HEX_WORD = "Hex word"
     BINARY = "binary"
@@ -99,3 +100,37 @@ class TRMModbusClient:  # TODO: реализовать
 
     def read_register(self, register: TRMModbusRegister):
         ...
+
+    def read(self):
+        self._client.read_holding_registers(address=1, count=..., unit=0x00)
+
+
+# как это должно выглядеть
+from PyQt5.QtCore import QThread, pyqtSignal
+from pymodbus.client.sync import ModbusSerialClient
+
+
+def create_register(address: int) -> TRMModbusRegister:
+    """Фабрика для создания объекта регистра"""
+
+
+class Thread(QThread):
+    read_signal = pyqtSignal(object)
+    client = TRMModbusClient(
+        ModbusSerialClient(method='ascii', port=0, parity=..., baudrate=9600, timeout=3, handle_local_echo=...),
+    )
+    period = 1
+
+    def __init__(self, registers: List[TRMModbusRegister], parent=None):
+        super().__init__(parent)
+        self._registers = registers
+
+    def run(self):
+        while True:
+            self.client.read_registers(self._registers)
+            self.sleep(self.period)
+
+
+# __main__
+thread = Thread(...)
+thread.read_signal.connect(lambda x: print(f"Отрисовал регистры {x}"))
