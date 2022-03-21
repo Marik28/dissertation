@@ -16,3 +16,6 @@ migrate:
 
 fill-database:
 	cd src; python -m scripts.fill_database
+
+available-ports:
+	cd src; python -m scripts.available_ports
