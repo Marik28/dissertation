@@ -98,6 +98,15 @@ def create_dataframe(
     return df
 
 
+def parse_thermocouple_characteristics(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[~df.index.isna()]
+    df = df.iloc[2:]
+    min_value = int(df.index[0])
+    voltages = sorted(list(set([float(x) for x in df.values.flatten() if not np.isnan(float(x))])))
+    temperatures = [i + min_value for i in range(len(voltages))]
+    return pd.DataFrame({"temp": temperatures, "value": voltages})
+
+
 if __name__ == '__main__':
     import doctest
 
