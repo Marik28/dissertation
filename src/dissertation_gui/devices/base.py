@@ -1,11 +1,14 @@
-from abc import abstractmethod
+from abc import (
+    abstractmethod,
+    ABCMeta,
+)
 from contextlib import contextmanager
 
 from adafruit_blinka import Lockable
 from loguru import logger
 
 
-class BaseDevice:
+class BaseDevice(metaclass=ABCMeta):
     min_code: int = None
     max_code: int = None
 
