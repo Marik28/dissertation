@@ -58,7 +58,7 @@ def fill_empty_temperatures(
         curr_res = resistances[index]
         res_step = (curr_res - prev_res) / temps_diff
         for _ in range(temps_diff):
-            new_resistances.append(prev_res)
+            new_resistances.append(round(prev_res, 2))
             prev_res += res_step
     new_temperatures.append(temperatures[-1])
     new_resistances.append(resistances[-1])
