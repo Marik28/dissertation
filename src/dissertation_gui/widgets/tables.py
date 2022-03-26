@@ -19,6 +19,7 @@ from ..services.sensor_characteristics import SensorCharacteristicsService
 # -0 | -2|  0|  2|  4|  6|  8| 10| 12| 14| 16| # 1 строка
 #  0 | -2| -4| -6| -8|-10| - | - | - | - | - | # 2 строка
 
+# TODO: добавить график с характеристикой датчика, а также отображать на нем диапазон температур, используемых в ТРМ
 class CharacteristicsTableWidget(QTableWidget):
 
     def __init__(self, parent=None):

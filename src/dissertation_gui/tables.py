@@ -29,6 +29,8 @@ class Sensor(Base):
         Enum(SensorType, values_callable=get_enum_values),
         nullable=False,
     )
+    min_temperature = Column(Integer(), nullable=False)
+    max_temperature = Column(Integer(), nullable=False)
     units = Column(String(10), nullable=False)
     physical_quantity = Column(String(50), nullable=False)
     trm_code = Column(String(10), nullable=False, unique=True)

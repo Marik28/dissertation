@@ -21,6 +21,8 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
             trm_code=row["trm_code"],
             units=row["units"],
             physical_quantity=row["physical_quantity"],
+            min_temperature=row["min_temperature"],
+            max_temperature=row["max_temperature"],
         ) for _, row in df.iterrows()
     ]
     session.add_all(sensors_to_add)

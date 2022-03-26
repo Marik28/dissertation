@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -230,6 +230,21 @@
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>Page</string>
+     </attribute>
+     <widget class="PdfViewer" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>761</width>
+        <height>411</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -250,6 +265,12 @@
    <class>CharacteristicsTableWidget</class>
    <extends>QTableWidget</extends>
    <header>dissertation_gui.widgets.tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PdfViewer</class>
+   <extends>QWidget</extends>
+   <header>dissertation_gui.widgets.pdf_viewer</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
