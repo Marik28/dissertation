@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -147,10 +147,10 @@
      <widget class="SensorsComboBox" name="sensors_combo_box">
       <property name="geometry">
        <rect>
-        <x>140</x>
-        <y>10</y>
-        <width>211</width>
-        <height>41</height>
+        <x>10</x>
+        <y>50</y>
+        <width>241</width>
+        <height>51</height>
        </rect>
       </property>
      </widget>
@@ -158,32 +158,25 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
-        <width>121</width>
+        <y>0</y>
+        <width>241</width>
         <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>Датчик</string>
       </property>
-     </widget>
-     <widget class="QTextBrowser" name="sensor_info_text_browser">
-      <property name="geometry">
-       <rect>
-        <x>360</x>
-        <y>10</y>
-        <width>421</width>
-        <height>41</height>
-       </rect>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="CharacteristicsTableWidget" name="sensor_characteristics_table">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>80</y>
-        <width>771</width>
-        <height>351</height>
+        <x>260</x>
+        <y>50</y>
+        <width>521</width>
+        <height>381</height>
        </rect>
       </property>
       <property name="sizeAdjustPolicy">
@@ -196,14 +189,49 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>60</y>
-        <width>791</width>
-        <height>20</height>
+        <x>260</x>
+        <y>-1</y>
+        <width>521</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
        <string>Градуировочная характеристика</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="SensorInfoTable" name="sensor_info_table">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>160</y>
+        <width>241</width>
+        <height>271</height>
+       </rect>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>110</y>
+        <width>241</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Справка</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -234,13 +262,13 @@
      <attribute name="title">
       <string>Page</string>
      </attribute>
-     <widget class="PdfViewer" name="widget" native="true">
+     <widget class="PdfViewer" name="doc_viewer" native="true">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>20</y>
-        <width>761</width>
-        <height>411</height>
+        <y>10</y>
+        <width>771</width>
+        <height>421</height>
        </rect>
       </property>
      </widget>
@@ -269,8 +297,13 @@
   <customwidget>
    <class>PdfViewer</class>
    <extends>QWidget</extends>
-   <header>dissertation_gui.widgets.pdf_viewer</header>
+   <header>dissertation_gui.widgets.pdf_viewer.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SensorInfoTable</class>
+   <extends>QTableWidget</extends>
+   <header>dissertation_gui.widgets.tables.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

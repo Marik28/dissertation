@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QTabWidget,
-    QTextBrowser,
     QSpinBox,
     QDoubleSpinBox,
     QPushButton,
@@ -13,7 +12,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.uic import loadUi
 from loguru import logger
-from pyqtgraph import GraphicsLayoutWidget
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
@@ -22,10 +20,17 @@ from .services.sensors import SensorsService
 from .settings import settings
 # from .threads.plot import ExamplePlotThread
 from .threads.calculations import TemperatureCalculationThread
-from .threads.testing import SetpointThread, MeasuredTempThread
-from .utils.plot_manager import ThermoRegulatorInfoPlotManager, PlotManager
+from .threads.testing import (
+    SetpointThread,
+    MeasuredTempThread,
+)
+from .utils.plot_manager import (
+    ThermoRegulatorInfoPlotManager,
+    PlotManager,
+)
 from .widgets.combo_boxes import SensorsComboBox
-from .widgets.tables import CharacteristicsTableWidget
+from .widgets.pdf_viewer import PdfViewer
+from .widgets.tables import CharacteristicsTableWidget, SensorInfoTable
 
 logger.add("logs.log", rotation="10 MB", compression="zip")
 logger.info("Инициализация GUI")
@@ -36,14 +41,18 @@ ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.u
 # plot_thread = ExamplePlotThread(frequency=settings.plot_update_frequency)
 plot_thread = TemperatureCalculationThread()
 tab_menu: QTabWidget = ui.tab_menu
+
+# вкладка График
 graph: PlotWidget = ui.graph
-reset_plot_button: QPushButton = ui.reset_plot_button
-sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
-sensor_info_text_browser: QTextBrowser = ui.sensor_info_text_browser
-sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 temp_spin_box: QSpinBox = ui.temp_spin_box
 k_spin_box: QDoubleSpinBox = ui.k_spin_box
 bursts_check_box: QCheckBox = ui.bursts_check_box
+reset_plot_button: QPushButton = ui.reset_plot_button
+
+# Вкладка Датчики
+sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
+sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
+sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
 plot_manager = PlotManager(graph, max_points=settings.plot_points)
 trm_plot_manager = ThermoRegulatorInfoPlotManager(trm_plot)
@@ -56,8 +65,8 @@ with Session() as session:
 
     sensor_list = sensors_service.get_sensors()
     sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
+    sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
     sensors_combo_box.set_sensors(sensor_list)
-    # sensors_combo_box.sensor_changed.connect(sensor_info_text_browser.setText)
     temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
     k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
     bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
@@ -65,7 +74,9 @@ with Session() as session:
     plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
     plot_thread.start(priority=QThread.Priority.HighPriority)
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-
+    doc_viewer: PdfViewer = ui.doc_viewer
+    doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
+    doc_viewer.show()
     # fixme
     temp_thread = MeasuredTempThread()
     temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
