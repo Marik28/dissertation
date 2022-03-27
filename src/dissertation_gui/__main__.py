@@ -29,7 +29,7 @@ from .utils.plot_manager import (
     PlotManager,
 )
 from .widgets.combo_boxes import SensorsComboBox
-from .widgets.pdf_viewer import PdfViewer
+# from .widgets.pdf_viewer import PdfViewer
 from .widgets.tables import CharacteristicsTableWidget, SensorInfoTable
 
 logger.add("logs.log", rotation="10 MB", compression="zip")
@@ -74,9 +74,9 @@ with Session() as session:
     plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
     plot_thread.start(priority=QThread.Priority.HighPriority)
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-    doc_viewer: PdfViewer = ui.doc_viewer
-    doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
-    doc_viewer.show()
+    # doc_viewer: PdfViewer = ui.doc_viewer
+    # doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
+    # doc_viewer.show()
     # fixme
     temp_thread = MeasuredTempThread()
     temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
