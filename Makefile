@@ -17,5 +17,8 @@ migrate:
 fill-database:
 	cd src; python3 -m scripts.fill_database
 
+drop-database:
+	rm src/dissertation_gui/db.sqlite3
+
 available-ports:
 	cd src; python3 -m scripts.available_ports
