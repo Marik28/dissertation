@@ -34,6 +34,7 @@ class Sensor(Base):
     units = Column(String(10), nullable=False)
     physical_quantity = Column(String(50), nullable=False)
     trm_code = Column(String(10), nullable=False, unique=True)
+    int_code = Column(Integer(), nullable=False, unique=True)
 
 
 class SensorCharacteristics(Base):

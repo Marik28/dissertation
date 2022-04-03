@@ -2,6 +2,7 @@ from typing import List
 
 import pandas as pd
 import sqlalchemy.orm
+from loguru import logger
 
 from dissertation_gui import tables
 from dissertation_gui.database import (
@@ -23,6 +24,7 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
             physical_quantity=row["physical_quantity"],
             min_temperature=row["min_temperature"],
             max_temperature=row["max_temperature"],
+            int_code=int(row["int_code"]),
         ) for _, row in df.iterrows()
     ]
     session.add_all(sensors_to_add)
@@ -48,10 +50,16 @@ def add_characteristics(session: sqlalchemy.orm.Session, sensors: List[tables.Se
 
 def main(session: sqlalchemy.orm.Session):
     tables.Base.metadata.create_all(engine)
+    logger.info("Добавляются датчики")
     added_sensors = insert_sensors(session)
+    logger.info("Датчики добавлены")
+    logger.info("Добавляются характеристики датчиков")
     add_characteristics(session, added_sensors)
+    logger.info("Характеристики датчиков добавлены")
 
 
 if __name__ == '__main__':
+    logger.info("Начинается заполнение БД")
     with Session() as session:
         main(session)
+    logger.info("БД успешно заполнена")
