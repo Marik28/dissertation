@@ -10,6 +10,7 @@ pyqt5-tools
 PyQtWebEngine
 pyqtgraph
 pydantic
+pyserial
 sqlalchemy
 alembic
 board
