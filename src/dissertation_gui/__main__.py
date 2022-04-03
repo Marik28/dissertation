@@ -9,17 +9,20 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QPushButton,
     QCheckBox,
+    QTextBrowser,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
+from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 # from .threads.plot import ExamplePlotThread
 from .threads.calculations import TemperatureCalculationThread
+from .threads.owen import TRMParametersReadThread
 from .threads.testing import (
     SetpointThread,
     MeasuredTempThread,
@@ -32,7 +35,6 @@ from .widgets.combo_boxes import SensorsComboBox
 # from .widgets.pdf_viewer import PdfViewer
 from .widgets.tables import CharacteristicsTableWidget, SensorInfoTable
 
-logger.add("logs.log", rotation="10 MB", compression="zip")
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола
@@ -57,6 +59,10 @@ trm_plot: PlotWidget = ui.trm_plot
 plot_manager = PlotManager(graph, max_points=settings.plot_points)
 trm_plot_manager = ThermoRegulatorInfoPlotManager(trm_plot)
 
+# вкладка Параметры ТРМ
+trm_relay_output_text: QTextBrowser = ui.trm_relay_output_text
+trm_measured_temp_text: QTextBrowser = ui.trm_measured_temp_text
+
 with Session() as session:
     sensors_service = SensorsService(session)
     sensors_characteristics_service = SensorCharacteristicsService(session)
@@ -74,6 +80,9 @@ with Session() as session:
     plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
     plot_thread.start(priority=QThread.Priority.HighPriority)
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
+    owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
+    trm_thread = TRMParametersReadThread(owen_client)
+    trm_thread.parameter_signal.connect(lambda params: trm_relay_output_text.setText(str(params)))
     # doc_viewer: PdfViewer = ui.doc_viewer
     # doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
     # doc_viewer.show()
@@ -86,6 +95,14 @@ with Session() as session:
     temp_thread.start(priority=QThread.Priority.NormalPriority)
     setpoint_thread.start(priority=QThread.Priority.NormalPriority)
 
+    trm_thread.start(priority=QThread.Priority.NormalPriority)
+
     logger.info("Запуск приложения")
-    ui.show()
-    exit(app.exec_())
+    try:
+        ui.show()
+        exit_code = app.exec_()
+    except Exception as e:
+        logger.error(e)
+    finally:
+        logger.info(f"Завершение работы приложения с кодом {exit_code}")
+        exit(exit_code)

@@ -3,21 +3,24 @@ from threading import Lock
 from typing import (
     Literal,
     Tuple,
+    Dict,
+    Union,
+    Callable,
 )
 
 from loguru import logger
 from serial import Serial
 
+from .const import Type
 from .exceptions import OwenProtocolError
 from .helpers import (
     calculate_crc,
     calculate_name_hash,
 )
 from .sctructs import (
-    unpack_int16,
-    unpack_uint16,
-    unpack_char,
-    unpack_float32,
+    unpack_short,
+    unpack_unsigned_short,
+    unpack_signed_char,
     unpack_float24,
     unpack_string,
     unpack_nerr,
@@ -29,13 +32,26 @@ __all__ = ["OwenClient"]
 class OwenClient:
     """Класс, реализующий протокол ОВЕН"""
 
-    frame_min_length = 6
+    SUPPORTED_BAUDRATES = [2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200]
+    """Поддерживаемые ТРМ-ом скорости обмена в бод"""
+
+    FRAME_MIN_LENGTH = 6
+
+    parsers: Dict[Type, Callable[[bytes], Union[int, float, str, Tuple[int, int]]]] = {
+        Type.SIGNED_CHAR: unpack_signed_char,
+        Type.UNSIGNED_CHAR: unpack_signed_char,
+        Type.SHORT: unpack_short,
+        Type.UNSIGNED_SHORT: unpack_unsigned_short,
+        Type.FLOAT24: unpack_float24,
+        Type.STRING: unpack_string,
+        Type.NERR: unpack_nerr,
+    }
 
     def __init__(self,
                  port: str,
                  baudrate: int = 9600,
                  timeout: float = 0.2,
-                 address: int = 1,
+                 address: int = 0,
                  address_length: Literal[8, 11] = 8):
         """
         :param port: Название используемого порта. Пример - для Windows - 'COM1', для Linux - '/dev/ttyUSB0'
@@ -44,6 +60,8 @@ class OwenClient:
         :param address: Адрес прибора в сети. Положительное целое число
         :param address_length: Длина адреса прибора в сети в битах (8 либо 11)
         """
+        if baudrate not in self.SUPPORTED_BAUDRATES:
+            raise OwenProtocolError("Unsupported baudrate!")
         self._serial = Serial(port, baudrate, timeout=timeout)
         self._address = address
         self._address_length = address_length
@@ -59,7 +77,7 @@ class OwenClient:
             self._mutex.release()
 
     def unpack_frame(self, frame: bytearray) -> Tuple[int, bytes]:
-        if len(frame) < self.frame_min_length:
+        if len(frame) < self.FRAME_MIN_LENGTH:
             raise OwenProtocolError('OwenProtocolError: Small length of frame!')
         # контрольная сумма
         crc = frame[-2] << 8 | frame[-1]
@@ -105,14 +123,11 @@ class OwenClient:
             data += chr((index >> 8) & 0x0F).encode()
             data += chr(index & 0x0F).encode()
             frame[1] |= len(data)
-
         frame.extend(data)
         # контрольная сумма
         crc = calculate_crc(frame)
         frame.append((crc >> 8) & 0xff)
         frame.append(crc & 0xff)
-        self._logger.info(f'Sending: frame size={len(frame)} hash={hash_:#x} address={self._address:#x} data={data} '
-                          f'index={index} crc={crc}')
         return frame
 
     def pack_faw_frame(self, frame: bytearray) -> bytearray:
@@ -125,63 +140,59 @@ class OwenClient:
         raw_frame.append(ord('\r'))  # маркер конца кадра
         return raw_frame
 
-    def get_parameter(self, name: str, index: int = None) -> bytes:
+    def get_parameter(self, name: str, type_: Type, index: int = None):
         """\
         Запрашивает значение параметра.
 
         :param name: Имя запрашиваемого параметра
         :param index: Индекс запрашиваемого параметра (если имеется)
+        :param type_: Тип запрашиваемого параметра
         :return: Значение параметра в байтах
         :raises OwenProtocolError:
         """
         _hash = calculate_name_hash(name)
         request_frame = self.pack_frame(_hash, self._address, index)
         raw_request_frame = self.pack_faw_frame(request_frame)
-        self._logger.info('Sent: {}'.format(raw_request_frame))
+        self._logger.info(f'Request parameter: name={name} hash={_hash:#x} address={self._address:#x} index={index} '
+                          f'sent frame={raw_request_frame}')
         self._serial.reset_input_buffer()
         self._serial.write(raw_request_frame)
         raw_response_frame = self._serial.read_until(b'\r')
-        raw_frame_size = len(raw_response_frame)
-        if raw_frame_size == 0:
+        if len(raw_response_frame) == 0:
             raise OwenProtocolError('OwenProtocolError: No data received from serial port!')
-        self._logger.info('Reading::Length: {1} Received: {0}'.format(raw_response_frame, raw_frame_size))
+        self._logger.info(f'Response: frame={raw_response_frame}')
         frame = self.unpack_raw_frame(raw_response_frame)
-        ret_hash, data_ret = self.unpack_frame(frame)
-        if ret_hash != _hash:
+        response_hash, response_data = self.unpack_frame(frame)
+        if response_hash != _hash:
             raise OwenProtocolError('OwenProtocolError: Hash mismatch!')
-        return data_ret
+        if index is not None:
+            response_data = response_data[:-2]
+        return self.parsers[type_](response_data)
 
-    def get_int16(self, name: str) -> int:
-        data = self.get_parameter(name)
-        return unpack_int16(data)
+    def get_short(self, name: str, index: int = None) -> int:
+        return self.get_parameter(name, Type.SHORT, index)
 
-    def get_uint16(self, name: str) -> int:
-        data = self.get_parameter(name)
-        return unpack_uint16(data)
+    def get_unsigned_short(self, name: str, index: int = None) -> int:
+        return self.get_parameter(name, Type.UNSIGNED_SHORT, index)
 
-    def get_char(self, name: str) -> int:
-        data = self.get_parameter(name)
-        return unpack_char(data)
+    def get_signed_char(self, name: str, index: int = None) -> int:
+        return self.get_parameter(name, Type.SIGNED_CHAR, index)
 
-    def get_float32(self, name: str, with_time: bool = False, with_index: bool = False) -> float:
-        data = self.get_parameter(name)
-        return unpack_float32(data, with_time, with_index)
+    def get_unsigned_char(self, name: str, index: int = None) -> int:
+        return self.get_parameter(name, Type.UNSIGNED_CHAR, index)
 
-    def get_float24(self, name: str) -> float:
-        data = self.get_parameter(name)
-        return unpack_float24(data)
+    def get_float24(self, name: str, index: int = None) -> float:
+        return self.get_parameter(name, Type.FLOAT24, index)
 
-    def get_string(self, name: str) -> str:
-        data = self.get_parameter(name)
-        return unpack_string(data)
+    def get_string(self, name: str, index: int = None) -> str:
+        return self.get_parameter(name, Type.STRING, index)
 
     def get_last_error(self) -> Tuple[int, int]:
         """\
         Возвращает значение параметра N.err.
 
-        1 число - код ошибки. 2 - Хэш параметра, при запросе на который произошла ошибка
+        error_code - код ошибки. parameter_hash - Хэш параметра, при запросе которого произошла ошибка
 
         :returns: (error_code, parameter_hash)
         """
-        data = self.get_parameter("N.err")
-        return unpack_nerr(data)
+        return self.get_parameter("N.err", Type.NERR)

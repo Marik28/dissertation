@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -242,6 +242,52 @@
      <attribute name="title">
       <string>Параметры ТРМ</string>
      </attribute>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>100</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Состояние реле</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="trm_relay_output_text">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>90</y>
+        <width>256</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>170</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Измеренная величина</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="trm_measured_temp_text">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>160</y>
+        <width>256</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="settings_tab">
      <attribute name="title">

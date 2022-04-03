@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     plot_update_frequency: int = 10
     plot_points: int = 1000
     port: str
+    baudrate: int = 19200
+    trm_address: int = 1
 
 
 settings = Settings(_env_file=base_dir.parent / ".env")
