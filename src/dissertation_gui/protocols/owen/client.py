@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 from threading import Lock
 from typing import (
-    Literal,
     Tuple,
     Dict,
     Union,
@@ -10,6 +9,7 @@ from typing import (
 
 from loguru import logger
 from serial import Serial
+from typing_extensions import Literal
 
 from .const import Type
 from .exceptions import OwenProtocolError

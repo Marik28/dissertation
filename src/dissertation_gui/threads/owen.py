@@ -4,7 +4,8 @@ from dataclasses import (
 )
 from typing import (
     Union,
-    Optional, Iterator,
+    Optional,
+    Iterator,
 )
 
 from PyQt5.QtCore import (

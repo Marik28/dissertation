@@ -19,3 +19,5 @@ digitalio
 microcontroller
 adafruit_mcp4725
 pymodbus
+typing_extensions
+aenum
