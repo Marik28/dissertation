@@ -82,7 +82,11 @@ with Session() as session:
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
     owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
     trm_thread = TRMParametersReadThread(owen_client)
-    trm_thread.parameter_signal.connect(lambda params: trm_relay_output_text.setText(str(params)))
+    trm_thread.parameter_signal.connect(
+        lambda params: trm_relay_output_text.setText(
+            "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
+        )
+    )
     # doc_viewer: PdfViewer = ui.doc_viewer
     # doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
     # doc_viewer.show()

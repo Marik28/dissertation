@@ -43,7 +43,6 @@ class BaseDevice(metaclass=ABCMeta):
             self._logger.info(f"{self.get_device_name()} отправляет '{data}'")
 
     def send_code(self, code: int) -> None:
-        self._logger.info(f"{self.get_device_name()} получил код {code} для отправки")
         validated_code = self._validate_code(code)
         self._logger.info(f"{self.get_device_name()} отправляет код {code}")
         data_to_send = bytes([validated_code])

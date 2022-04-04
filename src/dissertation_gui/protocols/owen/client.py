@@ -16,6 +16,8 @@ from .exceptions import OwenProtocolError
 from .helpers import (
     calculate_crc,
     calculate_name_hash,
+    pack_faw_frame,
+    unpack_raw_frame,
 )
 from .sctructs import (
     unpack_short,
@@ -94,17 +96,6 @@ class OwenClient:
             data = b''
         return _hash, data
 
-    def unpack_raw_frame(self, raw_frame: bytes) -> bytearray:
-        frame = bytearray()
-        if raw_frame[0] != ord('#') or raw_frame[-1] != ord('\r'):
-            raise OwenProtocolError('OwenProtocolError: Raw buffer does not have start or stop bytes!')
-        for i in range(1, len(raw_frame) - 2, 2):
-            # склеиваем тетрады
-            first_tetrad = (raw_frame[i] - 0x47) << 4
-            second_tetrad = (raw_frame[i + 1] - 0x47)
-            frame.append(first_tetrad | second_tetrad)
-        return frame
-
     def pack_frame(self, hash_: int, address: int, index: int = None):
         frame = bytearray()
         if self._address_length == 8:
@@ -130,16 +121,6 @@ class OwenClient:
         frame.append(crc & 0xff)
         return frame
 
-    def pack_faw_frame(self, frame: bytearray) -> bytearray:
-        """Добавляет маркировки конца и начала кадра, преобразует тетрады байт в ASCII символы для передачи"""
-        raw_frame = bytearray()
-        raw_frame.append(ord('#'))  # маркер начала кадра
-        for byte in frame:
-            raw_frame.append(0x47 + (byte >> 4))  # первая тетрада
-            raw_frame.append(0x47 + (byte & 0x0F))  # вторая тетрада
-        raw_frame.append(ord('\r'))  # маркер конца кадра
-        return raw_frame
-
     def get_parameter(self, name: str, type_: Type, index: int = None):
         """\
         Запрашивает значение параметра.
@@ -147,12 +128,12 @@ class OwenClient:
         :param name: Имя запрашиваемого параметра
         :param index: Индекс запрашиваемого параметра (если имеется)
         :param type_: Тип запрашиваемого параметра
-        :return: Значение параметра в байтах
+        :return: Значение параметра соответствующего типа python
         :raises OwenProtocolError:
         """
         _hash = calculate_name_hash(name)
         request_frame = self.pack_frame(_hash, self._address, index)
-        raw_request_frame = self.pack_faw_frame(request_frame)
+        raw_request_frame = pack_faw_frame(request_frame)
         self._logger.info(f'Request parameter: name={name} hash={_hash:#x} address={self._address:#x} index={index} '
                           f'sent frame={raw_request_frame}')
         self._serial.reset_input_buffer()
@@ -161,7 +142,7 @@ class OwenClient:
         if len(raw_response_frame) == 0:
             raise OwenProtocolError('OwenProtocolError: No data received from serial port!')
         self._logger.info(f'Response: frame={raw_response_frame}')
-        frame = self.unpack_raw_frame(raw_response_frame)
+        frame = unpack_raw_frame(raw_response_frame)
         response_hash, response_data = self.unpack_frame(frame)
         if response_hash != _hash:
             raise OwenProtocolError('OwenProtocolError: Hash mismatch!')
@@ -191,8 +172,8 @@ class OwenClient:
         """\
         Возвращает значение параметра N.err.
 
-        error_code - код ошибки. parameter_hash - Хэш параметра, при запросе которого произошла ошибка
-
         :returns: (error_code, parameter_hash)
+        error_code - код ошибки.
+        parameter_hash - Хэш параметра, при запросе которого произошла ошибка
         """
         return self.get_parameter("N.err", Type.NERR)

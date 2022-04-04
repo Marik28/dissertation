@@ -22,6 +22,11 @@ from ..models.plot import PlotPoint
 # 7. d-; nt < st; nt < ct;
 # 8. d-; nt < st; nt > ct;
 
+# TODO: функции отправки рассчитанного значения нужному устройству и переключение устройств
+#  можно вынести вынести в воркер, который будет находиться в отдельном потоке
+#  https://stackoverflow.com/questions/35527439/pyqt4-wait-in-thread-for-user-input-from-gui/35534047#35534047
+
+
 class TemperatureCalculationThread(QThread):
     temperature_signal = pyqtSignal(PlotPoint)
 

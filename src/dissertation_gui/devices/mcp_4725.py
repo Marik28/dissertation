@@ -3,6 +3,11 @@ from busio import I2C
 from .base import BaseDevice
 
 
+# TODO: - https://gist.github.com/mcbridejc/d060602e892f6879e7bc8b93aa3f85be
+#       - https://pinout.xyz/pinout/spi
+#  чтобы добавить еще chip select-ов
+
+
 class MCP4725(BaseDevice):
     min_code = 0
     max_code = 4095

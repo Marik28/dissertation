@@ -6,6 +6,9 @@ from ...types import Number
 
 
 # TODO: реализовать
+#  1. CalcThread рассчитывает температуру и: QThread.signal.emit(temp)
+#  2. Текущий воркер высчитывает значение для отправки на устройство: Worker.calc(temp) -> code
+#  3. Значение отправляется на устройство: Device.send(code)
 class ResistanceThermometerManager(SensorManager):
 
     def __init__(self, *digipots: AD8400):

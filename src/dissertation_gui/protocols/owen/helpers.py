@@ -54,3 +54,26 @@ def calculate_crc(data: bytearray) -> int:
             else:
                 crc = (crc << 1) & 0xFFFF
     return crc
+
+
+def pack_faw_frame(frame: bytearray) -> bytearray:
+    """Добавляет маркировки конца и начала кадра, преобразует тетрады байт в ASCII символы для передачи"""
+    raw_frame = bytearray()
+    raw_frame.append(ord('#'))  # маркер начала кадра
+    for byte in frame:
+        raw_frame.append(0x47 + (byte >> 4))  # первая тетрада
+        raw_frame.append(0x47 + (byte & 0x0F))  # вторая тетрада
+    raw_frame.append(ord('\r'))  # маркер конца кадра
+    return raw_frame
+
+
+def unpack_raw_frame(raw_frame: bytes) -> bytearray:
+    frame = bytearray()
+    if raw_frame[0] != ord('#') or raw_frame[-1] != ord('\r'):
+        raise OwenProtocolError('OwenProtocolError: Raw buffer does not have start or stop bytes!')
+    for i in range(1, len(raw_frame) - 2, 2):
+        # склеиваем тетрады
+        first_tetrad = (raw_frame[i] - 0x47) << 4
+        second_tetrad = (raw_frame[i + 1] - 0x47)
+        frame.append(first_tetrad | second_tetrad)
+    return frame
