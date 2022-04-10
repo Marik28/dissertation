@@ -4,14 +4,13 @@ from PyQt5.QtCore import QThread
 from pymodbus.client.sync import BaseModbusClient
 
 
-# TODO выбрать параметры для отслеживания
+# выбрать параметры для отслеживания
 #   - Измеренная величина
 #   - Тип входного датчика или сигнала
 #   - Постоянная времени цифрового фильтра
 #   - Способ управления для выхода (холодильник/нагреватель)
 #   - Уставка
 
-# TODO проверить параметр 'handle_local_echo=' у ModbusSerialClient
 class ThermoRegulatorInfoThread(QThread):
     """Поток для периодического опроса ТРМ-а по Modbus"""
 
@@ -28,7 +27,9 @@ class ThermoRegulatorInfoThread(QThread):
 
     def run(self) -> None:
         while True:
-            # TODO реализовать
             with self._client as client:
-                client.read_input_registers()
+                client.read_input_registers(...)
             time.sleep(self._update_period)
+
+
+raise NotImplementedError("""Modbus is not implemented, use Owen protocol!""")
