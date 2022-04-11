@@ -1,6 +1,6 @@
-from PyQt5.QtCore import (
-    QThread,
-)
+import board
+import digitalio
+from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -12,10 +12,14 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
 )
 from PyQt5.uic import loadUi
+from adafruit_extended_bus import ExtendedSPI as SPI
+from busio import I2C
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
+from .devices.ad8400 import AD8400
+from .devices.mcp_4725 import MCP4725
 from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
@@ -33,8 +37,19 @@ from .utils.plot_manager import (
 )
 from .widgets.combo_boxes import SensorsComboBox
 # from .widgets.pdf_viewer import PdfViewer
-from .widgets.tables import CharacteristicsTableWidget, SensorInfoTable
+from .widgets.tables import (
+    CharacteristicsTableWidget,
+    SensorInfoTable,
+)
 
+# пины и протоколы
+ad8400_1 = AD8400(SPI(1, 0), digitalio.DigitalInOut(board.GPIO5))
+ad8400_2 = AD8400(SPI(1, 1), digitalio.DigitalInOut(board.GPIO16))
+mcp4725 = MCP4725(I2C(board.SCL, board.SDA), settings.mcp4725_address)
+relay_1 = ...
+relay_2 = ...
+relay_3 = ...
+relay_4 = ...
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     port: str
     baudrate: int = 19200
     trm_address: int = 1
+    mcp4725_address: int
 
 
 settings = Settings(_env_file=base_dir.parent / ".env")
