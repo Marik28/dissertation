@@ -2,14 +2,14 @@ import time
 
 import typer as typer
 
-from dissertation_gui.__main__ import relay_1, relay_2, relay_3, relay_4
+from dissertation_gui.devices.relay import DigitalIORelay
 
-relays = [relay_1, relay_2, relay_3, relay_4]
+relays = [DigitalIORelay(...), DigitalIORelay(...), DigitalIORelay(...), DigitalIORelay(...)]
 app = typer.Typer()
 
 
 @app.command
-def main(delay: float = typer.Argument(0.5)):
+def main(delay: float = typer.Argument(0.5, min=0)):
     typer.echo(f"Начало теста. Задержка между переключениями - {delay}")
     typer.echo("Включение всех релюх")
     for relay in relays:

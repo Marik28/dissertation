@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List, Tuple
 
 from .base import SensorManager
 from ...devices.ad8400 import AD8400
@@ -20,10 +20,10 @@ class ResistanceThermometerManager(SensorManager):
     def unselect(self) -> None:
         pass
 
-    def calculate_codes(self, temperature: Number) -> Dict[AD8400, int]:
+    def calculate_codes(self, temperature: Number) -> List[Tuple[AD8400, int]]:
         _temperature = round(temperature)
 
     def set_temperature(self, temperature: Number) -> None:
         codes = self.calculate_codes(temperature)
-        for digipot, code in codes.items():
+        for digipot, code in codes:
             digipot.send_code(code)

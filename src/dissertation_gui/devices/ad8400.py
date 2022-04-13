@@ -10,12 +10,12 @@ class AD8400(BaseDevice):
 
     def __init__(self,
                  protocol: SPI,
-                 cs: digitalio.DigitalInOut,
+                 cs,
                  baudrate: int = 100_000):
         super().__init__(protocol)
         self._spi = protocol
         self._baudrate = baudrate
-        self._cs = cs
+        self._cs = digitalio.DigitalInOut(cs)
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
         clock, mosi, _cs = self.get_used_pins()

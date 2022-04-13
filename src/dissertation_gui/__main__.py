@@ -1,5 +1,4 @@
 import board
-import digitalio
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -44,8 +43,8 @@ from .widgets.tables import (
 )
 
 # пины и протоколы
-ad8400_1 = AD8400(SPI(1, 0), digitalio.DigitalInOut(board.GPIO5))
-ad8400_2 = AD8400(SPI(1, 1), digitalio.DigitalInOut(board.GPIO16))
+ad8400_1 = AD8400(SPI(1, 0), board.GPIO5)
+ad8400_2 = AD8400(SPI(1, 1), board.GPIO16)
 mcp4725 = MCP4725(I2C(board.SCL, board.SDA), settings.mcp4725_address)
 relay_1 = DigitalIORelay(...)
 relay_2 = DigitalIORelay(...)
