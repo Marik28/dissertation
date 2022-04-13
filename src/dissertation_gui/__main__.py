@@ -20,6 +20,7 @@ from pyqtgraph.widgets.PlotWidget import PlotWidget
 from .database import Session
 from .devices.ad8400 import AD8400
 from .devices.mcp_4725 import MCP4725
+from .devices.relay import DigitalIORelay
 from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
@@ -46,10 +47,10 @@ from .widgets.tables import (
 ad8400_1 = AD8400(SPI(1, 0), digitalio.DigitalInOut(board.GPIO5))
 ad8400_2 = AD8400(SPI(1, 1), digitalio.DigitalInOut(board.GPIO16))
 mcp4725 = MCP4725(I2C(board.SCL, board.SDA), settings.mcp4725_address)
-relay_1 = ...
-relay_2 = ...
-relay_3 = ...
-relay_4 = ...
+relay_1 = DigitalIORelay(...)
+relay_2 = DigitalIORelay(...)
+relay_3 = DigitalIORelay(...)
+relay_4 = DigitalIORelay(...)
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола
