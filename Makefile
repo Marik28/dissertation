@@ -21,4 +21,4 @@ drop-database:
 	rm src/dissertation_gui/db.sqlite3
 
 available-ports:
-	cd src; python3 -m scripts.available_ports
+	python3 -m serial.tools.list_ports
