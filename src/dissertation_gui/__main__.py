@@ -43,13 +43,22 @@ from .widgets.tables import (
 )
 
 # пины и протоколы
-ad8400_1 = AD8400(SPI(1, 0), board.GPIO5)
-ad8400_2 = AD8400(SPI(1, 1), board.GPIO16)
-mcp4725 = MCP4725(I2C(board.SCL, board.SDA), settings.mcp4725_address)
-relay_1 = DigitalIORelay(...)
-relay_2 = DigitalIORelay(...)
-relay_3 = DigitalIORelay(...)
-relay_4 = DigitalIORelay(...)
+ad8400_1 = AD8400(
+    SPI(1, 0),
+    getattr(board, settings.cs0_pin),
+)
+ad8400_2 = AD8400(
+    SPI(1, 1),
+    getattr(board, settings.cs1_pin),
+)
+mcp4725 = MCP4725(
+    I2C(getattr(board, settings.i2c_scl_pin), getattr(board, settings.i2c_sda_pin)),
+    settings.mcp4725_address,
+)
+relay_1 = DigitalIORelay(getattr(board, settings.relay_1_pin))
+relay_2 = DigitalIORelay(getattr(board, settings.relay_2_pin))
+relay_3 = DigitalIORelay(getattr(board, settings.relay_3_pin))
+relay_4 = DigitalIORelay(getattr(board, settings.relay_4_pin))
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола

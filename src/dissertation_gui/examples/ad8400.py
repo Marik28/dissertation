@@ -1,14 +1,10 @@
 import board
-import digitalio
-from busio import SPI
+from adafruit_extended_bus import ExtendedSPI as SPI
 
+from dissertation_gui.settings import settings
 from ..devices.ad8400 import AD8400
 
-cs = digitalio.DigitalInOut(board.CE0)
-sclk = board.SCLK
-mosi = board.MOSI
-spi = SPI(clock=sclk, MOSI=mosi)
-ad8400 = AD8400(spi, cs=cs)
+ad8400 = AD8400(SPI(1, 0), getattr(board, settings.cs0_pin))
 
 if __name__ == '__main__':
     import time
