@@ -1,10 +1,17 @@
 import time
 
-import typer as typer
+import board
+import typer
 
 from dissertation_gui.devices.relay import DigitalIORelay
+from dissertation_gui.settings import settings
 
-relays = [DigitalIORelay(...), DigitalIORelay(...), DigitalIORelay(...), DigitalIORelay(...)]
+relays = [
+    DigitalIORelay(getattr(board, settings.relay_1_pin)),
+    DigitalIORelay(getattr(board, settings.relay_2_pin)),
+    DigitalIORelay(getattr(board, settings.relay_3_pin)),
+    DigitalIORelay(getattr(board, settings.relay_4_pin)),
+]
 app = typer.Typer()
 
 

@@ -13,11 +13,11 @@ pydantic
 pyserial
 sqlalchemy
 alembic
+adafruit-blinka
 board
 busio
 digitalio
 microcontroller
-adafruit_mcp4725
 adafruit-extended-bus
 pymodbus
 typing_extensions
