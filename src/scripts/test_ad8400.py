@@ -15,6 +15,8 @@ relay_2 = DigitalIORelay(getattr(board, settings.relay_2_pin))
 relay_3 = DigitalIORelay(getattr(board, settings.relay_3_pin))
 relay_4 = DigitalIORelay(getattr(board, settings.relay_4_pin))
 
+relays = [relay_1, relay_2, relay_3, relay_4]
+
 
 def configure_relays():
     pass

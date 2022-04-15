@@ -10,14 +10,11 @@ pyqt5-tools
 PyQtWebEngine
 pyqtgraph
 pydantic
+pydantic[dotenv]
 pyserial
 sqlalchemy
 alembic
 adafruit-blinka
-board
-busio
-digitalio
-microcontroller
 adafruit-extended-bus
 pymodbus
 typing_extensions
