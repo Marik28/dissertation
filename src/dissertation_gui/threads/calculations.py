@@ -8,7 +8,6 @@ from PyQt5.QtCore import (
 
 from ..models.plot import PlotPoint
 
-
 # st - set temp
 # nt - new temp
 # ct - current temp
@@ -25,6 +24,7 @@ from ..models.plot import PlotPoint
 # TODO: функции отправки рассчитанного значения нужному устройству и переключение устройств
 #  можно вынести вынести в воркер, который будет находиться в отдельном потоке
 #  https://stackoverflow.com/questions/35527439/pyqt4-wait-in-thread-for-user-input-from-gui/35534047#35534047
+__all__ = ["TemperatureCalculationThread"]
 
 
 class TemperatureCalculationThread(QThread):

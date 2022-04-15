@@ -134,14 +134,14 @@ class OwenClient:
         _hash = calculate_name_hash(name)
         request_frame = self.pack_frame(_hash, self._address, index)
         raw_request_frame = pack_faw_frame(request_frame)
-        self._logger.info(f'Request parameter: name={name} hash={_hash:#x} address={self._address:#x} index={index} '
-                          f'sent frame={raw_request_frame}')
+        self._logger.debug(f'Request parameter: name={name} hash={_hash:#x} address={self._address:#x} index={index} '
+                           f'sent frame={raw_request_frame}')
         self._serial.reset_input_buffer()
         self._serial.write(raw_request_frame)
         raw_response_frame = self._serial.read_until(b'\r')
         if len(raw_response_frame) == 0:
             raise OwenProtocolError('OwenProtocolError: No data received from serial port!')
-        self._logger.info(f'Response: frame={raw_response_frame}')
+        self._logger.debug(f'Response: frame={raw_response_frame}')
         frame = unpack_raw_frame(raw_response_frame)
         response_hash, response_data = self.unpack_frame(frame)
         if response_hash != _hash:

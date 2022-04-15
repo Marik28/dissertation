@@ -1,25 +1,31 @@
-from PyQt5.QtCore import (
-    QObject,
-    pyqtSlot,
-)
+from typing import Dict
 
-from ..devices.managers.base import SensorManager
+from PyQt5.QtCore import QObject
+
+from .. import tables
+from ..devices.managers import (
+    BaseSensorManager,
+    MockManager,
+)
+from ..models.sensors import SensorType
 from ..types import Number
 
 
 class SensorWorker(QObject):
     """Воркер, который переключается между устройствами и отправляет им данные"""
 
-    def __init__(self, manager: SensorManager, parent=None):
+    def __init__(self, managers: Dict[SensorType, BaseSensorManager], parent=None):
         super().__init__(parent)
-        self._manager = manager
+        self._managers = managers
+        self._current_manager = MockManager()
 
-    @pyqtSlot(Number)
     def set_temperature(self, temperature: Number) -> None:
-        self._manager.set_temperature(temperature)
+        self._current_manager.set_temperature(temperature)
 
-    @pyqtSlot(SensorManager)
-    def set_manager(self, manager: SensorManager) -> None:
-        self._manager.unselect()
-        self._manager = manager
-        self._manager.select()
+    def set_sensor(self, sensor: tables.Sensor) -> None:
+        manager = self._managers[sensor.type]
+        if manager is not self._current_manager:
+            self._current_manager.unselect()
+            manager.select()
+            self._current_manager = manager
+        manager.set_sensor(sensor)

@@ -24,14 +24,14 @@ class BaseDevice(metaclass=ABCMeta):
 
     @contextmanager
     def _begin_transaction(self):
-        self._logger.info(f"Отправка данных на {self.get_device_name()} начата")
+        self._logger.debug(f"Отправка данных на {self.get_device_name()} начата")
         while not self._protocol.try_lock():
             pass
         self.before_transaction()
         yield
         self.after_transaction()
         self._protocol.unlock()
-        self._logger.info(f"Отправка данных на {self.get_device_name()} закончена")
+        self._logger.debug(f"Отправка данных на {self.get_device_name()} закончена")
 
     @abstractmethod
     def _perform_send_data(self, data: bytes) -> None:
@@ -40,11 +40,11 @@ class BaseDevice(metaclass=ABCMeta):
     def send_data(self, data: bytes) -> None:
         with self._begin_transaction():
             self._perform_send_data(data)
-            self._logger.info(f"{self.get_device_name()} отправляет '{data}'")
+            self._logger.debug(f"{self.get_device_name()} отправляет '{data}'")
 
     def send_code(self, code: int) -> None:
         validated_code = self._validate_code(code)
-        self._logger.info(f"{self.get_device_name()} отправляет код {code}")
+        self._logger.debug(f"{self.get_device_name()} отправляет код {code}")
         data_to_send = bytes([validated_code])
         self.send_data(data_to_send)
 

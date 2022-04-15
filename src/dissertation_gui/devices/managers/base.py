@@ -3,10 +3,16 @@ from abc import (
     ABCMeta,
 )
 
+from ... import tables
 from ...types import Number
 
 
-class SensorManager(metaclass=ABCMeta):
+class BaseSensorManager(metaclass=ABCMeta):
+    @abstractmethod
+    def set_sensor(self, sensor: tables.Sensor):
+        """Устанавливает датчик, который необходимо симулировать"""
+        pass
+
     @abstractmethod
     def set_temperature(self, temperature: Number) -> None:
         pass

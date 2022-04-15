@@ -16,6 +16,8 @@ from PyQt5.QtCore import (
 from ..protocols.owen import OwenClient
 from ..protocols.owen.const import Type
 
+__all__ = ["TRMParametersReadThread"]
+
 
 @dataclass
 class Parameter:
@@ -50,7 +52,9 @@ class TRMParametersReadThread(QThread):
                 {"name": "PV", "index": None, "type_": Type.FLOAT24},
                 {"name": "inF", "index": 0, "type_": Type.FLOAT24},
                 {"name": "r.oUt", "index": None, "type_": Type.FLOAT24},
-                {"name": "CmP", "index": 0, "type_": Type.UNSIGNED_CHAR}
+                {"name": "CmP", "index": 0, "type_": Type.UNSIGNED_CHAR},
+                {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
+                {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
             ]
             for param in params_to_read:
                 value = self.client.get_parameter(**param)

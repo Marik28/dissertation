@@ -17,14 +17,15 @@ from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
-from .devices.ad8400 import AD8400
-from .devices.mcp_4725 import MCP4725
-from .devices.relay import DigitalIORelay
+from .devices import (
+    AD8400,
+    MCP4725,
+    DigitalIORelay,
+)
 from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
-# from .threads.plot import ExamplePlotThread
 from .threads.calculations import TemperatureCalculationThread
 from .threads.owen import TRMParametersReadThread
 from .threads.testing import (
@@ -32,12 +33,11 @@ from .threads.testing import (
     MeasuredTempThread,
 )
 from .utils.plot_manager import (
-    ThermoRegulatorInfoPlotManager,
+    TRMInfoPlotManager,
     PlotManager,
 )
-from .widgets.combo_boxes import SensorsComboBox
-# from .widgets.pdf_viewer import PdfViewer
-from .widgets.tables import (
+from .widgets import (
+    SensorsComboBox,
     CharacteristicsTableWidget,
     SensorInfoTable,
 )
@@ -81,7 +81,7 @@ sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteris
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
 plot_manager = PlotManager(graph, max_points=settings.plot_points)
-trm_plot_manager = ThermoRegulatorInfoPlotManager(trm_plot)
+trm_plot_manager = TRMInfoPlotManager(trm_plot)
 
 # вкладка Параметры ТРМ
 trm_relay_output_text: QTextBrowser = ui.trm_relay_output_text

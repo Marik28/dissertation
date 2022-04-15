@@ -9,6 +9,8 @@ from pyqtgraph import (
 
 from ..models.plot import PlotPoint
 
+__all__ = ["TRMInfoPlotManager", "PlotManager"]
+
 
 class PlotManager:
     def __init__(self, graph_to_manage: PlotWidget, max_points: int = 100):
@@ -36,7 +38,7 @@ class CurveManager:
 
 
 # TODO: можно тут же отрисовывать рассчитанную температуру
-class ThermoRegulatorInfoPlotManager:
+class TRMInfoPlotManager:
     def __init__(self, plot_widget: PlotWidget, max_points: int = 100):
         self._plot_widget = plot_widget
         self._max_points = max_points
