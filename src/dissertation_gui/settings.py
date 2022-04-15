@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from loguru import logger
@@ -9,6 +10,9 @@ base_dir: Path = Path(__file__).parent.parent
 class Settings(BaseSettings):
     base_dir: Path = base_dir
     db_url = f'sqlite:///{base_dir / "dissertation_gui" / "db.sqlite3"}'
+
+    # логи
+    log_level: str = "DEBUG"
 
     plot_update_frequency: int = 10
     plot_points: int
@@ -33,4 +37,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings(_env_file=base_dir.parent / ".env")
-logger.add(settings.base_dir.parent / "logs.log", rotation="10 MB", compression="zip")
+logger.remove()
+logger.add(sys.stdout, level=settings.log_level)
+logger.add(settings.base_dir.parent / "logs.log", level=settings.log_level, rotation="10 MB", compression="zip")

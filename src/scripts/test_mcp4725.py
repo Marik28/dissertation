@@ -1,3 +1,5 @@
+import time
+
 import board
 import typer
 from busio import I2C
@@ -23,12 +25,24 @@ relays = [relay_1, relay_2, relay_3, relay_4]
 
 
 def configure_relays():
-    pass
+    relay_1.turn_off()
+    relay_2.turn_off()
+    relay_3.turn_off()
+    relay_4.turn_on()
 
 
 @app.command
-def main():
+def main(
+        delay: float = typer.Option(0.1),
+        step: int = typer.Option(1),
+        max_code: int = typer.Option(1000),
+):
     configure_relays()
+    typer.echo("Релюшки сконфигурированы")
+    for code in range(0, max_code, step):
+        mcp4725.send_code(code)
+        typer.echo(f"Отправлен код {code}")
+        time.sleep(delay)
 
 
 if __name__ == '__main__':

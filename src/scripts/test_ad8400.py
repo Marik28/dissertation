@@ -1,3 +1,5 @@
+import time
+
 import board
 import typer
 from adafruit_extended_bus import ExtendedSPI as SPI
@@ -19,12 +21,19 @@ relays = [relay_1, relay_2, relay_3, relay_4]
 
 
 def configure_relays():
-    pass
+    relay_3.turn_on()
+    relay_4.turn_off()
 
 
 @app.command
-def main():
+def main(delay: float = typer.Option(0.2)):
     configure_relays()
+    typer.echo("Релюшки сконфигурированы")
+    ad8400_1.send_code(0)
+    for code in range(255):
+        ad8400_2.send_code(code)
+        typer.echo(f"Отправлен код {code}")
+        time.sleep(delay)
 
 
 if __name__ == '__main__':
