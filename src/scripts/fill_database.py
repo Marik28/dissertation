@@ -46,6 +46,7 @@ def add_characteristics(session: sqlalchemy.orm.Session, sensors: List[tables.Se
         ]
         session.add_all(characteristics)
         session.commit()
+        logger.info(f"Добавлена характеристика для {sensor.name}")
 
 
 def main(session: sqlalchemy.orm.Session):
