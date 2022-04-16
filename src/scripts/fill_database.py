@@ -27,7 +27,7 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
             int_code=int(row["int_code"]),
         ) for _, row in df.iterrows()
     ]
-    session.add_all(sensors_to_add)
+    session.bulk_save_objects(sensors_to_add)
     session.commit()
     return sensors_to_add
 
@@ -44,7 +44,7 @@ def add_characteristics(session: sqlalchemy.orm.Session, sensors: List[tables.Se
                 value=float(row["value"]),
             ) for _, row in df.iterrows()
         ]
-        session.add_all(characteristics)
+        session.bulk_save_objects(characteristics)
         session.commit()
         logger.info(f"Добавлена характеристика для {sensor.name}")
 
