@@ -31,7 +31,7 @@ def configure_relays():
     relay_4.turn_on()
 
 
-@app.command
+@app.command()
 def main(
         delay: float = typer.Option(0.1),
         step: int = typer.Option(1),

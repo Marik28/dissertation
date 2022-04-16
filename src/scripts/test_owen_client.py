@@ -8,7 +8,7 @@ app = typer.Typer()
 client = OwenClient(port=settings.port, baudrate=settings.baudrate, address=settings.trm_address)
 
 
-@app.command
+@app.command()
 def main():
     model = client.get_string("Dev")
     version = client.get_string("VER")

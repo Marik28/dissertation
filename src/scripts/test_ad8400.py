@@ -25,7 +25,7 @@ def configure_relays():
     relay_4.turn_off()
 
 
-@app.command
+@app.command()
 def main(delay: float = typer.Option(0.2)):
     configure_relays()
     typer.echo("Релюшки сконфигурированы")

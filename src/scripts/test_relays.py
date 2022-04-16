@@ -15,7 +15,7 @@ relays = [
 app = typer.Typer()
 
 
-@app.command
+@app.command()
 def main(delay: float = typer.Argument(0.5, min=0)):
     typer.echo(f"Начало теста. Задержка между переключениями - {delay}")
     typer.echo("Включение всех релюх")
