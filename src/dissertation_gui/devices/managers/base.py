@@ -22,5 +22,5 @@ class BaseSensorManager(metaclass=ABCMeta):
         """Переключает все релюшки и настраивает интерфейс для использования устройства, если это необходимо"""
 
     @abstractmethod
-    def unselect(self) -> None:
+    def unselect(self) -> None:  # TODO возможно оставить только select()
         """Подчищает все пины и прочее для того, чтобы использовать другое устройство"""
