@@ -11,7 +11,7 @@ from dissertation_gui.settings import settings
 app = typer.Typer()
 
 ad8400_1 = AD8400(SPI(1, 0), getattr(board, settings.cs0_pin))
-ad8400_2 = AD8400(SPI(1, 1), getattr(board, settings.cs1_pin))
+ad8400_2 = AD8400(SPI(1, 2), getattr(board, settings.cs1_pin))
 relay_1 = DigitalIORelay(getattr(board, settings.relay_1_pin))
 relay_2 = DigitalIORelay(getattr(board, settings.relay_2_pin))
 relay_3 = DigitalIORelay(getattr(board, settings.relay_3_pin))
