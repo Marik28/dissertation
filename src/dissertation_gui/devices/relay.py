@@ -36,4 +36,4 @@ class DigitalIORelay(BaseRelay):
     def __repr__(self):
         number = self.registered_relays.index(self) + 1
         state = "Включено" if self._pin.value else "Выключено"
-        return f"<{self.__class__.__name__}> #{number}; Порт - {self._pin_name}; Состояние - {state}"
+        return f"<{self.__class__.__name__}> (#{number}; GPIO{self._pin_name}; Состояние - {state})"
