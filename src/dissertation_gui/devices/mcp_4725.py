@@ -8,7 +8,7 @@ from .base import BaseDevice
 #  чтобы добавить еще chip select-ов
 
 
-class MCP4725(BaseDevice):
+class MCP4725(BaseDevice): # TODO переписать, чтобы работало
     min_code = 0
     max_code = 4095
 
