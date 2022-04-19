@@ -3,7 +3,7 @@ from ... import tables
 from ...types import Number
 
 
-class MockManager(BaseSensorManager):
+class FakeManager(BaseSensorManager):
     """Костыль. А может гениальный мув 🤔"""
 
     def set_sensor(self, sensor: tables.Sensor):
