@@ -10,6 +10,8 @@ class UnifiedAnalogSignalManager(BaseSensorManager):
 
     def __init__(self, mcp4725: MCP4725):
         self._mcp4725 = mcp4725
+        # TODO: мы можем выдавать только 33 мВ,
+        #  поэтому надо как то выкручиваться и брать диапазоны с запасом
         self._max_temperature = 100
         self._min_temperature = -50
 

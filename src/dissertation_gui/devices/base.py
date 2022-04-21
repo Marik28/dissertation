@@ -48,7 +48,7 @@ class BaseDevice(metaclass=ABCMeta):
     def send_data(self, data: bytes) -> None:
         with self._begin_transaction():
             self._perform_send_data(data)
-            self._logger.debug(f"{self.get_device_name()} отправляет '{data}'")
+            self._logger.debug(f"На {self} отправлены данные: {data}")
 
     def send_code(self, code: int) -> None:
         validated_code = self._validate_code(code)

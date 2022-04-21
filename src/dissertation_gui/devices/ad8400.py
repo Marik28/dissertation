@@ -18,11 +18,6 @@ class AD8400(BaseDevice):
         self._cs = digitalio.DigitalInOut(cs)
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
-        clock, mosi, _cs = self.get_used_pins()
-        self._logger.info(
-            f"{self.get_device_name()} инициализирован пинами clock={protocol},"
-            f" mosi={mosi}, cs={_cs}; baudrate={baudrate}"
-        )
 
     def get_used_pins(self):
         """
@@ -42,12 +37,7 @@ class AD8400(BaseDevice):
     def _perform_send_data(self, data: bytes) -> None:
         self._spi.write(data)
 
-    def __hash__(self) -> int:
-        # TODO реализовать
-        return hash()
-
-    def __eq__(self, other: "AD8400"):
-        if not isinstance(other, AD8400):
-            return NotImplemented
-        # TODO потестировать
-        return self.get_used_pins() == other.get_used_pins()
+    def __repr__(self):
+        clock, mosi, cs = self.get_used_pins()
+        device = self.get_device_name()
+        return f"<{device} SCLK={clock}, MOSI={mosi} CS={cs}>"

@@ -1,9 +1,13 @@
-from typing import Optional
+from typing import (
+    Optional,
+    List,
+)
 
 import pandas as pd
 
 from .base import BaseSensorManager
 from ..mcp_4725 import MCP4725
+from ..relay import BaseRelay
 from ... import tables
 from ...types import Number
 from ...utils.loader import load_characteristics
@@ -11,9 +15,10 @@ from ...utils.loader import load_characteristics
 
 class ThermocoupleManager(BaseSensorManager):
 
-    def __init__(self, dac: MCP4725):
+    def __init__(self, dac: MCP4725, relays: List[BaseRelay]):
         self._dac = dac
         self._df: Optional[pd.DataFrame] = None
+        self._relays = relays
 
     def _calculate_code(self, temperature: int) -> int:
         _temperature = round(temperature)
@@ -31,7 +36,10 @@ class ThermocoupleManager(BaseSensorManager):
         self._dac.send_code(code)
 
     def select(self) -> None:
-        pass
+        self._relays[0].turn_on()
+        self._relays[1].turn_off()
+        self._relays[2].turn_off()
+        self._relays[3].turn_on()
 
     def unselect(self) -> None:
         pass

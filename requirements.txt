@@ -21,3 +21,4 @@ pymodbus
 typing_extensions
 aenum
 typer
+pympler
