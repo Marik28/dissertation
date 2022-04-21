@@ -11,8 +11,10 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
 )
 from PyQt5.uic import loadUi
-from adafruit_extended_bus import ExtendedSPI as SPI
-from busio import I2C
+from busio import (
+    I2C,
+    SPI,
+)
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
@@ -41,14 +43,16 @@ from .widgets import (
     CharacteristicsTableWidget,
     SensorInfoTable,
 )
+from .workers import SensorWorker
 
 # пины и протоколы
+
 ad8400_1 = AD8400(
-    SPI(1, 0),
+    SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
     getattr(board, settings.cs0_pin),
 )
 ad8400_2 = AD8400(
-    SPI(1, 1),
+    SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
     getattr(board, settings.cs1_pin),
 )
 mcp4725 = MCP4725(
@@ -87,6 +91,10 @@ trm_plot_manager = TRMInfoPlotManager(trm_plot)
 trm_relay_output_text: QTextBrowser = ui.trm_relay_output_text
 trm_measured_temp_text: QTextBrowser = ui.trm_measured_temp_text
 
+# вкладка Страница
+uas_max_temp: QSpinBox = ui.uas_max_temp
+uas_min_temp: QSpinBox = ui.uas_min_temp
+
 with Session() as session:
     sensors_service = SensorsService(session)
     sensors_characteristics_service = SensorCharacteristicsService(session)
@@ -102,7 +110,6 @@ with Session() as session:
     bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
     plot_thread.temperature_signal.connect(plot_manager.update_graph)
     plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
-    plot_thread.start(priority=QThread.Priority.HighPriority)
     reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
     owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
     trm_thread = TRMParametersReadThread(owen_client)
@@ -120,10 +127,15 @@ with Session() as session:
     setpoint_thread = SetpointThread()
     setpoint_thread.setpoint_signal.connect(trm_plot_manager.update_setpoint_curve)
 
+    sensor_worker_thread = QThread()
+    sensor_worker = SensorWorker({})
+    sensor_worker.moveToThread(sensor_worker_thread)
+
+    plot_thread.start(priority=QThread.Priority.HighPriority)
     temp_thread.start(priority=QThread.Priority.NormalPriority)
     setpoint_thread.start(priority=QThread.Priority.NormalPriority)
-
     trm_thread.start(priority=QThread.Priority.NormalPriority)
+    sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
     logger.info("Запуск приложения")
     try:
