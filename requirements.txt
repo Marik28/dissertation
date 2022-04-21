@@ -16,6 +16,7 @@ sqlalchemy
 alembic
 adafruit-blinka
 adafruit-extended-bus
+adafruit-circuitpython-mcp4725
 pymodbus
 typing_extensions
 aenum

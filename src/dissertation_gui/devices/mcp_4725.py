@@ -1,14 +1,15 @@
+from adafruit_mcp4725 import MCP4725 as _MCP4725
 from busio import I2C
 
-from .base import BaseDevice
+from .base import (
+    BaseDevice,
+    FakeLockable,
+)
+
+__all__ = ["MCP4725"]
 
 
-# TODO: - https://gist.github.com/mcbridejc/d060602e892f6879e7bc8b93aa3f85be
-#       - https://pinout.xyz/pinout/spi
-#  чтобы добавить еще chip select-ов
-
-
-class MCP4725(BaseDevice): # TODO переписать, чтобы работало
+class DeprecatedMCP4725(BaseDevice):
     min_code = 0
     max_code = 4095
 
@@ -19,3 +20,21 @@ class MCP4725(BaseDevice): # TODO переписать, чтобы работа�
 
     def _perform_send_data(self, data: bytes) -> None:
         self._i2c.writeto(self._address, data)
+
+
+class MCP4725(BaseDevice):
+    min_code = 0
+    max_code = 4095
+
+    def __init__(self, address: int, i2c: I2C):
+        super().__init__(FakeLockable())
+        self._mcp = _MCP4725(i2c, address=address)
+
+    def _perform_send_data(self, data: bytes) -> None:
+        raise NotImplemented("Нужно использовать send_code()")
+
+    def send_data(self, data: bytes) -> None:
+        raise NotImplemented("Нужно использовать send_code()")
+
+    def send_code(self, code: int) -> None:
+        self._mcp.raw_value = code
