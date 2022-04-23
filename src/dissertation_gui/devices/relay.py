@@ -34,8 +34,8 @@ class DigitalIORelay(BaseRelay):
         self._pin = digitalio.DigitalInOut(pin)
         self._pin.direction = digitalio.Direction.OUTPUT
         self.registered_relays.append(self)
-        self.turn_off()
         self._delay = delay
+        self.turn_off()
 
     def turn_on(self) -> None:
         self.set_value(True)
