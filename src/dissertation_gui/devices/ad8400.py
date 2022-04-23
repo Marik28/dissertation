@@ -15,6 +15,7 @@ class AD8400(BaseDevice):
         super().__init__(protocol)
         self._spi = protocol
         self._baudrate = baudrate
+        self._cs_name = cs
         self._cs = digitalio.DigitalInOut(cs)
         self._cs.direction = digitalio.Direction.OUTPUT
         self._cs.value = True
@@ -38,6 +39,6 @@ class AD8400(BaseDevice):
         self._spi.write(data)
 
     def __repr__(self):
-        clock, mosi, cs = self.get_used_pins()
+        clock, mosi, _ = self.get_used_pins()
         device = self.get_device_name()
-        return f"<{device} SCLK={clock}, MOSI={mosi} CS={cs}>"
+        return f"<{device} SCLK={clock}, MOSI={mosi} CS={self._cs_name}>"
