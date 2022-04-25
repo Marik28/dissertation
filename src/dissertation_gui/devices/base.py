@@ -1,63 +1,29 @@
+import sys
 from abc import (
     abstractmethod,
     ABCMeta,
 )
-from contextlib import contextmanager
 
-from adafruit_blinka import Lockable
 from loguru import logger
 
+logger.add(sys.stdout, level="DEBUG")
 
-class FakeLockable(Lockable):
-    def try_lock(self):
-        return True
-
-    def unlock(self):
-        pass
+__all__ = ["logger", "BaseDevice"]
 
 
 class BaseDevice(metaclass=ABCMeta):
     min_code: int = None
     max_code: int = None
 
-    def __init__(self, protocol: Lockable):
-        self._logger = logger
-        self._protocol = protocol
-
-    def before_transaction(self):
-        pass
-
-    def after_transaction(self):
-        pass
-
-    @contextmanager
-    def _begin_transaction(self):
-        while not self._protocol.try_lock():
-            pass
-        self.before_transaction()
-        try:
-            yield
-        finally:
-            self.after_transaction()
-            self._protocol.unlock()
-
-    @abstractmethod
-    def _perform_send_data(self, data: bytes) -> None:
-        pass
-
-    def send_data(self, data: bytes) -> None:
-        with self._begin_transaction():
-            self._perform_send_data(data)
-            self._logger.debug(f"На {self} отправлены данные: {data}")
-
-    def send_code(self, code: int) -> None:
-        validated_code = self._validate_code(code)
-        data_to_send = bytes([validated_code])
-        self.send_data(data_to_send)
-
-    def _validate_code(self, code: int) -> int:
+    def __init__(self):
         if self.min_code is None or self.max_code is None:
             raise TypeError("Необходимо указать диапазон кодов")
+
+    @abstractmethod
+    def send_code(self, code: int) -> None:
+        pass
+
+    def validate_code(self, code: int) -> int:
         if code < self.min_code:
             code = self.min_code
         elif code > self.max_code:

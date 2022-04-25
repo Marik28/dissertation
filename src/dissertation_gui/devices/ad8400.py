@@ -1,7 +1,16 @@
+from typing import Tuple
+
+import board
 import digitalio
+from adafruit_bus_device.spi_device import SPIDevice
 from busio import SPI
 
-from .base import BaseDevice
+from .base import (
+    BaseDevice,
+    logger,
+)
+
+__all__ = ["AD8400"]
 
 
 class AD8400(BaseDevice):
@@ -9,36 +18,30 @@ class AD8400(BaseDevice):
     max_code = 255
 
     def __init__(self,
-                 protocol: SPI,
-                 cs,
+                 spi: SPI,
+                 cs: str,
                  baudrate: int = 100_000):
-        super().__init__(protocol)
-        self._spi = protocol
-        self._baudrate = baudrate
-        self._cs_name = cs
-        self._cs = digitalio.DigitalInOut(cs)
-        self._cs.direction = digitalio.Direction.OUTPUT
-        self._cs.value = True
+        super().__init__()
+        self._cs = getattr(board, cs)
+        self._spidev = SPIDevice(spi,
+                                 chip_select=digitalio.DigitalInOut(self._cs),
+                                 baudrate=baudrate)
 
-    def get_used_pins(self):
+    def get_used_pins(self) -> Tuple[int, int, int]:
         """
         :return: (clock_pin, mosi_pin, cs)
         """
-        clock, mosi, _ = self._spi._pins
-        cs = self._cs
-        return clock, mosi, cs
+        clock, mosi, _ = self._spidev.spi._pins
+        return clock.id, mosi.id, self._cs.id
 
-    def before_transaction(self):
-        self._spi.configure(self._baudrate)
-        self._cs.value = False
-
-    def after_transaction(self):
-        self._cs.value = True
-
-    def _perform_send_data(self, data: bytes) -> None:
-        self._spi.write(data)
+    def send_code(self, code: int) -> None:
+        validated_code = self.validate_code(code)
+        data = bytes([validated_code])
+        with self._spidev as spi:
+            spi.write(data)
+        logger.debug(f"На {self} отправлен код {validated_code}")
 
     def __repr__(self):
-        clock, mosi, _ = self.get_used_pins()
+        clock, mosi, cs = self.get_used_pins()
         device = self.get_device_name()
-        return f"<{device} SCLK={clock}, MOSI={mosi} CS={self._cs_name}>"
+        return f"<{device} SCLK=GPIO{clock}, MOSI=GPIO{mosi} CS=GPIO{cs}>"

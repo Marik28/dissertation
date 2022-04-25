@@ -5,7 +5,8 @@ from abc import (
 )
 
 import digitalio
-from loguru import logger
+
+from .base import logger
 
 
 class BaseRelay(metaclass=ABCMeta):
