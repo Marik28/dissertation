@@ -3,12 +3,10 @@ from typing import Tuple
 import digitalio
 from adafruit_bus_device.spi_device import SPIDevice
 from busio import SPI
+from loguru import logger
 
 from utils.utils import get_pin
-from .base import (
-    BaseDevice,
-    logger,
-)
+from .base import BaseDevice
 
 __all__ = ["AD8400"]
 

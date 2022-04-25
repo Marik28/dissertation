@@ -1,10 +1,8 @@
 from adafruit_mcp4725 import MCP4725 as _MCP4725
 from busio import I2C
+from loguru import logger
 
-from .base import (
-    BaseDevice,
-    logger,
-)
+from .base import BaseDevice
 
 __all__ = ["MCP4725"]
 

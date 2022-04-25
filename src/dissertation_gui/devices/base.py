@@ -1,14 +1,9 @@
-import sys
 from abc import (
     abstractmethod,
     ABCMeta,
 )
 
-from loguru import logger
-
-logger.add(sys.stdout, level="DEBUG")
-
-__all__ = ["logger", "BaseDevice"]
+__all__ = ["BaseDevice"]
 
 
 class BaseDevice(metaclass=ABCMeta):

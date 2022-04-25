@@ -1,3 +1,4 @@
+import math
 import random
 import time
 
@@ -30,20 +31,28 @@ __all__ = ["TemperatureCalculationThread"]
 class TemperatureCalculationThread(QThread):
     temperature_signal = pyqtSignal(PlotPoint)
 
-    def __init__(self, parent=None, frequency: int = 10):
+    def __init__(self, parent=None, frequency: int = 100):
         """
         :param parent:
         :param frequency: Hz. Сколько раз в секунду пересчитывать
         """
         super().__init__(parent)
         self._update_period = 1 / frequency
+        """Частота обновления температуры"""
         self._start_time = 0.
+        """Время с начала процесса"""
         self._k = 1.
+        """Коэффициент быстроты изменения температуры (град/с)"""
         self._direction = 1
+        """Направление изменения температуры"""
         self._set_temperature = 25.
+        """Заданная температура"""
         self._temperature = 0.
+        """Текущая температура"""
         self._start_temperature = self._temperature
+        """Начальная температура"""
         self._reset = False
+        """Флаг, сигнализирущий о том, что необходимо сбросить начальное время"""
         self._enable_bursts = False
 
     def set_enable_bursts(self, new_val: int):
@@ -53,32 +62,16 @@ class TemperatureCalculationThread(QThread):
         return self._enable_bursts
 
     def set_k_ratio(self, k: float) -> None:
-        """Слот для изменения коэффициента 'k'"""
-        self._k = float(k)
+        """Слот для изменения коэффициента, задающего быстроту изменения температуры"""
+        self._k = k
         self._reset_start_temperature()
         self._defer_reset_time()
 
     def set_temperature(self, new_set_temperature: float) -> None:
         """Слот для изменения заданной температуры"""
-        _new_temperature = float(new_set_temperature)
-        if self._direction_positive():
-            if _new_temperature < self._temperature:
-                self._change_direction()
-                self._defer_reset_time()
-                self._reset_start_temperature()
-            elif _new_temperature > self._temperature:
-                self._defer_reset_time()
-                self._reset_start_temperature()
-                pass
-        else:
-            if _new_temperature > self._temperature:
-                self._change_direction()
-                self._defer_reset_time()
-                self._reset_start_temperature()
-            elif _new_temperature < self._temperature:
-                self._defer_reset_time()
-                self._reset_start_temperature()
-        self._set_temperature = _new_temperature
+        self._set_temperature = new_set_temperature
+        self._defer_reset_time()
+        self._reset_start_temperature()
 
     # TODO протестировать
     def run(self) -> None:
@@ -105,6 +98,7 @@ class TemperatureCalculationThread(QThread):
 
     def calculate_temperature(self) -> float:
         now = time.time() - self._start_time
+        self._direction = int(math.copysign(1, self._set_temperature - self._temperature))
         return self._start_temperature + self._k * now * self._direction
 
     def _defer_reset_time(self):
@@ -112,10 +106,6 @@ class TemperatureCalculationThread(QThread):
 
     def _reset_time_required(self) -> bool:
         return self._reset
-
-    def _change_direction(self) -> None:
-        """Изменяет направление графика на противоположное"""
-        self._direction = -self._direction
 
     def _reset_start_time(self) -> None:
         self._start_time = time.time()

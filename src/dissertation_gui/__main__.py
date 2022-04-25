@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-import board
+# import board
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,26 +14,26 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
 )
 from PyQt5.uic import loadUi
-from busio import (
-    I2C,
-    SPI,
-)
+# from busio import (
+#     I2C,
+#     SPI,
+# )
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
-from utils.utils import get_pin
+# from utils.utils import get_pin
 from .database import Session
-from .devices import (
-    AD8400,
-    MCP4725,
-    DigitalIORelay,
-)
-from .protocols.owen import OwenClient
+# from .devices import (
+#     AD8400,
+#     MCP4725,
+#     DigitalIORelay,
+# )
+# from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
-from .threads.owen import TRMParametersReadThread
+# from .threads.owen import TRMParametersReadThread
 from .threads.testing import (
     SetpointThread,
     MeasuredTempThread,
@@ -50,23 +50,23 @@ from .widgets import (
 from .workers import SensorWorker
 
 # пины и протоколы
-
-ad8400_1 = AD8400(
-    SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-    get_pin(settings.cs0_pin),
-)
-ad8400_2 = AD8400(
-    SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-    get_pin(settings.cs1_pin),
-)
-mcp4725 = MCP4725(
-    I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
-    settings.mcp4725_address,
-)
-relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
-relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
-relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
-relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
+#
+# ad8400_1 = AD8400(
+#     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
+#     get_pin(settings.cs0_pin),
+# )
+# ad8400_2 = AD8400(
+#     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
+#     get_pin(settings.cs1_pin),
+# )
+# mcp4725 = MCP4725(
+#     I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
+#     settings.mcp4725_address,
+# )
+# relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
+# relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
+# relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
+# relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола
@@ -88,6 +88,8 @@ sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
+
+graph.setYRange(min=-50, max=100)
 plot_manager = PlotManager(graph, max_points=settings.plot_points)
 trm_plot_manager = TRMInfoPlotManager(trm_plot)
 
@@ -120,13 +122,13 @@ bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
 plot_thread.temperature_signal.connect(plot_manager.update_graph)
 plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
-trm_thread = TRMParametersReadThread(owen_client)
-trm_thread.parameter_signal.connect(
-    lambda params: trm_relay_output_text.setText(
-        "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
-    )
-)
+# owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
+# trm_thread = TRMParametersReadThread(owen_client)
+# trm_thread.parameter_signal.connect(
+#     lambda params: trm_relay_output_text.setText(
+#         "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
+#     )
+# )
 
 temp_thread = MeasuredTempThread()
 temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
@@ -140,7 +142,7 @@ sensor_worker.moveToThread(sensor_worker_thread)
 plot_thread.start(priority=QThread.Priority.HighPriority)
 temp_thread.start(priority=QThread.Priority.NormalPriority)
 setpoint_thread.start(priority=QThread.Priority.NormalPriority)
-trm_thread.start(priority=QThread.Priority.NormalPriority)
+# trm_thread.start(priority=QThread.Priority.NormalPriority)
 sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
 
@@ -150,8 +152,11 @@ def on_shutdown():
 
 
 def excepthook(exc_type, exc_value, exc_tb):
-    tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
-    logger.error(tb)
+    if issubclass(exc_type, KeyboardInterrupt):
+        msg = "KeyboardInterrupt"
+    else:
+        msg = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    logger.error(msg)
     app.exit(-1)
 
 
