@@ -1,10 +1,10 @@
 from typing import Tuple
 
-import board
 import digitalio
 from adafruit_bus_device.spi_device import SPIDevice
 from busio import SPI
 
+from utils.utils import get_pin
 from .base import (
     BaseDevice,
     logger,
@@ -22,7 +22,7 @@ class AD8400(BaseDevice):
                  cs: str,
                  baudrate: int = 100_000):
         super().__init__()
-        self._cs = getattr(board, cs)
+        self._cs = get_pin(cs)
         self._spidev = SPIDevice(spi,
                                  chip_select=digitalio.DigitalInOut(self._cs),
                                  baudrate=baudrate)

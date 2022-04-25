@@ -1,17 +1,18 @@
 import time
 from pathlib import Path
-from typing import Tuple, List
+from typing import List
 
 import board
 import numpy as np
 import pandas as pd
 import typer
-from adafruit_extended_bus import ExtendedSPI as SPI
+from busio import SPI
 
 from dissertation_gui.devices import AD8400
 from dissertation_gui.protocols.owen import OwenClient
 from dissertation_gui.protocols.owen.exceptions import OwenProtocolError
 from dissertation_gui.settings import settings
+from utils.utils import get_pin
 
 app = typer.Typer()
 
@@ -34,7 +35,6 @@ def save_result(codes: List, resistances: List, output: Path):
 @app.command()
 def main(
         cs: str = typer.Argument(...),
-        bus: Tuple[int, int] = typer.Option((1, 0)),
         delay: float = typer.Option(1.0),
         output: Path = typer.Option(settings.base_dir.parent / "data" / "ad8400"),
         retries: int = typer.Option(1),
@@ -44,7 +44,8 @@ def main(
 ):
     typer.echo("Не забывайте выставить датчик 100П!", err=True)
     client = OwenClient(port=settings.port, baudrate=settings.baudrate, address=settings.trm_address)
-    ad_8400 = AD8400(SPI(*bus), getattr(board, cs))
+    spi = SPI(clock=board.SCLK, MOSI=board.MOSI)
+    ad_8400 = AD8400(spi, get_pin(cs))
     sensor_data = pd.read_csv(settings.base_dir / "data" / "sensors_characteristics" / "100П.csv", index_col="temp")
     test_owen(client)
     codes = []

@@ -1,3 +1,6 @@
+import sys
+import traceback
+
 import board
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
@@ -18,6 +21,7 @@ from busio import (
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
+from utils.utils import get_pin
 from .database import Session
 from .devices import (
     AD8400,
@@ -49,20 +53,20 @@ from .workers import SensorWorker
 
 ad8400_1 = AD8400(
     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-    getattr(board, settings.cs0_pin),
+    get_pin(settings.cs0_pin),
 )
 ad8400_2 = AD8400(
     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-    getattr(board, settings.cs1_pin),
+    get_pin(settings.cs1_pin),
 )
 mcp4725 = MCP4725(
-    I2C(getattr(board, settings.i2c_scl_pin), getattr(board, settings.i2c_sda_pin)),
+    I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
     settings.mcp4725_address,
 )
-relay_1 = DigitalIORelay(getattr(board, settings.relay_1_pin))
-relay_2 = DigitalIORelay(getattr(board, settings.relay_2_pin))
-relay_3 = DigitalIORelay(getattr(board, settings.relay_3_pin))
-relay_4 = DigitalIORelay(getattr(board, settings.relay_4_pin))
+relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
+relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
+relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
+relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола
@@ -95,54 +99,64 @@ trm_measured_temp_text: QTextBrowser = ui.trm_measured_temp_text
 uas_max_temp: QSpinBox = ui.uas_max_temp
 uas_min_temp: QSpinBox = ui.uas_min_temp
 
-with Session() as session:
-    sensors_service = SensorsService(session)
-    sensors_characteristics_service = SensorCharacteristicsService(session)
+session = Session()
+uas_max_temp.setMaximum(100)
+uas_max_temp.setMinimum(-50)
+uas_min_temp.setMaximum(100)
+uas_min_temp.setMinimum(-50)
 
-    sensor_characteristics_table.set_service(sensors_characteristics_service)
+sensors_service = SensorsService(session)
+sensors_characteristics_service = SensorCharacteristicsService(session)
 
-    sensor_list = sensors_service.get_sensors()
-    sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
-    sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
-    sensors_combo_box.set_sensors(sensor_list)
-    temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
-    k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
-    bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
-    plot_thread.temperature_signal.connect(plot_manager.update_graph)
-    plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
-    reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-    owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
-    trm_thread = TRMParametersReadThread(owen_client)
-    trm_thread.parameter_signal.connect(
-        lambda params: trm_relay_output_text.setText(
-            "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
-        )
+sensor_characteristics_table.set_service(sensors_characteristics_service)
+
+sensor_list = sensors_service.get_sensors()
+sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
+sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
+sensors_combo_box.set_sensors(sensor_list)
+temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
+k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
+bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
+plot_thread.temperature_signal.connect(plot_manager.update_graph)
+plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
+reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
+owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
+trm_thread = TRMParametersReadThread(owen_client)
+trm_thread.parameter_signal.connect(
+    lambda params: trm_relay_output_text.setText(
+        "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
     )
-    # doc_viewer: PdfViewer = ui.doc_viewer
-    # doc_viewer.load_pdf(settings.base_dir.parent / "data" / "TRM" / "ТРМ201 документация.pdf")
-    # doc_viewer.show()
-    # fixme
-    temp_thread = MeasuredTempThread()
-    temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
-    setpoint_thread = SetpointThread()
-    setpoint_thread.setpoint_signal.connect(trm_plot_manager.update_setpoint_curve)
+)
 
-    sensor_worker_thread = QThread()
-    sensor_worker = SensorWorker({})
-    sensor_worker.moveToThread(sensor_worker_thread)
+temp_thread = MeasuredTempThread()
+temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
+setpoint_thread = SetpointThread()
+setpoint_thread.setpoint_signal.connect(trm_plot_manager.update_setpoint_curve)
 
-    plot_thread.start(priority=QThread.Priority.HighPriority)
-    temp_thread.start(priority=QThread.Priority.NormalPriority)
-    setpoint_thread.start(priority=QThread.Priority.NormalPriority)
-    trm_thread.start(priority=QThread.Priority.NormalPriority)
-    sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
+sensor_worker_thread = QThread()
+sensor_worker = SensorWorker({})
+sensor_worker.moveToThread(sensor_worker_thread)
 
-    logger.info("Запуск приложения")
-    try:
-        ui.show()
-        exit_code = app.exec_()
-    except Exception as e:
-        logger.error(e)
-    finally:
-        logger.info(f"Завершение работы приложения с кодом {exit_code}")
-        exit(exit_code)
+plot_thread.start(priority=QThread.Priority.HighPriority)
+temp_thread.start(priority=QThread.Priority.NormalPriority)
+setpoint_thread.start(priority=QThread.Priority.NormalPriority)
+trm_thread.start(priority=QThread.Priority.NormalPriority)
+sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
+
+
+def on_shutdown():
+    session.close()
+    logger.info(f"Завершение работы приложения")
+
+
+def excepthook(exc_type, exc_value, exc_tb):
+    tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    logger.error(tb)
+    app.exit(-1)
+
+
+sys.excepthook = excepthook
+app.aboutToQuit.connect(on_shutdown)
+logger.info("Запуск приложения")
+ui.show()
+app.exec()

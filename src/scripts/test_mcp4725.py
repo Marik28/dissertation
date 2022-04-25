@@ -1,6 +1,5 @@
 import time
 
-import board
 import typer
 from busio import I2C
 
@@ -9,17 +8,18 @@ from dissertation_gui.devices import (
     DigitalIORelay,
 )
 from dissertation_gui.settings import settings
+from utils.utils import get_pin
 
 app = typer.Typer()
 
 mcp4725 = MCP4725(
-    I2C(getattr(board, settings.i2c_scl_pin), getattr(board, settings.i2c_sda_pin)),
+    I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
     settings.mcp4725_address,
 )
-relay_1 = DigitalIORelay(getattr(board, settings.relay_1_pin))
-relay_2 = DigitalIORelay(getattr(board, settings.relay_2_pin))
-relay_3 = DigitalIORelay(getattr(board, settings.relay_3_pin))
-relay_4 = DigitalIORelay(getattr(board, settings.relay_4_pin))
+relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
+relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
+relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
+relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
 
 relays = [relay_1, relay_2, relay_3, relay_4]
 

@@ -1,6 +1,7 @@
 from numbers import Number
 from typing import Iterable
 
+import board
 import numpy as np
 import pandas as pd
 
@@ -106,6 +107,17 @@ def parse_thermocouple_characteristics(df: pd.DataFrame) -> pd.DataFrame:
     voltages = sorted(list(set([float(x) for x in df.values.flatten() if not np.isnan(float(x))])))
     temperatures = [i + min_value for i in range(len(voltages))]
     return pd.DataFrame({"temp": temperatures, "value": voltages})
+
+
+def get_pin(pin_name: str):
+    """
+    :param pin_name: Название пина в библиотеке board
+    """
+    return getattr(board, pin_name)
+
+
+def remap(x: int, in_min: int, in_max: int, out_min: int, out_max: int) -> int:
+    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
 
 
 if __name__ == '__main__':
