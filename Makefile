@@ -22,3 +22,6 @@ drop-database:
 
 available-ports:
 	python3 -m serial.tools.list_ports
+
+generate-dataframes:
+	cd src; python3 -m scripts.generate_dfs
