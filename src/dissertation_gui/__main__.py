@@ -1,7 +1,6 @@
 import sys
 import traceback
 
-# import board
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,26 +13,14 @@ from PyQt5.QtWidgets import (
     QTextBrowser,
 )
 from PyQt5.uic import loadUi
-# from busio import (
-#     I2C,
-#     SPI,
-# )
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
-# from utils.utils import get_pin
 from .database import Session
-# from .devices import (
-#     AD8400,
-#     MCP4725,
-#     DigitalIORelay,
-# )
-# from .protocols.owen import OwenClient
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
-# from .threads.owen import TRMParametersReadThread
 from .threads.testing import (
     SetpointThread,
     MeasuredTempThread,
@@ -49,24 +36,50 @@ from .widgets import (
 )
 from .workers import SensorWorker
 
-# пины и протоколы
-#
-# ad8400_1 = AD8400(
-#     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-#     get_pin(settings.cs0_pin),
-# )
-# ad8400_2 = AD8400(
-#     SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
-#     get_pin(settings.cs1_pin),
-# )
-# mcp4725 = MCP4725(
-#     I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
-#     settings.mcp4725_address,
-# )
-# relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
-# relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
-# relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
-# relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
+if not settings.test_gui:
+    import board
+    from utils.utils import get_pin
+    from .threads.owen import TRMParametersReadThread
+    from .protocols.owen import OwenClient
+    from busio import (
+        I2C,
+        SPI,
+    )
+    from .devices import (
+        AD8400,
+        MCP4725,
+        DigitalIORelay,
+    )
+
+if not settings.test_gui:
+    # пины и протоколы
+    ad8400_1 = AD8400(
+        SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
+        get_pin(settings.cs0_pin),
+    )
+    ad8400_2 = AD8400(
+        SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None),
+        get_pin(settings.cs1_pin),
+    )
+    mcp4725 = MCP4725(
+        I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
+        settings.mcp4725_address,
+    )
+    relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
+    relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
+    relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
+    relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
+
+    owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
+    trm_thread = TRMParametersReadThread(owen_client)
+    trm_thread.parameter_signal.connect(
+        lambda params: trm_relay_output_text.setText(
+            "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
+        )
+    )
+
+    trm_thread.start(priority=QThread.Priority.NormalPriority)
+
 logger.info("Инициализация GUI")
 
 #  TODO добавить читалку документации ТРМ-а и протокола
@@ -122,13 +135,6 @@ bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
 plot_thread.temperature_signal.connect(plot_manager.update_graph)
 plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-# owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
-# trm_thread = TRMParametersReadThread(owen_client)
-# trm_thread.parameter_signal.connect(
-#     lambda params: trm_relay_output_text.setText(
-#         "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
-#     )
-# )
 
 temp_thread = MeasuredTempThread()
 temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
@@ -142,7 +148,6 @@ sensor_worker.moveToThread(sensor_worker_thread)
 plot_thread.start(priority=QThread.Priority.HighPriority)
 temp_thread.start(priority=QThread.Priority.NormalPriority)
 setpoint_thread.start(priority=QThread.Priority.NormalPriority)
-# trm_thread.start(priority=QThread.Priority.NormalPriority)
 sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
 

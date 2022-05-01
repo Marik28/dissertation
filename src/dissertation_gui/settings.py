@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     base_dir: Path = base_dir
     db_url = f'sqlite:///{base_dir / "dissertation_gui" / "db.sqlite3"}'
 
+    test_gui: bool
+
     # логи
     log_level: str = "DEBUG"
 
