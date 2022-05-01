@@ -15,6 +15,7 @@ from PyQt5.QtCore import (
 
 from ..protocols.owen import OwenClient
 from ..protocols.owen.const import Type
+from ..protocols.owen.exceptions import OwenProtocolError
 
 __all__ = ["TRMParametersReadThread"]
 
@@ -57,7 +58,10 @@ class TRMParametersReadThread(QThread):
                 {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
             ]
             for param in params_to_read:
-                value = self.client.get_parameter(**param)
+                try:
+                    value = self.client.get_parameter(**param)
+                except OwenProtocolError:
+                    value = self.client.get_last_error()
                 read_parameters[param["name"]] = value
             self.parameter_signal.emit(read_parameters)
             self.sleep(1)
