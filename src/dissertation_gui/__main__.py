@@ -71,8 +71,11 @@ if not settings.test_gui:
     relay_3 = DigitalIORelay(settings.relay_3_pin)
     relay_4 = DigitalIORelay(settings.relay_4_pin)
 
-    owen_client = OwenClient(settings.port, settings.baudrate, address=settings.trm_address)
-    trm_thread = TRMParametersReadThread(owen_client)
+    owen_client = OwenClient(port=settings.port,
+                             baudrate=settings.baudrate,
+                             timeout=settings.port_timeout,
+                             address=settings.trm_address)
+    trm_thread = TRMParametersReadThread(owen_client, update_period=settings.trm_update_period)
     trm_thread.parameter_signal.connect(
         lambda params: trm_relay_output_text.setText(
             "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])

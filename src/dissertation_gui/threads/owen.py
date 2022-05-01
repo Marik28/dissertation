@@ -42,9 +42,13 @@ class TRMParameters:
 class TRMParametersReadThread(QThread):
     parameter_signal = pyqtSignal(dict)
 
-    def __init__(self, client: OwenClient, parent=None):
+    def __init__(self, client: OwenClient, update_period: float, parent=None):
+        """
+        :param update_period: Период опроса ТРМ в секундах
+        """
         super().__init__(parent)
         self.client = client
+        self.update_period = update_period
 
     def run(self) -> None:  # TODO: сделать красиво
         while True:
@@ -63,5 +67,6 @@ class TRMParametersReadThread(QThread):
                 except OwenUnpackError:
                     value = self.client.get_last_error()
                 read_parameters[param["name"]] = value
+
             self.parameter_signal.emit(read_parameters)
-            self.sleep(1)
+            self.msleep(int(self.update_period * 1000))

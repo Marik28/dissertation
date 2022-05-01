@@ -16,13 +16,15 @@ class Settings(BaseSettings):
     # логи
     log_level: str = "DEBUG"
 
-    plot_update_frequency: int = 10
+    plot_update_frequency: int
     plot_points: int
 
     # настройки протокола OWEN
     port: str
     baudrate: int
-    trm_address: int = 1
+    trm_address: int
+    trm_update_period: float
+    port_timeout: float
 
     # настройки протокола I2C
     mcp4725_address: int
