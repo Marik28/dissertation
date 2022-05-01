@@ -34,17 +34,17 @@ from .widgets import (
     CharacteristicsTableWidget,
     SensorInfoTable,
 )
-from .workers import SensorWorker
 
 if not settings.test_gui:
     import board
-    from utils.utils import get_pin
-    from .threads.owen import TRMParametersReadThread
-    from .protocols.owen import OwenClient
     from busio import (
         I2C,
         SPI,
     )
+    from utils.utils import get_pin
+    from .threads.owen import TRMParametersReadThread
+    from .protocols.owen import OwenClient
+    from .workers import SensorWorker
     from .devices import (
         AD8400,
         MCP4725,
@@ -77,12 +77,15 @@ if not settings.test_gui:
             "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
         )
     )
+    sensor_worker_thread = QThread()
+    sensor_worker = SensorWorker({})
+    sensor_worker.moveToThread(sensor_worker_thread)
 
     trm_thread.start(priority=QThread.Priority.NormalPriority)
+    sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
 logger.info("Инициализация GUI")
 
-#  TODO добавить читалку документации ТРМ-а и протокола
 app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
 # plot_thread = ExamplePlotThread(frequency=settings.plot_update_frequency)
@@ -102,7 +105,7 @@ sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteris
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
 
-graph.setYRange(min=-50, max=100)
+graph.setYRange(min=-40, max=90)
 plot_manager = PlotManager(graph, max_points=settings.plot_points)
 trm_plot_manager = TRMInfoPlotManager(trm_plot)
 
@@ -135,20 +138,16 @@ bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
 plot_thread.temperature_signal.connect(plot_manager.update_graph)
 plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
+# reset_plot_button.clicked.connect(lambda: graph.getPlotItem().setYRange(min=-40, max=90))
 
 temp_thread = MeasuredTempThread()
 temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
 setpoint_thread = SetpointThread()
 setpoint_thread.setpoint_signal.connect(trm_plot_manager.update_setpoint_curve)
 
-sensor_worker_thread = QThread()
-sensor_worker = SensorWorker({})
-sensor_worker.moveToThread(sensor_worker_thread)
-
 plot_thread.start(priority=QThread.Priority.HighPriority)
 temp_thread.start(priority=QThread.Priority.NormalPriority)
 setpoint_thread.start(priority=QThread.Priority.NormalPriority)
-sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
 
 def on_shutdown():

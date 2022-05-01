@@ -7,16 +7,15 @@ from busio import SPI
 from dissertation_gui.devices.ad8400 import AD8400
 from dissertation_gui.devices.relay import DigitalIORelay
 from dissertation_gui.settings import settings
-from utils.utils import get_pin
 
 app = typer.Typer()
 spi = SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None)
-ad8400_1 = AD8400(spi, get_pin(settings.cs0_pin))
-ad8400_2 = AD8400(spi, get_pin(settings.cs1_pin))
-relay_1 = DigitalIORelay(get_pin(settings.relay_1_pin))
-relay_2 = DigitalIORelay(get_pin(settings.relay_2_pin))
-relay_3 = DigitalIORelay(get_pin(settings.relay_3_pin))
-relay_4 = DigitalIORelay(get_pin(settings.relay_4_pin))
+ad8400_1 = AD8400(spi, settings.cs0_pin)
+ad8400_2 = AD8400(spi, settings.cs1_pin)
+relay_1 = DigitalIORelay(settings.relay_1_pin)
+relay_2 = DigitalIORelay(settings.relay_2_pin)
+relay_3 = DigitalIORelay(settings.relay_3_pin)
+relay_4 = DigitalIORelay(settings.relay_4_pin)
 
 relays = [relay_1, relay_2, relay_3, relay_4]
 
