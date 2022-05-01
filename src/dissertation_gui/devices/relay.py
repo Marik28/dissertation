@@ -7,6 +7,8 @@ from abc import (
 import digitalio
 from loguru import logger
 
+from utils.utils import get_pin
+
 
 class BaseRelay(metaclass=ABCMeta):
 
@@ -31,7 +33,7 @@ class DigitalIORelay(BaseRelay):
         :param delay: Задержка после переключения реле (в секундах)
         """
         self._pin_name = pin
-        self._pin = digitalio.DigitalInOut(pin)
+        self._pin = digitalio.DigitalInOut(get_pin(pin))
         self._pin.direction = digitalio.Direction.OUTPUT
         self.registered_relays.append(self)
         self._delay = delay
