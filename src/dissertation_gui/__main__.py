@@ -41,7 +41,7 @@ if not settings.test_gui:
         I2C,
         SPI,
     )
-    from utils.utils import get_pin
+    from utils.periphery import get_pin
     from .threads.owen import TRMParametersReadThread
     from .protocols.owen import OwenClient
     from .workers import SensorWorker

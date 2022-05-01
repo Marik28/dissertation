@@ -36,6 +36,9 @@ class Sensor(Base):
     trm_code = Column(String(10), nullable=False, unique=True)
     int_code = Column(Integer(), nullable=False, unique=True)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.name}>"
+
 
 class SensorCharacteristics(Base):
     __tablename__ = "sensor_characteristics"

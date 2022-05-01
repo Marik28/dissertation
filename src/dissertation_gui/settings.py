@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     i2c_sda_pin: str
     i2c_scl_pin: str
 
+    # файлы для генерации датафреймов
+    ad8400_1: str
+    ad8400_2: str
+
 
 settings = Settings(_env_file=base_dir.parent / ".env")
 logger.remove()

@@ -1,7 +1,10 @@
 from numbers import Number
-from typing import Iterable
+from typing import (
+    Iterable,
+    Dict,
+    Tuple,
+)
 
-import board
 import numpy as np
 import pandas as pd
 
@@ -20,7 +23,7 @@ def find_nearest(values: Iterable[Number], value: Number) -> Number:
     return array[idx]
 
 
-def fill_empty(data: pd.DataFrame) -> dict:
+def fill_empty(data: pd.DataFrame) -> Dict:
     data_as_dict = {int(row["T"]): row["R"] for _, row in data.iterrows()}
     temperatures = list(data_as_dict.keys())
     new_values = {temp: None for temp in range(min(temperatures), max(temperatures) + 1)}
@@ -109,15 +112,48 @@ def parse_thermocouple_characteristics(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({"temp": temperatures, "value": voltages})
 
 
-def get_pin(pin_name: str):
-    """
-    :param pin_name: Название пина в библиотеке board
-    """
-    return getattr(board, pin_name)
-
-
 def remap(x: int, in_min: int, in_max: int, out_min: int, out_max: int) -> int:
     return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
+
+def generate_resistance_thermometer_dataframe(
+        sensor_characteristics: pd.DataFrame,
+        simulation_range: Tuple[int, int],
+        digipot1_data: pd.DataFrame,
+        digipot2_data: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+
+    :param sensor_characteristics: Датафрейм с характеристикой датчика
+    :param simulation_range: Диапазон температур датчика, который необходимо симулировать. Пример - (-200, 750)
+    :param digipot1_data: Датафрейм с характеристикой первого цифрового резистора
+    :param digipot2_data: Датафрейм с характеристикой второго цифрового резистора
+    """
+
+    # перебираем все возможные сочетания сопротивлений цифровых резисторов
+    possible_values = {}
+    for _, r1 in digipot1_data.iterrows():
+        for _, r2 in digipot2_data.iterrows():
+            possible_value = round((r1["resistance"] * r2["resistance"]) / (r1["resistance"] + r2["resistance"]), 5)
+            possible_values[possible_value] = [int(r1["code"]), int(r2["code"])]
+    min_temp, max_temp = simulation_range
+
+    # найдем диапазон сопротивления, который необходимо симулировать
+    min_value = sensor_characteristics.loc[min_temp]["value"]
+    max_value = sensor_characteristics.loc[max_temp]["value"]
+    _simulation_range = [value for value in possible_values if min_value < value < max_value]
+
+    df = pd.DataFrame()
+    df["R"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp))]["value"]
+    df["calc"] = df["R"].apply(lambda x: find_nearest(_simulation_range, x))
+    df["error"] = abs(df["R"] - df["calc"])
+    df["code"] = df["calc"].apply(lambda x: possible_values[x])
+    df["R1_code"] = df["code"].apply(lambda x: x[0])
+    df["R2_code"] = df["code"].apply(lambda x: x[1])
+    df["R1"] = df["R1_code"].apply(lambda x: digipot1_data[digipot1_data["code"] == x].iloc[0]["resistance"])
+    df["R2"] = df["R2_code"].apply(lambda x: digipot2_data[digipot2_data["code"] == x].iloc[0]["resistance"])
+    del df["code"]
+    return df
 
 
 if __name__ == '__main__':

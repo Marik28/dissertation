@@ -7,7 +7,7 @@ from abc import (
 import digitalio
 from loguru import logger
 
-from utils.utils import get_pin
+from utils.periphery import get_pin
 
 
 class BaseRelay(metaclass=ABCMeta):

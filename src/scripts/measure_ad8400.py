@@ -12,7 +12,7 @@ from dissertation_gui.devices import AD8400
 from dissertation_gui.protocols.owen import OwenClient
 from dissertation_gui.protocols.owen.exceptions import OwenProtocolError
 from dissertation_gui.settings import settings
-from utils.utils import get_pin
+from utils.periphery import get_pin
 
 app = typer.Typer()
 

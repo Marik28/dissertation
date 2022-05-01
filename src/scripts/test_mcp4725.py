@@ -8,7 +8,7 @@ from dissertation_gui.devices import (
     DigitalIORelay,
 )
 from dissertation_gui.settings import settings
-from utils.utils import get_pin
+from utils.periphery import get_pin
 
 app = typer.Typer()
 
