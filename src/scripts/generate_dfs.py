@@ -16,7 +16,8 @@ app = typer.Typer()
 @app.command()
 def main():
     data_dir = settings.base_dir.parent / "data"
-    typer.echo("Чтение датафреймов с характеристиками цифровых резисторов")
+    typer.echo("Чтение датафреймов с характеристиками цифровых резисторов. "
+               f"Используются {settings.ad8400_1} и {settings.ad8400_2}")
     digipot1_data = pd.read_csv(data_dir / "ad8400" / f"{settings.ad8400_1}.csv")
     digipot2_data = pd.read_csv(data_dir / "ad8400" / f"{settings.ad8400_2}.csv")
     with Session() as session:
@@ -24,8 +25,8 @@ def main():
         typer.echo("Чтение списка датчиков")
         sensors: List[tables.Sensor] = service.get_sensors()
     for sensor in sensors:
+        typer.echo(f"Генерация датафрейма для датчика {sensor.name}")
         if sensor.type == SensorType.RESISTANCE_THERMOMETER:
-            typer.echo(f"Генерация датафрейма для датчика {sensor.name}")
             sensor_characteristics = pd.read_csv(
                 data_dir / "sensors_characteristics" / f"{sensor.name}.csv",
                 index_col="temp",
