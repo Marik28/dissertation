@@ -2,7 +2,7 @@ import pandas as pd
 
 from ..settings import settings
 
-characteristics_dir = settings.base_dir.parent / "data" / "real_sensors"
+characteristics_dir = settings.base_dir.parent / "data" / "dataframes"
 
 
 def load_characteristics(sensor: str) -> pd.DataFrame:
