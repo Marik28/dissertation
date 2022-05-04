@@ -1,5 +1,9 @@
 import math
-from typing import Optional
+from typing import (
+    Optional,
+    Dict,
+    List,
+)
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
@@ -105,6 +109,20 @@ class SensorInfoTable(QTableWidget):
         for i, row in enumerate(rows):
             self.setItem(i, 0, QTableWidgetItem(row))
         self.resizeColumnsToContents()
+        self.resizeRowsToContents()
+
+
+class TRMParametersInfoTable(QTableWidget):
+    def update_info(self, parameters: List[Dict]):
+        labels = ["Параметр", "Значение"]
+        rows = len(parameters)
+        columns = len(labels)
+        self.setColumnCount(columns)
+        self.setRowCount(rows)
+        self.setHorizontalHeaderLabels(labels)
+        for i, param in enumerate(parameters):
+            self.setItem(i, 0, QTableWidgetItem(str(param["name"])))
+            self.setItem(i, 1, QTableWidgetItem(str(param["value"])))
         self.resizeRowsToContents()
 
 

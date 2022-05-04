@@ -24,27 +24,17 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
       <string>График</string>
      </attribute>
-     <widget class="PlotWidget" name="graph" native="true">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>681</width>
-        <height>421</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QSpinBox" name="temp_spin_box">
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>60</y>
+        <y>40</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -63,7 +53,7 @@
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>140</y>
+        <y>120</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -85,7 +75,7 @@
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>20</y>
+        <y>10</y>
         <width>91</width>
         <height>31</height>
        </rect>
@@ -101,7 +91,7 @@
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>100</y>
+        <y>80</y>
         <width>91</width>
         <height>41</height>
        </rect>
@@ -130,13 +120,112 @@
       <property name="geometry">
        <rect>
         <x>700</x>
-        <y>200</y>
+        <y>180</y>
         <width>92</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
        <string>Всплески</string>
+      </property>
+     </widget>
+     <widget class="PlotWidget" name="trm_plot" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>691</width>
+        <height>431</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="interference_frequency_spin_box">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>270</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>230</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Частота помех, Гц</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="interference_amplitude_spin_box">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>350</y>
+        <width>81</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>10.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.100000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>310</y>
+        <width>91</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Амплитуда помех, °C</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="sin_check_box">
+      <property name="geometry">
+       <rect>
+        <x>700</x>
+        <y>200</y>
+        <width>92</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Гармонические помехи</string>
       </property>
      </widget>
     </widget>
@@ -242,50 +331,17 @@
      <attribute name="title">
       <string>Параметры ТРМ</string>
      </attribute>
-     <widget class="QLabel" name="label_6">
+     <widget class="TRMParametersInfoTable" name="trm_parameters_table">
       <property name="geometry">
        <rect>
-        <x>160</x>
-        <y>100</y>
-        <width>91</width>
-        <height>16</height>
+        <x>10</x>
+        <y>10</y>
+        <width>771</width>
+        <height>411</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Состояние реле</string>
-      </property>
-     </widget>
-     <widget class="QTextBrowser" name="trm_relay_output_text">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>90</y>
-        <width>256</width>
-        <height>31</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>170</y>
-        <width>111</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Измеренная величина</string>
-      </property>
-     </widget>
-     <widget class="QTextBrowser" name="trm_measured_temp_text">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>160</y>
-        <width>256</width>
-        <height>31</height>
-       </rect>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
       </property>
      </widget>
     </widget>
@@ -293,67 +349,67 @@
      <attribute name="title">
       <string>Страница</string>
      </attribute>
-     <widget class="PlotWidget" name="trm_plot" native="true">
+     <widget class="QLabel" name="label_8">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>791</width>
-        <height>431</height>
+        <x>110</x>
+        <y>70</y>
+        <width>201</width>
+        <height>21</height>
        </rect>
       </property>
-      <widget class="QSpinBox" name="uas_max_temp">
-       <property name="geometry">
-        <rect>
-         <x>290</x>
-         <y>40</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="uas_min_temp">
-       <property name="geometry">
-        <rect>
-         <x>290</x>
-         <y>90</y>
-         <width>101</width>
-         <height>41</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_8">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>50</y>
-         <width>201</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Верхний диапазон датчика</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_9">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>100</y>
-         <width>201</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Нижний диапазон датчика</string>
-       </property>
-      </widget>
+      <property name="text">
+       <string>Верхний диапазон датчика</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>120</y>
+        <width>201</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Нижний диапазон датчика</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="uas_min_temp">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>110</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="uas_max_temp">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>60</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>Page</string>
+      <string>Старый график</string>
      </attribute>
+     <widget class="PlotWidget" name="graph" native="true">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>10</y>
+        <width>681</width>
+        <height>421</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -379,6 +435,11 @@
   <customwidget>
    <class>SensorInfoTable</class>
    <extends>QTableWidget</extends>
+   <header>dissertation_gui.widgets.tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TRMParametersInfoTable</class>
+   <extends>QTableView</extends>
    <header>dissertation_gui.widgets.tables.h</header>
   </customwidget>
  </customwidgets>

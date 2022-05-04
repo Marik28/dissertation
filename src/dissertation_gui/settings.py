@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     ad8400_1: str
     ad8400_2: str
 
+    # графики
+    plot_background: str
+
 
 settings = Settings(_env_file=base_dir.parent / ".env")
 logger.remove()

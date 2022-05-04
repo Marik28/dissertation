@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QPushButton,
     QCheckBox,
-    QTextBrowser,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
@@ -25,14 +24,13 @@ from .threads.testing import (
     SetpointThread,
     MeasuredTempThread,
 )
-from .utils.plot_manager import (
-    TRMInfoPlotManager,
-    PlotManager,
-)
+from .utils.calculations import LinearSolver
+from .utils.plot_manager import TemperaturePlotManager
 from .widgets import (
     SensorsComboBox,
     CharacteristicsTableWidget,
     SensorInfoTable,
+    TRMParametersInfoTable,
 )
 
 if not settings.test_gui:
@@ -50,6 +48,8 @@ if not settings.test_gui:
         MCP4725,
         DigitalIORelay,
     )
+else:
+    from .threads.owen import FakeTRMParametersReadThread
 
 if not settings.test_gui:
     # пины и протоколы
@@ -76,24 +76,24 @@ if not settings.test_gui:
                              timeout=settings.port_timeout,
                              address=settings.trm_address)
     trm_thread = TRMParametersReadThread(owen_client, update_period=settings.trm_update_period)
-    trm_thread.parameter_signal.connect(
-        lambda params: trm_relay_output_text.setText(
-            "DEBUG:\n" + "\n".join([f"{k} - {v}" for k, v in params.items()])
-        )
-    )
     sensor_worker_thread = QThread()
     sensor_worker = SensorWorker({})
     sensor_worker.moveToThread(sensor_worker_thread)
 
-    trm_thread.start(priority=QThread.Priority.NormalPriority)
     sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
+else:
+    trm_thread = FakeTRMParametersReadThread(None, update_period=settings.trm_update_period)
 
 logger.info("Инициализация GUI")
 
 app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
-# plot_thread = ExamplePlotThread(frequency=settings.plot_update_frequency)
-plot_thread = TemperatureCalculationThread()
+linear_solver = LinearSolver(k=1.0,
+                             start_temperature=0.,
+                             set_temperature=25.,
+                             interference_amplitude=1.,
+                             interference_frequency=10.)
+temperature_calculation_thread = TemperatureCalculationThread(linear_solver)
 tab_menu: QTabWidget = ui.tab_menu
 
 # вкладка График
@@ -102,20 +102,22 @@ temp_spin_box: QSpinBox = ui.temp_spin_box
 k_spin_box: QDoubleSpinBox = ui.k_spin_box
 bursts_check_box: QCheckBox = ui.bursts_check_box
 reset_plot_button: QPushButton = ui.reset_plot_button
-
+sin_check_box: QCheckBox = ui.sin_check_box
+interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
+interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
 # Вкладка Датчики
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
+trm_plot.setBackground(settings.plot_background)
 
 graph.setYRange(min=-40, max=90)
-plot_manager = PlotManager(graph, max_points=settings.plot_points)
-trm_plot_manager = TRMInfoPlotManager(trm_plot)
+# plot_manager = PlotManager(graph, max_points=settings.plot_points)
+plot_manager = TemperaturePlotManager(trm_plot)
 
 # вкладка Параметры ТРМ
-trm_relay_output_text: QTextBrowser = ui.trm_relay_output_text
-trm_measured_temp_text: QTextBrowser = ui.trm_measured_temp_text
+trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
 
 # вкладка Страница
 uas_max_temp: QSpinBox = ui.uas_max_temp
@@ -136,22 +138,22 @@ sensor_list = sensors_service.get_sensors()
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)
-temp_spin_box.valueChanged.connect(plot_thread.set_temperature)
-k_spin_box.valueChanged.connect(plot_thread.set_k_ratio)
-bursts_check_box.stateChanged.connect(plot_thread.set_enable_bursts)
-plot_thread.temperature_signal.connect(plot_manager.update_graph)
-plot_thread.temperature_signal.connect(trm_plot_manager.update_set_temp_curve)
+temp_spin_box.valueChanged.connect(temperature_calculation_thread.set_temperature)
+k_spin_box.valueChanged.connect(temperature_calculation_thread.set_k_ratio)
+bursts_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_enabled)
+temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
 # reset_plot_button.clicked.connect(lambda: graph.getPlotItem().setYRange(min=-40, max=90))
-
-temp_thread = MeasuredTempThread()
-temp_thread.temp_signal.connect(trm_plot_manager.update_measured_temp_curve)
+trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
+trm_thread.parameters_signal.connect(
+    lambda params: plot_manager.update_measured_temp_curve([p for p in params if p["name"] == "PV"][0]["value"])
+)  # TODO нормально сделать
 setpoint_thread = SetpointThread()
-setpoint_thread.setpoint_signal.connect(trm_plot_manager.update_setpoint_curve)
+setpoint_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
 
-plot_thread.start(priority=QThread.Priority.HighPriority)
-temp_thread.start(priority=QThread.Priority.NormalPriority)
+temperature_calculation_thread.start(priority=QThread.Priority.HighPriority)
 setpoint_thread.start(priority=QThread.Priority.NormalPriority)
+trm_thread.start(priority=QThread.Priority.NormalPriority)
 
 
 def on_shutdown():

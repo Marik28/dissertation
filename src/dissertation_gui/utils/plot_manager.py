@@ -1,6 +1,7 @@
 import time
 from collections import deque
 
+from loguru import logger
 from pyqtgraph import (
     PlotWidget,
     PlotDataItem,
@@ -9,7 +10,7 @@ from pyqtgraph import (
 
 from ..models.plot import PlotPoint
 
-__all__ = ["TRMInfoPlotManager", "PlotManager"]
+__all__ = ["TemperaturePlotManager", "PlotManager"]
 
 
 class PlotManager:
@@ -35,19 +36,20 @@ class CurveManager:
         self._times.append(time)
         self._values.append(value)
         self._curve.setData(self._times, self._values)
+        self._curve.appendData()
 
 
 # TODO: можно тут же отрисовывать рассчитанную температуру
-class TRMInfoPlotManager:
-    def __init__(self, plot_widget: PlotWidget, max_points: int = 100):
+class TemperaturePlotManager:
+    def __init__(self, plot_widget: PlotWidget, max_points: int = 1000):
         self._plot_widget = plot_widget
         self._max_points = max_points
         self._start_time = time.time()
-        self._setpoint_curve = self._create_curve("Уставка", "g")  # уставка
+        self._setpoint_curve = self._create_curve("Уставка", "g")
         self._measured_temp_curve = self._create_curve("Измеренная температура", "b")
         self._set_temp_curve = self._create_curve("Заданная температура", "r")
 
-    def _create_curve(self, name: str, color: str, width: int = 2) -> CurveManager:
+    def _create_curve(self, name: str, color: str, width: int = 1) -> CurveManager:
         self._plot_widget.addLegend()
         return CurveManager(
             self._plot_widget.plot(name=name, pen=mkPen(color=color, width=width)),
@@ -64,5 +66,5 @@ class TRMInfoPlotManager:
     def update_measured_temp_curve(self, value: float):
         self._update_curve(self._measured_temp_curve, value)
 
-    def update_set_temp_curve(self, point: PlotPoint):
-        self._update_curve(self._set_temp_curve, point.value)
+    def update_set_temp_curve(self, value: float):
+        self._update_curve(self._set_temp_curve, value)

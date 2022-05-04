@@ -5,7 +5,7 @@ from dataclasses import (
 from typing import (
     Union,
     Optional,
-    Iterator,
+    Iterator, Dict, NamedTuple, Any, List,
 )
 
 from PyQt5.QtCore import (
@@ -17,7 +17,7 @@ from ..protocols.owen import OwenClient
 from ..protocols.owen.const import Type
 from ..protocols.owen.exceptions import OwenUnpackError
 
-__all__ = ["TRMParametersReadThread"]
+__all__ = ["TRMParametersReadThread", "FakeTRMParametersReadThread"]
 
 
 @dataclass
@@ -39,8 +39,22 @@ class TRMParameters:
         return (getattr(self, field.name) for field in fields(self))
 
 
+class TRMParameter(NamedTuple):
+    name: str
+    value: Any
+
+
 class TRMParametersReadThread(QThread):
-    parameter_signal = pyqtSignal(dict)
+    parameters_signal = pyqtSignal(list)
+
+    params_to_read = [
+        {"name": "PV", "index": None, "type_": Type.FLOAT24},
+        {"name": "inF", "index": 0, "type_": Type.FLOAT24},
+        {"name": "r.oUt", "index": None, "type_": Type.FLOAT24},
+        {"name": "CmP", "index": 0, "type_": Type.UNSIGNED_CHAR},
+        {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
+        {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
+    ]
 
     def __init__(self, client: OwenClient, update_period: float, parent=None):
         """
@@ -50,23 +64,28 @@ class TRMParametersReadThread(QThread):
         self.client = client
         self.update_period = update_period
 
+    def read_parameters(self) -> List[Dict]:
+        read_parameters = []
+
+        for param in self.params_to_read:
+            try:
+                value = self.client.get_parameter(**param)
+            except OwenUnpackError:
+                value = self.client.get_last_error()
+            read_parameters[param["name"]] = value
+            read_parameters.append({"name": param["name"], "value": value})
+        return read_parameters
+
     def run(self) -> None:  # TODO: сделать красиво
         while True:
-            read_parameters = {}
-            params_to_read = [
-                {"name": "PV", "index": None, "type_": Type.FLOAT24},
-                {"name": "inF", "index": 0, "type_": Type.FLOAT24},
-                {"name": "r.oUt", "index": None, "type_": Type.FLOAT24},
-                {"name": "CmP", "index": 0, "type_": Type.UNSIGNED_CHAR},
-                {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
-                {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
-            ]
-            for param in params_to_read:
-                try:
-                    value = self.client.get_parameter(**param)
-                except OwenUnpackError:
-                    value = self.client.get_last_error()
-                read_parameters[param["name"]] = value
-
-            self.parameter_signal.emit(read_parameters)
+            read_parameters = self.read_parameters()
+            self.parameters_signal.emit(read_parameters)
             self.msleep(int(self.update_period * 1000))
+
+
+class FakeTRMParametersReadThread(TRMParametersReadThread):
+    def __init__(self, client=None, update_period: float = 1., parent=None):
+        super().__init__(client, update_period, parent)
+
+    def read_parameters(self) -> List[Dict]:
+        return [{"name": "PV", "value": 20.}, {"name": "r.oUt", "value": 1.}, {"name": "Fake", "value": 1}]
