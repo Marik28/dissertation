@@ -16,9 +16,11 @@ class Solver(metaclass=ABCMeta):  # TODO вынести расчёты темп�
         self.interference_amplitude = interference_amplitude
         self.interference_frequency = interference_frequency
         self.set_temperature = set_temperature
-        self.direction = 1
+        self.sinusoidal_interference_enabled = False
+        self.burst_interference_enabled = False
 
     def set_set_temperature(self, temperature: float):
+        self.temperature = self.set_temperature
         self.set_temperature = temperature
 
     def set_interference_amplitude(self, amplitude: float):
@@ -31,15 +33,23 @@ class Solver(metaclass=ABCMeta):  # TODO вынести расчёты темп�
     def calculate_temperature(self, time: float) -> float:
         pass
 
-    def calculate_burst_noise(self) -> float:
+    def calculate_burst_interference(self, time: float) -> float:
         pass
 
-    def calculate_sinusoidal_noise(self, time: float) -> float:
+    def calculate_sinusoidal_interference(self, time: float) -> float:
         return self.interference_amplitude * math.sin(2 * math.pi * self.interference_frequency * time)
 
 
 class LinearSolver(Solver):
 
     def calculate_temperature(self, time: float) -> float:
-        self.direction = int(math.copysign(1, self.set_temperature - self.temperature))
-        return self.start_temperature + self.k * time * self.direction
+        direction = int(math.copysign(1, self.set_temperature - self.temperature))
+        temperature = self.start_temperature + self.k * time * direction
+        if self.burst_interference_enabled:
+            interference = self.calculate_burst_interference(time)
+        elif self.sinusoidal_interference_enabled:
+            interference = self.calculate_sinusoidal_interference(time)
+        else:
+            interference = 0
+        temperature += interference
+        return temperature
