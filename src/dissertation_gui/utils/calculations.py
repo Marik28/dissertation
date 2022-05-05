@@ -81,3 +81,29 @@ class LinearSolver(Solver):
         else:
             interference = 0
         return self.temperature + interference
+
+
+class ControlLogic(metaclass=ABCMeta):
+
+    def __init__(self, init_output: int = 1):
+        self._output = init_output
+        """Состояние выхода ТРМ-а"""
+
+    def set_output(self, output: int):
+        self._output = output
+
+
+class ReversedControlLogic(ControlLogic):
+    """Обратное управление"""
+
+
+class DirectControlLogic(ControlLogic):
+    """Прямое управление"""
+
+
+class PShapedControlLogic(ControlLogic):
+    """П-образная"""
+
+
+class UShapedControlLogic(ControlLogic):
+    """U-образная"""

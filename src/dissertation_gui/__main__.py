@@ -22,7 +22,6 @@ from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
 from .threads.testing import (
     SetpointThread,
-    MeasuredTempThread,
 )
 from .utils.calculations import LinearSolver
 from .utils.plot_manager import TemperaturePlotManager
@@ -82,7 +81,7 @@ if not settings.test_gui:
 
     sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 else:
-    trm_thread = FakeTRMParametersReadThread(None, update_period=settings.trm_update_period)
+    trm_thread = FakeTRMParametersReadThread(None, update_period=settings.trm_update_period)  # noqa
 
 logger.info("Инициализация GUI")
 
@@ -92,8 +91,11 @@ linear_solver = LinearSolver(k=1.0,
                              start_temperature=0.,
                              set_temperature=25.,
                              interference_amplitude=1.,
-                             interference_frequency=10.)
-temperature_calculation_thread = TemperatureCalculationThread(linear_solver)
+                             interference_frequency=1.)
+temperature_calculation_thread = TemperatureCalculationThread(
+    linear_solver,
+    frequency=settings.plot_update_frequency
+)
 tab_menu: QTabWidget = ui.tab_menu
 
 # вкладка График
@@ -112,7 +114,7 @@ sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
 trm_plot.setBackground(settings.plot_background)
 
-graph.setYRange(min=-40, max=90)
+graph.setYRange(min=-40, max=90)  # noqa
 # plot_manager = PlotManager(graph, max_points=settings.plot_points)
 plot_manager = TemperaturePlotManager(trm_plot)
 
@@ -138,9 +140,12 @@ sensor_list = sensors_service.get_sensors()
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)
+interference_frequency_spin_box.valueChanged.connect(linear_solver.set_interference_frequency)
+interference_amplitude_spin_box.valueChanged.connect(linear_solver.set_interference_amplitude)
 temp_spin_box.valueChanged.connect(temperature_calculation_thread.set_temperature)
 k_spin_box.valueChanged.connect(temperature_calculation_thread.set_k_ratio)
-bursts_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_enabled)
+bursts_check_box.stateChanged.connect(linear_solver.set_burst_interference_enabled)
+sin_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_enabled)
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
 # reset_plot_button.clicked.connect(lambda: graph.getPlotItem().setYRange(min=-40, max=90))
@@ -171,7 +176,7 @@ def excepthook(exc_type, exc_value, exc_tb):
 
 
 sys.excepthook = excepthook
-app.aboutToQuit.connect(on_shutdown)
+app.aboutToQuit.connect(on_shutdown)  # noqa
 logger.info("Запуск приложения")
 ui.show()
 app.exec()

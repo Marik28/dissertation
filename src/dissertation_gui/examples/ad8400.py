@@ -2,10 +2,9 @@ import board
 from busio import SPI
 
 from dissertation_gui.settings import settings
-from utils.periphery import get_pin
 from ..devices.ad8400 import AD8400
 
-ad8400 = AD8400(SPI(clock=board.SCLK, MOSI=board.MOSI), get_pin(settings.cs0_pin))
+ad8400 = AD8400(SPI(clock=board.SCLK, MOSI=board.MOSI), settings.cs0_pin)
 
 if __name__ == '__main__':
     import time
