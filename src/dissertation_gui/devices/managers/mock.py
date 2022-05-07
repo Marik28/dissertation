@@ -1,9 +1,9 @@
-from .base import BaseSensorManager
+from .base import SensorManager
 from ... import tables
 from ...types import Number
 
 
-class FakeManager(BaseSensorManager):
+class FakeManager(SensorManager):
     """Костыль. А может гениальный мув 🤔"""
 
     def set_sensor(self, sensor: tables.Sensor):

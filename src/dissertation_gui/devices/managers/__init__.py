@@ -1,4 +1,4 @@
-from .base import BaseSensorManager
+from .base import SensorManager
 from .mock import FakeManager
 from ...settings import settings
 

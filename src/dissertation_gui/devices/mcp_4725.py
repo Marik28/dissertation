@@ -2,12 +2,12 @@ from adafruit_mcp4725 import MCP4725 as _MCP4725
 from busio import I2C
 from loguru import logger
 
-from .base import BaseDevice
+from .base import Device
 
 __all__ = ["MCP4725"]
 
 
-class MCP4725(BaseDevice):
+class MCP4725(Device):
     min_code = 0
     max_code = 4095
 

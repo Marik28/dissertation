@@ -88,7 +88,7 @@ if not settings.test_gui:
     thermocouple_manager = ThermocoupleManager(mcp4725, relays)
     unified_analog_signal_manager = UnifiedAnalogSignalManager(mcp4725, relays)
 else:
-    trm_thread = FakeTRMParametersReadThread(None, update_period=settings.trm_update_period)  # noqa
+    trm_thread = FakeTRMParametersReadThread(update_period=settings.trm_update_period)  # noqa
     resistance_thermometer_manager = FakeManager()
     thermocouple_manager = FakeManager()
     unified_analog_signal_manager = FakeManager()
@@ -130,7 +130,7 @@ trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
 # вкладка Страница
 uas_max_temp: QSpinBox = ui.uas_max_temp
 uas_min_temp: QSpinBox = ui.uas_min_temp
-sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # TODO: :)
+sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
 
 uas_max_temp.setMaximum(100)
 uas_max_temp.setMinimum(-50)

@@ -6,12 +6,12 @@ from busio import SPI
 from loguru import logger
 
 from utils.periphery import get_pin
-from .base import BaseDevice
+from .base import Device
 
 __all__ = ["AD8400"]
 
 
-class AD8400(BaseDevice):
+class AD8400(Device):
     min_code = 0
     max_code = 255
 

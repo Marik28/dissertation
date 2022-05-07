@@ -1,17 +1,17 @@
 from typing import List
 
-from .base import BaseSensorManager
+from .base import SensorManager
 from ..mcp_4725 import MCP4725
-from ..relay import BaseRelay
+from ..relay import Relay
 from ... import tables
 from ...types import Number
 
 
 # TODO сделать менюшку, где можно задавать диапазон измеряемых величин для датчиков 0...1/-50...50
-class UnifiedAnalogSignalManager(BaseSensorManager):
+class UnifiedAnalogSignalManager(SensorManager):
     # TODO реализовать
 
-    def __init__(self, mcp4725: MCP4725, relays: List[BaseRelay]):
+    def __init__(self, mcp4725: MCP4725, relays: List[Relay]):
         self._mcp4725 = mcp4725
         self._relays = relays
         # TODO: мы можем выдавать только 33 мВ,

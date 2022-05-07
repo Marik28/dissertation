@@ -3,10 +3,10 @@ from abc import (
     ABCMeta,
 )
 
-__all__ = ["BaseDevice"]
+__all__ = ["Device"]
 
 
-class BaseDevice(metaclass=ABCMeta):
+class Device(metaclass=ABCMeta):
     min_code: int = None
     max_code: int = None
 

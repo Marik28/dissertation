@@ -4,18 +4,19 @@ from typing import (
 )
 
 import pandas as pd
+from loguru import logger
 
-from .base import BaseSensorManager
+from .base import SensorManager
 from ..mcp_4725 import MCP4725
-from ..relay import BaseRelay
+from ..relay import Relay
 from ... import tables
 from ...types import Number
 from ...utils.loader import load_characteristics
 
 
-class ThermocoupleManager(BaseSensorManager):
+class ThermocoupleManager(SensorManager):
 
-    def __init__(self, dac: MCP4725, relays: List[BaseRelay]):
+    def __init__(self, dac: MCP4725, relays: List[Relay]):
         self._dac = dac
         self._df: Optional[pd.DataFrame] = None
         self._relays = relays
@@ -33,7 +34,10 @@ class ThermocoupleManager(BaseSensorManager):
 
     def set_temperature(self, temperature: Number) -> None:
         code = int(self._calculate_code(temperature))
-        self._dac.send_code(code)
+        try:
+            self._dac.send_code(code)
+        except Exception as e:
+            logger.error(e)
 
     def select(self) -> None:
         self._relays[0].turn_on()

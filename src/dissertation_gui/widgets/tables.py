@@ -1,7 +1,6 @@
 import math
 from typing import (
     Optional,
-    Dict,
     List,
 )
 
@@ -11,18 +10,13 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
 )
 
-from dissertation_gui.models.sensors import SensorType
 from .. import tables
+from ..models import (
+    TRMParameter,
+    SensorType,
+)
 from ..services.sensor_characteristics import SensorCharacteristicsService
 
-
-# темп [ -11, -10,  -9,  -8,  -7,  -6,  -5,  -4,  -3,  -2,  -1,   0,   1,   2,   3,   4]
-# знач [  20,  18,  16,  14,  12,  10,   8,   6,   4,   2,   0,  -2,  -4,  -6,  -8, -10]
-
-#    | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
-# -1 | 20| 18| - | - | - | - | - | - | - | - | # 0 строка
-# -0 | -2|  0|  2|  4|  6|  8| 10| 12| 14| 16| # 1 строка
-#  0 | -2| -4| -6| -8|-10| - | - | - | - | - | # 2 строка
 
 # TODO: добавить график с характеристикой датчика, а также отображать на нем диапазон температур, используемых в ТРМ
 class CharacteristicsTableWidget(QTableWidget):
@@ -113,7 +107,7 @@ class SensorInfoTable(QTableWidget):
 
 
 class TRMParametersInfoTable(QTableWidget):
-    def update_info(self, parameters: List[Dict]):
+    def update_info(self, parameters: List[TRMParameter]):
         labels = ["Параметр", "Значение"]
         rows = len(parameters)
         columns = len(labels)
@@ -121,8 +115,8 @@ class TRMParametersInfoTable(QTableWidget):
         self.setRowCount(rows)
         self.setHorizontalHeaderLabels(labels)
         for i, param in enumerate(parameters):
-            self.setItem(i, 0, QTableWidgetItem(str(param["name"])))
-            self.setItem(i, 1, QTableWidgetItem(str(param["value"])))
+            self.setItem(i, 0, QTableWidgetItem(str(param.name)))
+            self.setItem(i, 1, QTableWidgetItem(str(param.value)))
         self.resizeRowsToContents()
 
 

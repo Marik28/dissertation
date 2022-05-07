@@ -4,7 +4,7 @@ from PyQt5.QtCore import QObject
 
 from .. import tables
 from ..devices.managers import (
-    BaseSensorManager,
+    SensorManager,
     FakeManager,
 )
 from ..models.sensors import SensorType
@@ -14,10 +14,10 @@ from ..types import Number
 class SensorWorker(QObject):
     """Воркер, который переключается между устройствами и отправляет им данные"""
 
-    def __init__(self, managers: Dict[SensorType, BaseSensorManager], parent=None):
+    def __init__(self, managers: Dict[SensorType, SensorManager], parent=None):
         super().__init__(parent)
         self._managers = managers
-        self._current_manager: BaseSensorManager = FakeManager()
+        self._current_manager: SensorManager = FakeManager()
 
     def set_temperature(self, temperature: Number) -> None:
         self._current_manager.set_temperature(temperature)

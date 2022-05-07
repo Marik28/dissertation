@@ -10,7 +10,7 @@ from loguru import logger
 from utils.periphery import get_pin
 
 
-class BaseRelay(metaclass=ABCMeta):
+class Relay(metaclass=ABCMeta):
 
     def turn_on(self) -> None:
         self.set_value(True)
@@ -23,7 +23,7 @@ class BaseRelay(metaclass=ABCMeta):
         pass
 
 
-class DigitalIORelay(BaseRelay):
+class DigitalIORelay(Relay):
     registered_relays = []
 
     def __init__(self, pin: str, delay: float = 0.005):

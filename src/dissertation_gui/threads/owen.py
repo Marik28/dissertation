@@ -1,11 +1,6 @@
-from dataclasses import (
-    dataclass,
-    fields,
-)
+import random
 from typing import (
-    Union,
-    Optional,
-    Iterator, Dict, NamedTuple, Any, List,
+    List,
 )
 
 from PyQt5.QtCore import (
@@ -14,6 +9,7 @@ from PyQt5.QtCore import (
 )
 from loguru import logger
 
+from ..models.owen import TRMParameter
 from ..protocols.owen import OwenClient
 from ..protocols.owen.const import Type
 from ..protocols.owen.exceptions import OwenUnpackError
@@ -21,33 +17,10 @@ from ..protocols.owen.exceptions import OwenUnpackError
 __all__ = ["TRMParametersReadThread", "FakeTRMParametersReadThread"]
 
 
-@dataclass
-class Parameter:
-    value: Union[int, float]
-    name: str
-    type: Type
-    index: Optional[int]
-
-
-@dataclass
-class TRMParameters:
-    pv: Parameter
-    inf: Parameter
-    r_out: Parameter
-    cmp: Parameter
-
-    def __iter__(self) -> Iterator[Parameter]:
-        return (getattr(self, field.name) for field in fields(self))
-
-
-class TRMParameter(NamedTuple):
-    name: str
-    value: Any
-
-
 class TRMParametersReadThread(QThread):
     parameters_signal = pyqtSignal(list)
     temperature_signal = pyqtSignal(float)
+    output_signal = pyqtSignal(int)
 
     params_to_read = [
         {"name": "PV", "index": None, "type_": Type.FLOAT24},
@@ -66,31 +39,49 @@ class TRMParametersReadThread(QThread):
         self.client = client
         self.update_period = update_period
 
-    def read_parameters(self) -> List[Dict]:
+    def read_parameters(self) -> List[TRMParameter]:
         read_parameters = []
 
         for param in self.params_to_read:
             try:
                 value = self.client.get_parameter(**param)
             except OwenUnpackError:
-                value = self.client.get_last_error()
-            read_parameters.append({"name": param["name"], "value": value})
+                try:
+                    value = self.client.get_last_error()
+                except Exception as e:  # fixme: да да я
+                    logger.error(e)
+                    value = 0.0
+            except Exception as e:
+                logger.error(e)
+                value = 0.
+            read_parameters.append(TRMParameter(param["name"], value))
         return read_parameters
 
     def run(self) -> None:  # TODO: сделать красиво
         while True:
             read_parameters = self.read_parameters()
-            temperature = [p for p in read_parameters if p["name"] == "PV"][0]["value"]
-            if not isinstance(temperature, tuple):
-                self.temperature_signal.emit(temperature)  # noqa
+            filtered_temp_param = [p for p in read_parameters if p.name.lower() == "pv"]
+            if len(filtered_temp_param) > 0:
+                temperature = filtered_temp_param[0].value
+                if not isinstance(temperature, tuple):
+                    self.temperature_signal.emit(temperature)  # noqa
+            filtered_output_param = [p for p in read_parameters if p.name.lower() == "r.out"]
+            if len(filtered_output_param) > 0:
+                output = int(filtered_output_param[0].value)
+                self.output_signal.emit(output)  # noqa
             logger.debug(read_parameters)
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
 
 
 class FakeTRMParametersReadThread(TRMParametersReadThread):
-    def __init__(self, client=None, update_period: float = 1., parent=None):
-        super().__init__(client, update_period, parent)
+    def __init__(self, update_period: float = 1., parent=None):
+        super().__init__(None, update_period, parent)  # noqa
 
-    def read_parameters(self) -> List[Dict]:
-        return [{"name": "PV", "value": 20.}, {"name": "r.oUt", "value": 1.}, {"name": "Fake", "value": 1}]
+    def read_parameters(self) -> List[TRMParameter]:
+        temperature = random.random() * 10
+        return [
+            TRMParameter("PV", temperature),
+            TRMParameter("r.oUt", 1.),
+            TRMParameter("Fake", 1),
+        ]
