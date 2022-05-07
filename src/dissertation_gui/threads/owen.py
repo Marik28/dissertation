@@ -12,6 +12,7 @@ from PyQt5.QtCore import (
     QThread,
     pyqtSignal,
 )
+from loguru import logger
 
 from ..protocols.owen import OwenClient
 from ..protocols.owen.const import Type
@@ -78,6 +79,7 @@ class TRMParametersReadThread(QThread):
     def run(self) -> None:  # TODO: сделать красиво
         while True:
             read_parameters = self.read_parameters()
+            logger.debug(read_parameters)
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
 
