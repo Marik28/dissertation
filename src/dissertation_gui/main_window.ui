@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>480</height>
+    <width>1024</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,12 +19,12 @@
      <rect>
       <x>0</x>
       <y>-1</y>
-      <width>800</width>
-      <height>461</height>
+      <width>1021</width>
+      <height>571</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -33,9 +33,9 @@
      <widget class="QSpinBox" name="temp_spin_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>40</y>
-        <width>81</width>
+        <x>860</x>
+        <y>70</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -52,9 +52,9 @@
      <widget class="QDoubleSpinBox" name="k_spin_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>120</y>
-        <width>81</width>
+        <x>860</x>
+        <y>140</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -74,9 +74,9 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>10</y>
-        <width>91</width>
+        <x>860</x>
+        <y>30</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -90,10 +90,10 @@
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>80</y>
-        <width>91</width>
-        <height>41</height>
+        <x>860</x>
+        <y>100</y>
+        <width>141</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -106,10 +106,10 @@
      <widget class="QPushButton" name="reset_plot_button">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>400</y>
-        <width>89</width>
-        <height>25</height>
+        <x>860</x>
+        <y>440</y>
+        <width>141</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -119,9 +119,9 @@
      <widget class="QCheckBox" name="bursts_check_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>180</y>
-        <width>92</width>
+        <x>860</x>
+        <y>220</y>
+        <width>141</width>
         <height>23</height>
        </rect>
       </property>
@@ -133,18 +133,18 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>691</width>
-        <height>431</height>
+        <y>30</y>
+        <width>821</width>
+        <height>481</height>
        </rect>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="interference_frequency_spin_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>270</y>
-        <width>81</width>
+        <x>860</x>
+        <y>310</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -164,9 +164,9 @@
      <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>230</y>
-        <width>91</width>
+        <x>860</x>
+        <y>270</y>
+        <width>141</width>
         <height>41</height>
        </rect>
       </property>
@@ -180,9 +180,9 @@
      <widget class="QDoubleSpinBox" name="interference_amplitude_spin_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>350</y>
-        <width>81</width>
+        <x>860</x>
+        <y>390</y>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -202,9 +202,9 @@
      <widget class="QLabel" name="label_11">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>310</y>
-        <width>91</width>
+        <x>860</x>
+        <y>350</y>
+        <width>141</width>
         <height>41</height>
        </rect>
       </property>
@@ -218,9 +218,9 @@
      <widget class="QCheckBox" name="sin_check_box">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>200</y>
-        <width>92</width>
+        <x>860</x>
+        <y>240</y>
+        <width>141</width>
         <height>23</height>
        </rect>
       </property>
@@ -264,8 +264,8 @@
        <rect>
         <x>260</x>
         <y>50</y>
-        <width>521</width>
-        <height>381</height>
+        <width>741</width>
+        <height>481</height>
        </rect>
       </property>
       <property name="sizeAdjustPolicy">
@@ -280,7 +280,7 @@
        <rect>
         <x>260</x>
         <y>-1</y>
-        <width>521</width>
+        <width>741</width>
         <height>41</height>
        </rect>
       </property>
@@ -297,7 +297,7 @@
         <x>10</x>
         <y>160</y>
         <width>241</width>
-        <height>271</height>
+        <height>371</height>
        </rect>
       </property>
       <property name="editTriggers">
@@ -336,7 +336,7 @@
        <rect>
         <x>10</x>
         <y>10</y>
-        <width>771</width>
+        <width>331</width>
         <height>411</height>
        </rect>
       </property>
@@ -416,21 +416,6 @@
       </property>
       <property name="text">
        <string>Выбор датчика для симуляции</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>Старый график</string>
-     </attribute>
-     <widget class="PlotWidget" name="graph" native="true">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>10</y>
-        <width>681</width>
-        <height>421</height>
-       </rect>
       </property>
      </widget>
     </widget>
