@@ -47,6 +47,7 @@ class TRMParameter(NamedTuple):
 
 class TRMParametersReadThread(QThread):
     parameters_signal = pyqtSignal(list)
+    temperature_signal = pyqtSignal(float)
 
     params_to_read = [
         {"name": "PV", "index": None, "type_": Type.FLOAT24},
@@ -79,6 +80,9 @@ class TRMParametersReadThread(QThread):
     def run(self) -> None:  # TODO: сделать красиво
         while True:
             read_parameters = self.read_parameters()
+            temperature = [p for p in read_parameters if p["name"] == "PV"][0]["value"]
+            if not isinstance(temperature, tuple):
+                self.temperature_signal.emit(temperature)  # noqa
             logger.debug(read_parameters)
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))

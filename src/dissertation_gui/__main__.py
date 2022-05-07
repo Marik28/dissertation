@@ -169,9 +169,7 @@ temperature_calculation_thread.temperature_signal.connect(plot_manager.update_se
 reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
 # reset_plot_button.clicked.connect(lambda: graph.getPlotItem().setYRange(min=-40, max=90))
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
-trm_thread.parameters_signal.connect(
-    lambda params: plot_manager.update_measured_temp_curve([p for p in params if p["name"] == "PV"][0]["value"])
-)  # TODO нормально сделать
+trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 setpoint_thread = SetpointThread()
 setpoint_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
 
