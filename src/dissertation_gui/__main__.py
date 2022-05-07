@@ -109,7 +109,6 @@ temperature_calculation_thread = TemperatureCalculationThread(
 tab_menu: QTabWidget = ui.tab_menu
 
 # вкладка График
-graph: PlotWidget = ui.graph
 temp_spin_box: QSpinBox = ui.temp_spin_box
 k_spin_box: QDoubleSpinBox = ui.k_spin_box
 bursts_check_box: QCheckBox = ui.bursts_check_box
@@ -123,8 +122,6 @@ sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteris
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_plot: PlotWidget = ui.trm_plot
 trm_plot.setBackground(settings.plot_background)
-
-graph.setYRange(min=-40, max=90)  # noqa
 plot_manager = TemperaturePlotManager(trm_plot)
 
 # вкладка Параметры ТРМ
@@ -167,8 +164,7 @@ bursts_check_box.stateChanged.connect(linear_solver.set_burst_interference_enabl
 sin_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_enabled)
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
-reset_plot_button.clicked.connect(lambda: graph.getPlotItem().enableAutoRange())
-# reset_plot_button.clicked.connect(lambda: graph.getPlotItem().setYRange(min=-40, max=90))
+reset_plot_button.clicked.connect(lambda: trm_plot.getPlotItem().enableAutoRange())
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 setpoint_thread = SetpointThread()
