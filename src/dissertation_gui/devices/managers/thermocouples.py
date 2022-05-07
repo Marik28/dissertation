@@ -32,7 +32,7 @@ class ThermocoupleManager(BaseSensorManager):
         self._df = load_characteristics(sensor.name)
 
     def set_temperature(self, temperature: Number) -> None:
-        code = self._calculate_code(temperature)
+        code = int(self._calculate_code(temperature))
         self._dac.send_code(code)
 
     def select(self) -> None:
