@@ -30,7 +30,7 @@ class CharacteristicsTableWidget(QTableWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.service: Optional[SensorCharacteristicsService] = None
-        self.currentCellChanged.connect(self.change_colors)
+        self.currentCellChanged.connect(self.change_colors)  # noqa
         self.default_background = QTableWidgetItem().background()
 
     def set_service(self, service: SensorCharacteristicsService):

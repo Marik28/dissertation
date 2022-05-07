@@ -43,7 +43,7 @@ class ResistanceThermometerManager(BaseSensorManager):
         # в датафрейме код для i-того резистора лежит в колонке под названием 'R{i}_code'
         for index, digipot in enumerate(self._digipots, start=1):
             code = row[f"R{index}_code"]
-            codes.append((digipot, code))
+            codes.append((digipot, int(code)))
         return codes
 
     def set_temperature(self, temperature: Number) -> None:
