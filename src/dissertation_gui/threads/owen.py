@@ -72,14 +72,13 @@ class TRMParametersReadThread(QThread):
                 value = self.client.get_parameter(**param)
             except OwenUnpackError:
                 value = self.client.get_last_error()
-            read_parameters[param["name"]] = value
             read_parameters.append({"name": param["name"], "value": value})
         return read_parameters
 
     def run(self) -> None:  # TODO: сделать красиво
         while True:
             read_parameters = self.read_parameters()
-            self.parameters_signal.emit(read_parameters)
+            self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
 
 
