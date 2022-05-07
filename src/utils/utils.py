@@ -144,7 +144,7 @@ def generate_resistance_thermometer_dataframe(
     _simulation_range = [value for value in possible_values if min_value < value < max_value]
 
     df = pd.DataFrame()
-    df["R"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp))]["value"]
+    df["R"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp + 1))]["value"]
     df["calc"] = df["R"].apply(lambda x: find_nearest(_simulation_range, x))
     df["error"] = abs(df["R"] - df["calc"])
     df["code"] = df["calc"].apply(lambda x: possible_values[x])
@@ -153,6 +153,21 @@ def generate_resistance_thermometer_dataframe(
     df["R1"] = df["R1_code"].apply(lambda x: digipot1_data[digipot1_data["code"] == x].iloc[0]["resistance"])
     df["R2"] = df["R2_code"].apply(lambda x: digipot2_data[digipot2_data["code"] == x].iloc[0]["resistance"])
     del df["code"]
+    return df
+
+
+def generate_thermocouple_dataframe(
+        sensor_characteristics: pd.DataFrame,
+        simulation_range: Tuple[int, int],
+        mcp_data: pd.DataFrame,
+) -> pd.DataFrame:
+    min_temp, max_temp = simulation_range
+
+    df = pd.DataFrame()
+    df["voltage"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp + 1))]["value"]
+    df["calc"] = df["voltage"].apply(lambda x: find_nearest(mcp_data["divided_voltage (mV)"], x))
+    df["error"] = abs(df["voltage"] - df["calc"])
+    df["code"] = df["calc"].apply(lambda x: int(mcp_data[mcp_data["divided_voltage (mV)"] == x].iloc[0]["code"]))
     return df
 
 
