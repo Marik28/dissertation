@@ -1,5 +1,8 @@
+from typing import List
+
 from .base import BaseSensorManager
 from ..mcp_4725 import MCP4725
+from ..relay import BaseRelay
 from ... import tables
 from ...types import Number
 
@@ -8,8 +11,9 @@ from ...types import Number
 class UnifiedAnalogSignalManager(BaseSensorManager):
     # TODO реализовать
 
-    def __init__(self, mcp4725: MCP4725):
+    def __init__(self, mcp4725: MCP4725, relays: List[BaseRelay]):
         self._mcp4725 = mcp4725
+        self._relays = relays
         # TODO: мы можем выдавать только 33 мВ,
         #  поэтому надо как то выкручиваться и брать диапазоны с запасом
         self._max_temperature = 100
@@ -18,17 +22,20 @@ class UnifiedAnalogSignalManager(BaseSensorManager):
     def set_sensor(self, sensor: tables.Sensor):
         ...
 
-    def set_max_temperature(self, new_temperature: int):
-        self._max_temperature = new_temperature
+    def set_max_temperature(self, temperature: int):
+        self._max_temperature = temperature
 
-    def set_min_temperature(self, new_temperature: int):
-        self._min_temperature = new_temperature
+    def set_min_temperature(self, temperature: int):
+        self._min_temperature = temperature
 
     def set_temperature(self, temperature: Number) -> None:
         pass
 
     def select(self) -> None:
-        pass
+        self._relays[0].turn_on()
+        self._relays[1].turn_off()
+        self._relays[2].turn_off()
+        self._relays[3].turn_on()
 
     def unselect(self) -> None:
         pass

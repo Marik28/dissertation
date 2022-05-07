@@ -25,7 +25,7 @@ class SensorWorker(QObject):
     def set_sensor(self, sensor: tables.Sensor) -> None:
         manager = self._managers[sensor.type]
         if manager is not self._current_manager:
-            self._current_manager.unselect()  # TODO протестировать задержки
+            self._current_manager.unselect()  # TODO: протестировать задержки
             self._current_manager = manager
             self._current_manager.select()
         self._current_manager.set_sensor(sensor)

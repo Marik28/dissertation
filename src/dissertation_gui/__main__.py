@@ -16,6 +16,7 @@ from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
+from .models.sensors import SensorType
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
@@ -31,6 +32,7 @@ from .widgets import (
     SensorInfoTable,
     TRMParametersInfoTable,
 )
+from .workers import SensorWorker
 
 if not settings.test_gui:
     import board
@@ -41,14 +43,19 @@ if not settings.test_gui:
     from utils.periphery import get_pin
     from .threads.owen import TRMParametersReadThread
     from .protocols.owen import OwenClient
-    from .workers import SensorWorker
     from .devices import (
         AD8400,
         MCP4725,
         DigitalIORelay,
     )
+    from .devices.managers import (
+        ResistanceThermometerManager,
+        UnifiedAnalogSignalManager,
+        ThermocoupleManager,
+    )
 else:
     from .threads.owen import FakeTRMParametersReadThread
+    from .devices.managers.mock import FakeManager
 
 if not settings.test_gui:
     # пины и протоколы
@@ -69,19 +76,22 @@ if not settings.test_gui:
     relay_2 = DigitalIORelay(settings.relay_2_pin)
     relay_3 = DigitalIORelay(settings.relay_3_pin)
     relay_4 = DigitalIORelay(settings.relay_4_pin)
+    relays = [relay_1, relay_2, relay_3, relay_4]
 
     owen_client = OwenClient(port=settings.port,
                              baudrate=settings.baudrate,
                              timeout=settings.port_timeout,
                              address=settings.trm_address)
     trm_thread = TRMParametersReadThread(owen_client, update_period=settings.trm_update_period)
-    sensor_worker_thread = QThread()
-    sensor_worker = SensorWorker({})
-    sensor_worker.moveToThread(sensor_worker_thread)
 
-    sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
+    resistance_thermometer_manager = ResistanceThermometerManager([ad8400_1, ad8400_2], relays)
+    thermocouple_manager = ThermocoupleManager(mcp4725, relays)
+    unified_analog_signal_manager = UnifiedAnalogSignalManager(mcp4725, relays)
 else:
     trm_thread = FakeTRMParametersReadThread(None, update_period=settings.trm_update_period)  # noqa
+    resistance_thermometer_manager = FakeManager()
+    thermocouple_manager = FakeManager()
+    unified_analog_signal_manager = FakeManager()
 
 logger.info("Инициализация GUI")
 
@@ -115,7 +125,6 @@ trm_plot: PlotWidget = ui.trm_plot
 trm_plot.setBackground(settings.plot_background)
 
 graph.setYRange(min=-40, max=90)  # noqa
-# plot_manager = PlotManager(graph, max_points=settings.plot_points)
 plot_manager = TemperaturePlotManager(trm_plot)
 
 # вкладка Параметры ТРМ
@@ -124,22 +133,32 @@ trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
 # вкладка Страница
 uas_max_temp: QSpinBox = ui.uas_max_temp
 uas_min_temp: QSpinBox = ui.uas_min_temp
+sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # TODO: :)
 
-session = Session()
 uas_max_temp.setMaximum(100)
 uas_max_temp.setMinimum(-50)
 uas_min_temp.setMaximum(100)
 uas_min_temp.setMinimum(-50)
 
+session = Session()
 sensors_service = SensorsService(session)
 sensors_characteristics_service = SensorCharacteristicsService(session)
-
 sensor_characteristics_table.set_service(sensors_characteristics_service)
 
+sensor_worker_thread = QThread()
+sensor_worker = SensorWorker({
+    SensorType.RESISTANCE_THERMOMETER: resistance_thermometer_manager,
+    SensorType.THERMO_COUPLE: thermocouple_manager,
+    SensorType.UNIFIED_ANALOG_SIGNAL: unified_analog_signal_manager,
+})
+sensor_worker.moveToThread(sensor_worker_thread)
+sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 sensor_list = sensors_service.get_sensors()
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)
+sensors_combo_box_2.set_sensors(sensor_list)
+sensors_combo_box_2.sensor_changed.connect(sensor_worker.set_sensor)
 interference_frequency_spin_box.valueChanged.connect(linear_solver.set_interference_frequency)
 interference_amplitude_spin_box.valueChanged.connect(linear_solver.set_interference_amplitude)
 temp_spin_box.valueChanged.connect(temperature_calculation_thread.set_temperature)

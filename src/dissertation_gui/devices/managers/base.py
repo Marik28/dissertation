@@ -18,9 +18,9 @@ class BaseSensorManager(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def select(self) -> None:
+    def select(self) -> None: # TODO: добавить в меню выбора датчика блокировку выбора от спама
         """Переключает все релюшки и настраивает интерфейс для использования устройства, если это необходимо"""
 
     @abstractmethod
-    def unselect(self) -> None:  # TODO возможно оставить только select()
+    def unselect(self) -> None:  # TODO: возможно оставить только select()
         """Подчищает все пины и прочее для того, чтобы использовать другое устройство"""
