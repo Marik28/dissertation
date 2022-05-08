@@ -27,7 +27,7 @@ class CharacteristicsTableWidget(QTableWidget):
         self.currentCellChanged.connect(self.change_colors)  # noqa
         self.default_background = QTableWidgetItem().background()
         self.verticalScrollBar().setStyleSheet("QScrollBar:vertical { width: 30px; }")
-        self.horizontalScrollBar().setStyleSheet("QScrollBar:horizontal { width: 30px; }")
+        self.horizontalScrollBar().setStyleSheet("QScrollBar:horizontal { height: 30px; }")
 
     def set_service(self, service: SensorCharacteristicsService):
         self.service = service
