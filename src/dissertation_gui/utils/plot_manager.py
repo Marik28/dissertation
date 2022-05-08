@@ -1,7 +1,6 @@
 import time
 from collections import deque
 
-from loguru import logger
 from pyqtgraph import (
     PlotWidget,
     PlotDataItem,

@@ -112,8 +112,8 @@ def parse_thermocouple_characteristics(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame({"temp": temperatures, "value": voltages})
 
 
-def remap(x: int, in_min: int, in_max: int, out_min: int, out_max: int) -> int:
-    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+def remap(x: float, in_min: float, in_max: float, out_min: float, out_max: float) -> float:
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
 def generate_resistance_thermometer_dataframe(

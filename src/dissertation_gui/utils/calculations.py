@@ -58,7 +58,7 @@ class Solver(metaclass=ABCMeta):  # TODO учитывать логику ком�
     def calculate_temperature(self, time: float) -> float:
         pass
 
-    def calculate_burst_interference(self, time: float) -> float:
+    def calculate_burst_interference(self, time: float) -> float:  # TODO: реализовать
         return 0.0
 
     def calculate_sinusoidal_interference(self, time: float) -> float:
