@@ -4,7 +4,7 @@ import pandas as pd
 from loguru import logger
 
 from .base import SensorManager
-from ..relay import Relay
+from ..relay import RelaysController
 from ... import tables
 from ...devices.ad8400 import AD8400
 from ...types import Number
@@ -13,14 +13,14 @@ from ...utils.loader import load_characteristics
 
 class ResistanceThermometerManager(SensorManager):
 
-    def __init__(self, digipots: List[AD8400], relays: List[Relay]):
+    def __init__(self, digipots: List[AD8400], relays: RelaysController):
         self._digipots = digipots
         self._relays = relays
         self._df: Optional[pd.DataFrame] = None
 
     def select(self) -> None:
-        self._relays[2].turn_on()
-        self._relays[3].turn_off()
+        self._relays[3] = True
+        self._relays[4] = False
 
     def unselect(self) -> None:
         pass

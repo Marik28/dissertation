@@ -1,6 +1,7 @@
 import sys
 import traceback
 
+import pandas as pd
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -47,6 +48,7 @@ if not settings.test_gui:
         AD8400,
         MCP4725,
         DigitalIORelay,
+        RelaysController,
     )
     from .devices.managers import (
         ResistanceThermometerManager,
@@ -76,7 +78,7 @@ if not settings.test_gui:
     relay_2 = DigitalIORelay(settings.relay_2_pin)
     relay_3 = DigitalIORelay(settings.relay_3_pin)
     relay_4 = DigitalIORelay(settings.relay_4_pin)
-    relays = [relay_1, relay_2, relay_3, relay_4]
+    relays = RelaysController([relay_1, relay_2, relay_3, relay_4])
 
     owen_client = OwenClient(port=settings.port,
                              baudrate=settings.baudrate,

@@ -3,6 +3,7 @@ from abc import (
     ABCMeta,
     abstractmethod,
 )
+from typing import List
 
 import digitalio
 from loguru import logger
@@ -24,7 +25,6 @@ class Relay(metaclass=ABCMeta):
 
 
 class DigitalIORelay(Relay):
-    registered_relays = []
 
     def __init__(self, pin: str, delay: float = 0.005):
         """
@@ -35,7 +35,6 @@ class DigitalIORelay(Relay):
         self._pin_name = pin
         self._pin = digitalio.DigitalInOut(get_pin(pin))
         self._pin.direction = digitalio.Direction.OUTPUT
-        self.registered_relays.append(self)
         self._delay = delay
         self.turn_off()
 
@@ -52,6 +51,21 @@ class DigitalIORelay(Relay):
         time.sleep(self._delay)
 
     def __repr__(self):
-        number = self.registered_relays.index(self) + 1
         state = "Включено" if self._pin.value else "Выключено"
-        return f"<{self.__class__.__name__}> (#{number}; GPIO{self._pin_name}; Состояние - {state})"
+        return f"<{self.__class__.__name__} {self._pin_name}; Состояние - {state})> "
+
+
+class RelaysController:
+
+    def __init__(self, relays: List[Relay]):
+        self._relays = relays
+
+    def __setitem__(self, key: int, value: bool):
+        """Устанавливает состояние для заданного реле. Нумерация начинается с 1"""
+        index = key - 1
+        if index < 0 or index >= len(self._relays):
+            raise LookupError(f"No relay with index {key} found")
+        self._relays[index].set_value(bool(value))
+
+    def __repr__(self):
+        return ' '.join([repr(f"{relay} #{index}" for index, relay in enumerate(self._relays, start=1))])
