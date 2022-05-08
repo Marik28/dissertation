@@ -30,301 +30,275 @@
      <attribute name="title">
       <string>График</string>
      </attribute>
-     <widget class="QSpinBox" name="temp_spin_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>40</y>
-        <width>141</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>-50</number>
-      </property>
-      <property name="maximum">
-       <number>100</number>
-      </property>
-      <property name="value">
-       <number>25</number>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="k_spin_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>120</y>
-        <width>141</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>10.000000000000000</double>
-      </property>
-      <property name="singleStep">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="value">
-       <double>1.000000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>10</y>
-        <width>141</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Температура, °C</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>100</y>
-        <width>141</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Быстрота нагрева, °C/с</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="reset_plot_button">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>440</y>
-        <width>141</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Сброс</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="bursts_check_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>190</y>
-        <width>141</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Всплески</string>
-      </property>
-     </widget>
-     <widget class="PlotWidget" name="trm_plot" native="true">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>30</y>
-        <width>821</width>
-        <height>441</height>
+        <y>10</y>
+        <width>1011</width>
+        <height>471</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="interference_frequency_spin_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>290</y>
-        <width>141</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>10.000000000000000</double>
-      </property>
-      <property name="singleStep">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="value">
-       <double>1.000000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_10">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>270</y>
-        <width>141</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Частота помех, Гц</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="interference_amplitude_spin_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>370</y>
-        <width>141</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>10.000000000000000</double>
-      </property>
-      <property name="singleStep">
-       <double>0.100000000000000</double>
-      </property>
-      <property name="value">
-       <double>1.000000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_11">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>350</y>
-        <width>141</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Амплитуда помех, °C</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="sin_check_box">
-      <property name="geometry">
-       <rect>
-        <x>860</x>
-        <y>220</y>
-        <width>141</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Гармонические помехи</string>
-      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="PlotWidget" name="trm_plot" native="true"/>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Температура, °C</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="temp_spin_box">
+           <property name="minimum">
+            <number>-50</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>25</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Быстрота нагрева, °C/с</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="k_spin_box">
+           <property name="minimum">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="bursts_check_box">
+           <property name="text">
+            <string>Всплески</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="sin_check_box">
+           <property name="text">
+            <string>Гармонические помехи</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Частота помех, Гц</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="interference_frequency_spin_box">
+           <property name="minimum">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Амплитуда помех, °C</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="interference_amplitude_spin_box">
+           <property name="minimum">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>10.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="reset_plot_button">
+           <property name="text">
+            <string>Сброс</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_menu">
      <attribute name="title">
       <string>Датчики</string>
      </attribute>
-     <widget class="SensorsComboBox" name="sensors_combo_box">
+     <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>311</width>
-        <height>51</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>0</y>
-        <width>311</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Датчик</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="CharacteristicsTableWidget" name="sensor_characteristics_table">
-      <property name="geometry">
-       <rect>
-        <x>340</x>
-        <y>50</y>
-        <width>661</width>
-        <height>431</height>
-       </rect>
-      </property>
-      <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustIgnored</enum>
-      </property>
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
+        <x>0</x>
         <y>-1</y>
-        <width>741</width>
-        <height>41</height>
+        <width>1011</width>
+        <height>481</height>
        </rect>
       </property>
-      <property name="text">
-       <string>Градуировочная характеристика</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="SensorInfoTable" name="sensor_info_table">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>160</y>
-        <width>311</width>
-        <height>321</height>
-       </rect>
-      </property>
-      <property name="editTriggers">
-       <set>QAbstractItemView::NoEditTriggers</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-     </widget>
-     <widget class="QLabel" name="label_5">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>110</y>
-        <width>311</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Справка</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Датчик</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SensorsComboBox" name="sensors_combo_box"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Справка</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="SensorInfoTable" name="sensor_info_table">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <attribute name="horizontalHeaderVisible">
+            <bool>false</bool>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Градуировочная характеристика</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="CharacteristicsTableWidget" name="sensor_characteristics_table">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="sizeAdjustPolicy">
+            <enum>QAbstractScrollArea::AdjustToContents</enum>
+           </property>
+           <property name="autoScrollMargin">
+            <number>16</number>
+           </property>
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab">
