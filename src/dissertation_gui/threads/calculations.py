@@ -65,7 +65,7 @@ class TemperatureCalculationThread(QThread):
                 self._reset_start_time()
             now = self.now()
             temperature = self.solver.calculate_temperature(now)
-            self.temperature_signal.emit(temperature)
+            self.temperature_signal.emit(temperature)  # noqa
             time.sleep(self._update_period)
 
     def _defer_reset_time(self):

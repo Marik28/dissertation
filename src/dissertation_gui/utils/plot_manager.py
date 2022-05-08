@@ -44,7 +44,7 @@ class TemperaturePlotManager:
         self._plot_widget = plot_widget
         self._max_points = max_points
         self._start_time = time.time()
-        self._setpoint_curve = self._create_curve("Уставка", "g")
+        # self._setpoint_curve = self._create_curve("Уставка", "g")
         self._measured_temp_curve = self._create_curve("Измеренная температура", "b")
         self._set_temp_curve = self._create_curve("Заданная температура", "r")
 
@@ -60,7 +60,8 @@ class TemperaturePlotManager:
         curve.update(now, value)
 
     def update_setpoint_curve(self, value: float):
-        self._update_curve(self._setpoint_curve, value)
+        pass
+        # self._update_curve(self._setpoint_curve, value)
 
     def update_measured_temp_curve(self, value: float):
         self._update_curve(self._measured_temp_curve, value)
