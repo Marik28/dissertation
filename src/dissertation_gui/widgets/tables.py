@@ -84,9 +84,10 @@ class CharacteristicsTableWidget(QTableWidget):
             value = tuple_.value
             column = abs(temperature) % 10
             row = calculate_row(temperature, offset, min_temperature)
-            self.setItem(row, column, QTableWidgetItem(str(value)))
+            value_to_display = f"{value:.3f}"
+            self.setItem(row, column, QTableWidgetItem(value_to_display))
             if temperature == 0 and min_temperature != 0:  # костыль
-                self.setItem(row + 1, column, QTableWidgetItem(str(value)))
+                self.setItem(row + 1, column, QTableWidgetItem(value_to_display))
 
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
