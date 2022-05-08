@@ -27,7 +27,7 @@ class UnifiedAnalogSignalManager(SensorManager):
     def __init__(self, mcp4725: MCP4725, relays: RelaysController):
         self._mcp4725 = mcp4725
         self._relays = relays
-        self._df = load_characteristics(self.Sensor.ONE_V.name)
+        self._df = load_characteristics(self.Sensor.ONE_V.value)
         self._current_sensor = self.Sensor.ONE_V
         self._current_max_temperature = self.max_temperature
         self._current_min_temperature = self.min_temperature
