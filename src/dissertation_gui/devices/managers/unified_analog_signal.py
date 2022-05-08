@@ -1,5 +1,6 @@
 import enum
 
+import pandas as pd
 from loguru import logger
 
 from utils.utils import (
@@ -10,8 +11,8 @@ from .base import SensorManager
 from ..mcp_4725 import MCP4725
 from ..relay import RelaysController
 from ... import tables
+from ...settings import settings
 from ...types import Number
-from ...utils import load_characteristics
 
 
 # TODO: сделать менюшку, где можно задавать диапазон измеряемых величин для датчиков 0...1/-50...50
@@ -27,7 +28,7 @@ class UnifiedAnalogSignalManager(SensorManager):
     def __init__(self, mcp4725: MCP4725, relays: RelaysController):
         self._mcp4725 = mcp4725
         self._relays = relays
-        self._df = load_characteristics(self.Sensor.ONE_V.value)
+        self._df = pd.read_csv(settings.base_dir.parent / "data" / "dataframes" / self.Sensor.ONE_V.value)
         self._current_sensor = self.Sensor.ONE_V
         self._current_max_temperature = self.max_temperature
         self._current_min_temperature = self.min_temperature
