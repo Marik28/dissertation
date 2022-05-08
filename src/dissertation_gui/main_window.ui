@@ -30,7 +30,7 @@
      <attribute name="title">
       <string>График</string>
      </attribute>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -163,7 +163,14 @@
          <item>
           <widget class="QPushButton" name="reset_plot_button">
            <property name="text">
-            <string>Сброс</string>
+            <string>Сбросить диапазон</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="clear_plot_button">
+           <property name="text">
+            <string>Очистить график</string>
            </property>
           </widget>
          </item>
@@ -176,7 +183,7 @@
      <attribute name="title">
       <string>Датчики</string>
      </attribute>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>

@@ -1,5 +1,6 @@
 import time
 from collections import deque
+from typing import List
 
 from pyqtgraph import (
     PlotWidget,
@@ -35,25 +36,30 @@ class CurveManager:
         self._times.append(time)
         self._values.append(value)
         self._curve.setData(self._times, self._values)
-        self._curve.appendData()
+
+    def clear(self):
+        self._times.clear()
+        self._values.clear()
 
 
 # TODO: можно тут же отрисовывать рассчитанную температуру
 class TemperaturePlotManager:
     def __init__(self, plot_widget: PlotWidget, max_points: int = 1000):
         self._plot_widget = plot_widget
-        self._max_points = max_points
         self._start_time = time.time()
+        self._curves: List[CurveManager] = []
         # self._setpoint_curve = self._create_curve("Уставка", "g")
-        self._measured_temp_curve = self._create_curve("Измеренная температура", "b")
-        self._set_temp_curve = self._create_curve("Заданная температура", "r")
+        self._measured_temp_curve = self._create_curve("Измеренная температура", "b", max_points=max_points)
+        self._set_temp_curve = self._create_curve("Заданная температура", "r", max_points=10000)
 
-    def _create_curve(self, name: str, color: str, width: int = 1) -> CurveManager:
+    def _create_curve(self, name: str, color: str, width: int = 1, max_points: int = 1000) -> CurveManager:
         self._plot_widget.addLegend()
-        return CurveManager(
+        curve = CurveManager(
             self._plot_widget.plot(name=name, pen=mkPen(color=color, width=width)),
-            self._max_points,
+            max_points,
         )
+        self._curves.append(curve)
+        return curve
 
     def _update_curve(self, curve: CurveManager, value: float):
         now = time.time() - self._start_time
@@ -68,3 +74,7 @@ class TemperaturePlotManager:
 
     def update_set_temp_curve(self, value: float):
         self._update_curve(self._set_temp_curve, value)
+
+    def clear(self):
+        for curve in self._curves:
+            curve.clear()

@@ -115,6 +115,7 @@ temp_spin_box: QSpinBox = ui.temp_spin_box
 k_spin_box: QDoubleSpinBox = ui.k_spin_box
 bursts_check_box: QCheckBox = ui.bursts_check_box
 reset_plot_button: QPushButton = ui.reset_plot_button
+clear_plot_button: QPushButton = ui.clear_plot_button
 sin_check_box: QCheckBox = ui.sin_check_box
 interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
 interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
@@ -167,6 +168,7 @@ sin_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_ena
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
 reset_plot_button.clicked.connect(lambda: trm_plot.getPlotItem().enableAutoRange())
+clear_plot_button.clicked.connect(lambda: plot_manager.clear())
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 setpoint_thread = SetpointThread()
