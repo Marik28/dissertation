@@ -17,7 +17,6 @@ from ...types import Number
 
 # TODO: сделать менюшку, где можно задавать диапазон измеряемых величин для датчиков 0...1/-50...50
 class UnifiedAnalogSignalManager(SensorManager):
-    # TODO реализовать
     max_temperature = 100
     min_temperature = -50
 

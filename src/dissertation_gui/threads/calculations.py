@@ -7,22 +7,6 @@ from PyQt5.QtCore import (
 
 from ..utils.calculations import Solver
 
-# st - set temp
-# nt - new temp
-# ct - current temp
-# d - direction
-# 1. d+; nt > st; nt > ct; всё ок
-# 2. d+; nt > st; nt < ct; не бывает
-# 3. d+; nt < st; nt > ct; всё ок
-# 4. d+; nt < st; nt < ct; d = -d
-# 5. d-; nt > st; nt > ct; d = -d
-# 6. d-; nt > st; nt < ct;
-# 7. d-; nt < st; nt < ct;
-# 8. d-; nt < st; nt > ct;
-
-# TODO: функции отправки рассчитанного значения нужному устройству и переключение устройств
-#  можно вынести вынести в воркер, который будет находиться в отдельном потоке
-#  https://stackoverflow.com/questions/35527439/pyqt4-wait-in-thread-for-user-input-from-gui/35534047#35534047
 __all__ = ["TemperatureCalculationThread"]
 
 
@@ -31,6 +15,7 @@ class TemperatureCalculationThread(QThread):
 
     def __init__(self, solver: Solver, frequency: int = 100, parent=None):
         """
+        :param solver: Объект, симулирующий изменение температуры
         :param parent:
         :param frequency: Hz. Сколько раз в секунду пересчитывать
         """
@@ -57,7 +42,6 @@ class TemperatureCalculationThread(QThread):
         self.solver.set_set_temperature(temperature)
         self._defer_reset_time()
 
-    # TODO протестировать
     def run(self) -> None:
         self._reset_start_time()
         while True:

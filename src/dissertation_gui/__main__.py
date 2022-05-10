@@ -1,7 +1,6 @@
 import sys
 import traceback
 
-import pandas as pd
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -22,9 +21,7 @@ from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
-from .threads.testing import (
-    SetpointThread,
-)
+from .threads.testing import SetpointThread
 from .utils.calculations import LinearSolver
 from .utils.plot_manager import TemperaturePlotManager
 from .widgets import (
@@ -70,8 +67,9 @@ if not settings.test_gui:
         spi,
         settings.cs1_pin,
     )
+    i2c = I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin))
     mcp4725 = MCP4725(
-        I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin)),
+        i2c,
         settings.mcp4725_address,
     )
     relay_1 = DigitalIORelay(settings.relay_1_pin)
@@ -181,6 +179,11 @@ trm_thread.start(priority=QThread.Priority.NormalPriority)
 
 def on_shutdown():
     session.close()
+    try:
+        spi.deinit()
+        i2c.deinit()
+    except Exception:
+        pass
     logger.info(f"Завершение работы приложения")
 
 
