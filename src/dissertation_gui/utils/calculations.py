@@ -93,6 +93,10 @@ class ControlLogic(metaclass=ABCMeta):
         self._output = output
 
 
+class NoControlLogic(ControlLogic):
+    """Отсутствие управления"""
+
+
 class ReversedControlLogic(ControlLogic):
     """Обратное управление"""
 
