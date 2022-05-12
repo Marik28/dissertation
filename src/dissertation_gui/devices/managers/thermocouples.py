@@ -13,7 +13,7 @@ from ...types import Number
 from ...utils.loader import load_characteristics
 
 
-class ThermocoupleManager(SensorManager):
+class ThermocoupleManager(SensorManager):  # TODO: ТПР(B) не симулируем
 
     def __init__(self, dac: MCP4725, relays: RelaysController):
         self._dac = dac
