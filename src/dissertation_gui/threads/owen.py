@@ -84,4 +84,5 @@ class FakeTRMParametersReadThread(TRMParametersReadThread):
             TRMParameter("PV", temperature),
             TRMParameter("r.oUt", 1.),
             TRMParameter("Fake", 1),
+            TRMParameter("CmP", 2),
         ]
