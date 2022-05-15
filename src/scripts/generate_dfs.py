@@ -19,21 +19,30 @@ app = typer.Typer()
 @app.command()
 def main(overwrite: bool = True):
     data_dir = settings.base_dir.parent / "data"
+    not_simulated = [14, 25]
     typer.echo("Чтение датафреймов с характеристиками цифровых резисторов. "
                f"Используются {settings.ad8400_1} и {settings.ad8400_2}")
     digipot1_data = pd.read_csv(data_dir / "ad8400" / f"{settings.ad8400_1}.csv")
     digipot2_data = pd.read_csv(data_dir / "ad8400" / f"{settings.ad8400_2}.csv")
     simulation_range = (-50, 100)
+
     with Session() as session:
         service = SensorsService(session)
         typer.echo("Чтение списка датчиков")
         sensors: List[tables.Sensor] = service.get_sensors()
+
     for sensor in sensors:
         typer.echo(f"Генерация датафрейма для датчика {sensor.name}")
         output_file = data_dir / "dataframes" / f"{sensor.name}.csv"
+
+        if sensor.int_code in not_simulated:
+            typer.echo(f"{sensor.name} не симулируется, он будет пропущен")
+            continue
+
         if not overwrite and output_file.exists():
             typer.echo(f"{output_file} существует, он будет пропущен.")
             continue
+
         if sensor.type == SensorType.RESISTANCE_THERMOMETER:
             sensor_characteristics = pd.read_csv(
                 data_dir / "sensors_characteristics" / f"{sensor.name}.csv",
@@ -59,6 +68,7 @@ def main(overwrite: bool = True):
             )
         else:
             df = None
+
         if df is not None:
             df.to_csv(output_file)
             typer.echo(f"Датафрейм сохранен в {output_file}")

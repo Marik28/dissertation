@@ -15,6 +15,7 @@ from dissertation_gui.settings import settings
 
 def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
     df = pd.read_csv(settings.base_dir.parent / "data" / "sensors.csv")
+    not_simulated = [14, 25]
     sensors_to_add = [
         tables.Sensor(
             name=row["name"],
@@ -25,7 +26,7 @@ def insert_sensors(session: sqlalchemy.orm.Session) -> List[tables.Sensor]:
             min_temperature=row["min_temperature"],
             max_temperature=row["max_temperature"],
             int_code=int(row["int_code"]),
-        ) for _, row in df.iterrows()
+        ) for _, row in df.iterrows() if int(row["int_code"]) not in not_simulated
     ]
     session.add_all(sensors_to_add)
     session.commit()
