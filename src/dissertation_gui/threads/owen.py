@@ -1,6 +1,7 @@
 import random
 from typing import (
     List,
+    Callable,
 )
 
 from PyQt5.QtCore import (
@@ -21,6 +22,7 @@ class TRMParametersReadThread(QThread):
     parameters_signal = pyqtSignal(list)
     temperature_signal = pyqtSignal(float)
     output_signal = pyqtSignal(int)
+    control_logic_signal = pyqtSignal(int)
 
     params_to_read = [
         {"name": "PV", "index": None, "type_": Type.FLOAT24},
@@ -29,6 +31,7 @@ class TRMParametersReadThread(QThread):
         {"name": "CmP", "index": 0, "type_": Type.UNSIGNED_CHAR},
         {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
         {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
+        {"name": "in.t", "index": 0, "type_": Type.UNSIGNED_CHAR},
     ]
 
     def __init__(self, client: OwenClient, update_period: float, parent=None):
@@ -53,23 +56,32 @@ class TRMParametersReadThread(QThread):
                     value = 0.0
             except Exception as e:
                 logger.error(e)
-                value = 0.
+                value = 0.0
             read_parameters.append(TRMParameter(param["name"], value))
         return read_parameters
+
+    def emit_parameter(self,
+                       params: List[TRMParameter],
+                       name: str,
+                       signal: pyqtSignal,
+                       factory: Callable = None):
+        filtered_param = [p for p in params if p.name.lower() == name]
+        if len(filtered_param) > 0:
+            value = filtered_param[0].value
+            if factory is not None:
+                value = factory(value)
+            if not isinstance(value, tuple):
+                signal.emit(value)  # noqa
 
     def run(self) -> None:  # TODO: сделать красиво
         while True:
             read_parameters = self.read_parameters()
-            filtered_temp_param = [p for p in read_parameters if p.name.lower() == "pv"]
-            if len(filtered_temp_param) > 0:
-                temperature = filtered_temp_param[0].value
-                if not isinstance(temperature, tuple):
-                    self.temperature_signal.emit(temperature)  # noqa
-            filtered_output_param = [p for p in read_parameters if p.name.lower() == "r.out"]
-            if len(filtered_output_param) > 0:
-                output = int(filtered_output_param[0].value)
-                self.output_signal.emit(output)  # noqa
             logger.debug(read_parameters)
+
+            self.emit_parameter(read_parameters, "pv", self.temperature_signal)
+            self.emit_parameter(read_parameters, "r.out", self.output_signal, int)
+            self.emit_parameter(read_parameters, "cmp", self.control_logic_signal)
+
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
 
