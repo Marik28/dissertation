@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tab_menu_2">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -99,6 +99,15 @@
             </item>
             <item>
              <widget class="SensorInfoTable" name="sensor_info_table">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::AdjustToContents</enum>
               </property>
@@ -198,10 +207,29 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="TRMParametersInfoTable" name="trm_parameters_table">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -243,20 +271,16 @@
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_10">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
-               <widget class="QCheckBox" name="bursts_check_box">
+               <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Всплески</string>
+                 <string>Помехи</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="sin_check_box">
-                <property name="text">
-                 <string>Гармонические помехи</string>
-                </property>
-               </widget>
+               <widget class="InterferenceModesComboBox" name="interference_combo_box"/>
               </item>
              </layout>
             </item>
@@ -451,6 +475,11 @@
    <class>TRMParametersInfoTable</class>
    <extends>QTableView</extends>
    <header>dissertation_gui.widgets.tables.h</header>
+  </customwidget>
+  <customwidget>
+   <class>InterferenceModesComboBox</class>
+   <extends>QComboBox</extends>
+   <header>dissertation_gui.widgets.combo_boxes.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
