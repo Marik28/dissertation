@@ -1,4 +1,7 @@
-from .combo_boxes import SensorsComboBox
+from .combo_boxes import (
+    SensorsComboBox,
+    InterferenceModesComboBox,
+)
 from .tables import (
     SensorInfoTable,
     CharacteristicsTableWidget,

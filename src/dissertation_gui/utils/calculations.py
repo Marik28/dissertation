@@ -1,25 +1,22 @@
 import math
-from abc import abstractmethod, ABCMeta
+from abc import (
+    abstractmethod,
+    ABCMeta,
+)
 
 
-class Solver(metaclass=ABCMeta):  # TODO учитывать логику компаратора ТРМ-а
+class Solver(metaclass=ABCMeta):
 
     def __init__(
             self,
             k: float,
             start_temperature: float,
             set_temperature: float,
-            interference_amplitude: float,
-            interference_frequency: float,
     ):
         self.k = k
         self.start_temperature = start_temperature
         self.temperature = start_temperature
         self.set_temperature = set_temperature
-        self.interference_amplitude = interference_amplitude
-        self.interference_frequency = interference_frequency
-        self.sinusoidal_interference_enabled = False
-        self.burst_interference_enabled = False
         self.direction = 1
 
     def set_k_ratio(self, k: float):
@@ -35,21 +32,9 @@ class Solver(metaclass=ABCMeta):  # TODO учитывать логику ком�
         else:
             return self.temperature < self.set_temperature
 
-    def set_sinusoidal_interference_enabled(self, value: bool):
-        self.sinusoidal_interference_enabled = value
-
-    def set_burst_interference_enabled(self, value: bool):
-        self.burst_interference_enabled = value
-
     def set_set_temperature(self, temperature: float):
         self.reset_start_temperature()
         self.set_temperature = temperature
-
-    def set_interference_amplitude(self, amplitude: float):
-        self.interference_amplitude = amplitude
-
-    def set_interference_frequency(self, frequency: float):
-        self.interference_frequency = frequency
 
     def reset_start_temperature(self):
         self.start_temperature = self.temperature
@@ -57,12 +42,6 @@ class Solver(metaclass=ABCMeta):  # TODO учитывать логику ком�
     @abstractmethod
     def calculate_temperature(self, time: float) -> float:
         pass
-
-    def calculate_burst_interference(self, time: float) -> float:  # TODO: реализовать
-        return 0.0
-
-    def calculate_sinusoidal_interference(self, time: float) -> float:
-        return self.interference_amplitude * math.sin(2 * math.pi * self.interference_frequency * time)
 
 
 class LinearSolver(Solver):
@@ -74,13 +53,39 @@ class LinearSolver(Solver):
         if self.reached_set_temperature():
             self.temperature = self.set_temperature
 
-        if self.burst_interference_enabled:
-            interference = self.calculate_burst_interference(time)
-        elif self.sinusoidal_interference_enabled:
-            interference = self.calculate_sinusoidal_interference(time)
-        else:
-            interference = 0
-        return self.temperature + interference
+        return self.temperature
+
+
+class InterferenceSolver(metaclass=ABCMeta):
+
+    def __init__(self):
+        self._amplitude = 1.
+        self._frequency = 1.
+
+    def set_frequency(self, frequency: float):
+        self._frequency = frequency
+
+    def set_amplitude(self, amplitude: float):
+        self._amplitude = amplitude
+
+    @abstractmethod
+    def calculate_interference(self, time: float) -> float:
+        pass
+
+
+class NoInterferenceSolver(InterferenceSolver):
+    def calculate_interference(self, time: float) -> float:
+        return 0.0
+
+
+class SinusoidalInterferenceSolver(InterferenceSolver):
+    def calculate_interference(self, time: float) -> float:
+        return self._amplitude * math.sin(2 * math.pi * self._frequency * time)
+
+
+class BurstInterferenceSolver(InterferenceSolver):
+    def calculate_interference(self, time: float) -> float:
+        return 0.0  # TODO: реализовать
 
 
 class ControlLogic(metaclass=ABCMeta):
@@ -92,22 +97,41 @@ class ControlLogic(metaclass=ABCMeta):
     def set_output(self, output: int):
         self._output = output
 
+    @abstractmethod
+    def calculate_control_signal(self, time: float) -> float:
+        pass
+
 
 class NoControlLogic(ControlLogic):
     """Отсутствие управления"""
+
+    def calculate_control_signal(self, time: float) -> float:
+        return 0.
 
 
 class ReversedControlLogic(ControlLogic):
     """Обратное управление"""
 
+    def calculate_control_signal(self, time: float) -> float:
+        return -1.
+
 
 class DirectControlLogic(ControlLogic):
     """Прямое управление"""
+
+    def calculate_control_signal(self, time: float) -> float:
+        return 1.
 
 
 class PShapedControlLogic(ControlLogic):
     """П-образная"""
 
+    def calculate_control_signal(self, time: float) -> float:
+        return 0.
+
 
 class UShapedControlLogic(ControlLogic):
     """U-образная"""
+
+    def calculate_control_signal(self, time: float) -> float:
+        return 0.

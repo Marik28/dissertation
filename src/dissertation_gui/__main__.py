@@ -5,30 +5,40 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
-    QTabWidget,
     QSpinBox,
     QDoubleSpinBox,
     QPushButton,
-    QCheckBox,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
 from pyqtgraph.widgets.PlotWidget import PlotWidget
 
 from .database import Session
+from .models.interference import InterferenceMode
 from .models.sensors import SensorType
 from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
 from .threads.testing import SetpointThread
-from .utils.calculations import LinearSolver
+from .utils.calculations import (
+    LinearSolver,
+    NoControlLogic,
+    DirectControlLogic,
+    ReversedControlLogic,
+    PShapedControlLogic,
+    UShapedControlLogic,
+    NoInterferenceSolver,
+    SinusoidalInterferenceSolver,
+    BurstInterferenceSolver,
+)
 from .utils.plot_manager import TemperaturePlotManager
 from .widgets import (
     SensorsComboBox,
     CharacteristicsTableWidget,
     SensorInfoTable,
     TRMParametersInfoTable,
+    InterferenceModesComboBox,
 )
 from .workers import SensorWorker
 
@@ -99,50 +109,61 @@ app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
 linear_solver = LinearSolver(k=1.0,
                              start_temperature=0.,
-                             set_temperature=25.,
-                             interference_amplitude=1.,
-                             interference_frequency=1.)
+                             set_temperature=25.)
 temperature_calculation_thread = TemperatureCalculationThread(
     linear_solver,
-    frequency=settings.plot_update_frequency
+    {
+        0: NoControlLogic(),
+        1: DirectControlLogic(),
+        2: ReversedControlLogic(),
+        3: PShapedControlLogic(),
+        4: UShapedControlLogic(),
+    },
+    {
+        InterferenceMode.NO: NoInterferenceSolver(),
+        InterferenceMode.SINUSOIDAL: SinusoidalInterferenceSolver(),
+        InterferenceMode.BURST: BurstInterferenceSolver(),
+    },
+    frequency=settings.plot_update_frequency,
 )
-tab_menu: QTabWidget = ui.tab_menu
 
 # вкладка График
-temp_spin_box: QSpinBox = ui.temp_spin_box
-k_spin_box: QDoubleSpinBox = ui.k_spin_box
-bursts_check_box: QCheckBox = ui.bursts_check_box
+trm_plot: PlotWidget = ui.trm_plot
+trm_plot.setBackground(settings.plot_background)
+plot_manager = TemperaturePlotManager(trm_plot)
 reset_plot_button: QPushButton = ui.reset_plot_button
 clear_plot_button: QPushButton = ui.clear_plot_button
-sin_check_box: QCheckBox = ui.sin_check_box
-interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
-interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
+
 # Вкладка Датчики
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
-trm_plot: PlotWidget = ui.trm_plot
-trm_plot.setBackground(settings.plot_background)
-plot_manager = TemperaturePlotManager(trm_plot)
 
 # вкладка Параметры ТРМ
 trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
 
-# вкладка Страница
+# вкладка Настройки датчика
 uas_max_temp: QSpinBox = ui.uas_max_temp
 uas_min_temp: QSpinBox = ui.uas_min_temp
-sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
-
 uas_max_temp.setMaximum(100)
 uas_max_temp.setMinimum(-50)
 uas_min_temp.setMaximum(100)
 uas_min_temp.setMinimum(-50)
+sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
+temp_spin_box: QSpinBox = ui.temp_spin_box
+k_spin_box: QDoubleSpinBox = ui.k_spin_box
+interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
+interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
+interference_combo_box: InterferenceModesComboBox = ui.interference_combo_box
 
+# БД
 session = Session()
 sensors_service = SensorsService(session)
 sensors_characteristics_service = SensorCharacteristicsService(session)
 sensor_characteristics_table.set_service(sensors_characteristics_service)
+sensor_list = sensors_service.get_sensors()
 
+# Потоки
 sensor_worker_thread = QThread()
 sensor_worker = SensorWorker({
     SensorType.RESISTANCE_THERMOMETER: resistance_thermometer_manager,
@@ -151,24 +172,27 @@ sensor_worker = SensorWorker({
 })
 sensor_worker.moveToThread(sensor_worker_thread)
 sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
-sensor_list = sensors_service.get_sensors()
+
+# сигналы и слоты
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)
 sensors_combo_box_2.set_sensors(sensor_list)
 sensors_combo_box_2.sensor_changed.connect(sensor_worker.set_sensor)
-interference_frequency_spin_box.valueChanged.connect(linear_solver.set_interference_frequency)
-interference_amplitude_spin_box.valueChanged.connect(linear_solver.set_interference_amplitude)
+interference_frequency_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_frequency)
+interference_amplitude_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_amplitude)
+interference_combo_box.mode_changed.connect(temperature_calculation_thread.set_interference_mode)
 temp_spin_box.valueChanged.connect(temperature_calculation_thread.set_temperature)
 k_spin_box.valueChanged.connect(temperature_calculation_thread.set_k_ratio)
-bursts_check_box.stateChanged.connect(linear_solver.set_burst_interference_enabled)
-sin_check_box.stateChanged.connect(linear_solver.set_sinusoidal_interference_enabled)
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
+
 reset_plot_button.clicked.connect(lambda: trm_plot.getPlotItem().enableAutoRange())
 clear_plot_button.clicked.connect(lambda: plot_manager.clear())
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
+trm_thread.control_logic_signal.connect(temperature_calculation_thread.set_control_logic)
+# Потоки
 setpoint_thread = SetpointThread()
 setpoint_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
 

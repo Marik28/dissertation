@@ -1,11 +1,17 @@
 import time
+from typing import Dict
 
 from PyQt5.QtCore import (
     QThread,
     pyqtSignal,
 )
 
-from ..utils.calculations import Solver
+from ..models.interference import InterferenceMode
+from ..utils.calculations import (
+    Solver,
+    ControlLogic,
+    InterferenceSolver,
+)
 
 __all__ = ["TemperatureCalculationThread"]
 
@@ -13,14 +19,23 @@ __all__ = ["TemperatureCalculationThread"]
 class TemperatureCalculationThread(QThread):
     temperature_signal = pyqtSignal(float)
 
-    def __init__(self, solver: Solver, frequency: int = 100, parent=None):
+    def __init__(self,
+                 solver: Solver,
+                 control_logic: Dict[int, ControlLogic],
+                 interferences: Dict[InterferenceMode, InterferenceSolver],
+                 frequency: int = 100,
+                 parent=None):
         """
         :param solver: Объект, симулирующий изменение температуры
         :param parent:
         :param frequency: Hz. Сколько раз в секунду пересчитывать
         """
         super().__init__(parent)
-        self.solver = solver
+        self._solver = solver
+        self._interferences = interferences
+        self._interference = interferences[InterferenceMode.NO]
+        self._control_logic_dict = control_logic
+        self._control_logic = control_logic[0]
         self._update_period = 1 / frequency
         """Частота обновления температуры"""
         self._start_time = 0.
@@ -30,16 +45,30 @@ class TemperatureCalculationThread(QThread):
 
     def set_k_ratio(self, k: float) -> None:
         """Слот для изменения коэффициента, задающего быстроту изменения температуры"""
-        self.solver.set_k_ratio(k)
+        self._solver.set_k_ratio(k)
         self._defer_reset_time()
+
+    def set_interference_amplitude(self, amplitude: float):
+        for interference in self._interferences.values():
+            interference.set_amplitude(amplitude)
+
+    def set_interference_frequency(self, frequency: float):
+        for interference in self._interferences.values():
+            interference.set_frequency(frequency)
 
     def now(self):
         """Время со старта нового процесса симуляции"""
         return time.time() - self._start_time
 
+    def set_control_logic(self, code: int):
+        self._control_logic = self._control_logic_dict[code]
+
+    def set_interference_mode(self, mode: InterferenceMode):
+        self._interference = self._interferences[mode]
+
     def set_temperature(self, temperature: float) -> None:
         """Слот для изменения заданной температуры"""
-        self.solver.set_set_temperature(temperature)
+        self._solver.set_set_temperature(temperature)
         self._defer_reset_time()
 
     def run(self) -> None:
@@ -48,8 +77,10 @@ class TemperatureCalculationThread(QThread):
             if self._reset_time_required():
                 self._reset_start_time()
             now = self.now()
-            temperature = self.solver.calculate_temperature(now)
-            self.temperature_signal.emit(temperature)  # noqa
+            temperature = self._solver.calculate_temperature(now)
+            interference = self._interference.calculate_interference(now)
+            control_signal = self._control_logic.calculate_control_signal(now)
+            self.temperature_signal.emit(temperature + control_signal + interference)  # noqa
             time.sleep(self._update_period)
 
     def _defer_reset_time(self):
