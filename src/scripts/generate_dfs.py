@@ -63,7 +63,7 @@ def main(overwrite: bool = True):
             mcp_data = pd.read_csv(data_dir / "DAC" / "mcp4725.csv")
             df = generate_thermocouple_dataframe(
                 sensor_characteristics,
-                simulation_range=(0, 100),
+                simulation_range=(-50, 100),
                 mcp_data=mcp_data,
             )
         else:

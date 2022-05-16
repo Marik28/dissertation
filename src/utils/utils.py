@@ -1,12 +1,15 @@
-from numbers import Number
+import math
 from typing import (
     Iterable,
     Dict,
     Tuple,
+    Union,
 )
 
 import numpy as np
 import pandas as pd
+
+Number = Union[int, float]
 
 
 def find_nearest(values: Iterable[Number], value: Number) -> Number:
@@ -21,6 +24,9 @@ def find_nearest(values: Iterable[Number], value: Number) -> Number:
     array = np.asarray(values)
     idx = np.abs(array - value).argmin()
     return array[idx]
+
+
+a = find_nearest([1., 2., 3.], 2)
 
 
 def fill_empty(data: pd.DataFrame) -> Dict:
@@ -165,9 +171,11 @@ def generate_thermocouple_dataframe(
 
     df = pd.DataFrame()
     df["voltage"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp + 1))]["value"]
-    df["calc"] = df["voltage"].apply(lambda x: find_nearest(mcp_data["divided_voltage (mV)"], x))
+    df["calc"] = df["voltage"].apply(
+        lambda x: int(math.copysign(1, x)) * find_nearest(mcp_data["divided_voltage (mV)"], abs(x)),
+    )
     df["error"] = abs(df["voltage"] - df["calc"])
-    df["code"] = df["calc"].apply(lambda x: int(mcp_data[mcp_data["divided_voltage (mV)"] == x].iloc[0]["code"]))
+    df["code"] = df["calc"].apply(lambda x: int(mcp_data[mcp_data["divided_voltage (mV)"] == abs(x)].iloc[0]["code"]))
     return df
 
 
