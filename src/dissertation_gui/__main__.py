@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QSpinBox,
     QDoubleSpinBox,
-    QPushButton,
+    QPushButton, QComboBox,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
@@ -150,8 +150,8 @@ uas_max_temp.setMinimum(-50)
 uas_min_temp.setMaximum(100)
 uas_min_temp.setMinimum(-50)
 sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
-temp_spin_box: QSpinBox = ui.temp_spin_box
-k_spin_box: QDoubleSpinBox = ui.k_spin_box
+k_combo_box: QComboBox = ui.k_combo_box
+k_combo_box.addItems([str(i) for i in range(1, 5)])
 interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
 interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
 interference_combo_box: InterferenceModesComboBox = ui.interference_combo_box
@@ -182,8 +182,7 @@ sensors_combo_box_2.sensor_changed.connect(sensor_worker.set_sensor)
 interference_frequency_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_frequency)
 interference_amplitude_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_amplitude)
 interference_combo_box.mode_changed.connect(temperature_calculation_thread.set_interference_mode)
-temp_spin_box.valueChanged.connect(temperature_calculation_thread.set_temperature)
-k_spin_box.valueChanged.connect(temperature_calculation_thread.set_k_ratio)
+k_combo_box.currentTextChanged.connect(lambda x: temperature_calculation_thread.set_k_ratio(int(x)))
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
 
@@ -192,6 +191,8 @@ clear_plot_button.clicked.connect(lambda: plot_manager.clear())
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 trm_thread.control_logic_signal.connect(temperature_calculation_thread.set_control_logic)
+trm_thread.set_temperature_signal.connect(temperature_calculation_thread.set_temperature)
+
 # Потоки
 setpoint_thread = SetpointThread()
 setpoint_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)

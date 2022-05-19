@@ -23,6 +23,7 @@ class TRMParametersReadThread(QThread):
     temperature_signal = pyqtSignal(float)
     output_signal = pyqtSignal(int)
     control_logic_signal = pyqtSignal(int)
+    set_temperature_signal = pyqtSignal(float)
 
     params_to_read = [
         {"name": "PV", "index": None, "type_": Type.FLOAT24},
@@ -32,6 +33,7 @@ class TRMParametersReadThread(QThread):
         {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
         {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
         {"name": "in.t", "index": 0, "type_": Type.UNSIGNED_CHAR},
+        {"name": "SP", "index": 0, "type_": Type.FLOAT24}
     ]
 
     def __init__(self, client: OwenClient, update_period: float, parent=None):
@@ -65,7 +67,7 @@ class TRMParametersReadThread(QThread):
                        name: str,
                        signal: pyqtSignal,
                        factory: Callable = None):
-        filtered_param = [p for p in params if p.name.lower() == name]
+        filtered_param = [p for p in params if p.name.lower() == name.lower()]
         if len(filtered_param) > 0:
             value = filtered_param[0].value
             if factory is not None:
@@ -81,6 +83,7 @@ class TRMParametersReadThread(QThread):
             self.emit_parameter(read_parameters, "pv", self.temperature_signal)
             self.emit_parameter(read_parameters, "r.out", self.output_signal, int)
             self.emit_parameter(read_parameters, "cmp", self.control_logic_signal)
+            self.emit_parameter(read_parameters, "sp", self.set_temperature_signal)
 
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
@@ -97,4 +100,5 @@ class FakeTRMParametersReadThread(TRMParametersReadThread):
             TRMParameter("r.oUt", 1.),
             TRMParameter("Fake", 1),
             TRMParameter("CmP", 2),
+            TRMParameter("SP", 50),
         ]
