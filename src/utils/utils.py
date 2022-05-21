@@ -147,11 +147,11 @@ def generate_resistance_thermometer_dataframe(
     # найдем диапазон сопротивления, который необходимо симулировать
     min_value = sensor_characteristics.loc[min_temp]["value"]
     max_value = sensor_characteristics.loc[max_temp]["value"]
-    _simulation_range = [value for value in possible_values if min_value < value < max_value]
+    simulated_values = [value for value in possible_values if min_value < value < max_value]
 
     df = pd.DataFrame()
     df["R"] = sensor_characteristics[sensor_characteristics.index.isin(range(min_temp, max_temp + 1))]["value"]
-    df["calc"] = df["R"].apply(lambda x: find_nearest(_simulation_range, x))
+    df["calc"] = df["R"].apply(lambda x: find_nearest(simulated_values, x))
     df["error"] = abs(df["R"] - df["calc"])
     df["code"] = df["calc"].apply(lambda x: possible_values[x])
     df["R1_code"] = df["code"].apply(lambda x: x[0])
