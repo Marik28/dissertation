@@ -41,7 +41,7 @@ class ThermocoupleManager(SensorManager):  # TODO: ТПР(B) не симулир
         try:
             self._dac.send_code(code)
         except Exception as e:
-            logger.error(e)
+            logger.exception(str(e))
 
     def select(self) -> None:
         self._relays[1] = True

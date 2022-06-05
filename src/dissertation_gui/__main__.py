@@ -20,7 +20,6 @@ from .services.sensor_characteristics import SensorCharacteristicsService
 from .services.sensors import SensorsService
 from .settings import settings
 from .threads.calculations import TemperatureCalculationThread
-from .threads.testing import SetpointThread
 from .utils.calculations import (
     LinearSolver,
     NoControlLogic,
@@ -109,7 +108,8 @@ app = QApplication([])
 ui: QMainWindow = loadUi(settings.base_dir / "dissertation_gui" / "main_window.ui")
 linear_solver = LinearSolver(k=1.0,
                              start_temperature=0.,
-                             set_temperature=25.)
+                             setpoint=25.,
+                             hysteresis=2.)
 temperature_calculation_thread = TemperatureCalculationThread(
     linear_solver,
     {
@@ -151,7 +151,7 @@ uas_min_temp.setMaximum(100)
 uas_min_temp.setMinimum(-50)
 sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
 k_combo_box: QComboBox = ui.k_combo_box
-k_combo_box.addItems([str(i) for i in range(1, 5)])
+k_combo_box.addItems([str(i) for i in range(1, 11)])
 interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
 interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
 interference_combo_box: InterferenceModesComboBox = ui.interference_combo_box
@@ -190,15 +190,13 @@ reset_plot_button.clicked.connect(lambda: trm_plot.getPlotItem().enableAutoRange
 clear_plot_button.clicked.connect(lambda: plot_manager.clear())
 trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
+trm_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
+trm_thread.hysteresis_signal.connect(plot_manager.update_hys_curve)
+trm_thread.hysteresis_signal.connect(temperature_calculation_thread.set_hysteresis)
 trm_thread.control_logic_signal.connect(temperature_calculation_thread.set_control_logic)
-trm_thread.set_temperature_signal.connect(temperature_calculation_thread.set_temperature)
-
-# Потоки
-setpoint_thread = SetpointThread()
-setpoint_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
+trm_thread.setpoint_signal.connect(temperature_calculation_thread.set_temperature)
 
 temperature_calculation_thread.start(priority=QThread.Priority.HighPriority)
-setpoint_thread.start(priority=QThread.Priority.NormalPriority)
 trm_thread.start(priority=QThread.Priority.NormalPriority)
 
 

@@ -48,9 +48,12 @@ class TemperaturePlotManager:
         self._plot_widget = plot_widget
         self._start_time = time.time()
         self._curves: List[CurveManager] = []
-        # self._setpoint_curve = self._create_curve("Уставка", "g")
+        self._setpoint_curve = self._create_curve("Уставка", "k")
+        self._setpoint = 0.0
+        self._setpoint_plus_hys = self._create_curve("Уставка + HYS", "g")
+        self._setpoint_minus_hys = self._create_curve("Уставка - HYS", "g")
         self._measured_temp_curve = self._create_curve("Измеренная температура", "b", max_points=max_points)
-        self._set_temp_curve = self._create_curve("Заданная температура", "r", max_points=10000)
+        self._set_temp_curve = self._create_curve("Реальная температура", "r", max_points=10000)
 
     def _create_curve(self, name: str, color: str, width: int = 1, max_points: int = 1000) -> CurveManager:
         self._plot_widget.addLegend()
@@ -66,14 +69,18 @@ class TemperaturePlotManager:
         curve.update(now, value)
 
     def update_setpoint_curve(self, value: float):
-        pass
-        # self._update_curve(self._setpoint_curve, value)
+        self._setpoint = value
+        self._update_curve(self._setpoint_curve, value)
 
     def update_measured_temp_curve(self, value: float):
         self._update_curve(self._measured_temp_curve, value)
 
     def update_set_temp_curve(self, value: float):
         self._update_curve(self._set_temp_curve, value)
+
+    def update_hys_curve(self, value: float):
+        self._update_curve(self._setpoint_plus_hys, self._setpoint + value)
+        self._update_curve(self._setpoint_minus_hys, self._setpoint - value)
 
     def clear(self):
         for curve in self._curves:

@@ -23,7 +23,8 @@ class TRMParametersReadThread(QThread):
     temperature_signal = pyqtSignal(float)
     output_signal = pyqtSignal(int)
     control_logic_signal = pyqtSignal(int)
-    set_temperature_signal = pyqtSignal(float)
+    setpoint_signal = pyqtSignal(float)
+    hysteresis_signal = pyqtSignal(float)
 
     params_to_read = [
         {"name": "PV", "index": None, "type_": Type.FLOAT24},
@@ -33,7 +34,8 @@ class TRMParametersReadThread(QThread):
         {"name": "in.L", "index": 0, "type_": Type.FLOAT24},
         {"name": "in.H", "index": 0, "type_": Type.FLOAT24},
         {"name": "in.t", "index": 0, "type_": Type.UNSIGNED_CHAR},
-        {"name": "SP", "index": 0, "type_": Type.FLOAT24}
+        {"name": "SP", "index": 0, "type_": Type.FLOAT24},
+        {"name": "HYS", "index": 0, "type_": Type.FLOAT24},
     ]
 
     def __init__(self, client: OwenClient, update_period: float, parent=None):
@@ -54,10 +56,10 @@ class TRMParametersReadThread(QThread):
                 try:
                     value = self.client.get_last_error()
                 except Exception as e:  # fixme: да да я
-                    logger.error(e)
+                    logger.exception(str(e))
                     value = 0.0
             except Exception as e:
-                logger.error(e)
+                logger.exception(str(e))
                 value = 0.0
             read_parameters.append(TRMParameter(param["name"], value))
         return read_parameters
@@ -83,7 +85,8 @@ class TRMParametersReadThread(QThread):
             self.emit_parameter(read_parameters, "pv", self.temperature_signal)
             self.emit_parameter(read_parameters, "r.out", self.output_signal, int)
             self.emit_parameter(read_parameters, "cmp", self.control_logic_signal)
-            self.emit_parameter(read_parameters, "sp", self.set_temperature_signal)
+            self.emit_parameter(read_parameters, "sp", self.setpoint_signal)
+            self.emit_parameter(read_parameters, "hys", self.hysteresis_signal)
 
             self.parameters_signal.emit(read_parameters)  # noqa
             self.msleep(int(self.update_period * 1000))
@@ -100,5 +103,6 @@ class FakeTRMParametersReadThread(TRMParametersReadThread):
             TRMParameter("r.oUt", 1.),
             TRMParameter("Fake", 1),
             TRMParameter("CmP", 2),
-            TRMParameter("SP", 50),
+            TRMParameter("SP", 20),
+            TRMParameter("HYS", 2),
         ]

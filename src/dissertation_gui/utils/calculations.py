@@ -11,12 +11,14 @@ class Solver(metaclass=ABCMeta):
             self,
             k: float,
             start_temperature: float,
-            set_temperature: float,
+            setpoint: float,
+            hysteresis: float,
     ):
         self.k = k
         self.start_temperature = start_temperature
         self.temperature = start_temperature
-        self.set_temperature = set_temperature
+        self.setpoint = setpoint
+        self.hysteresis = hysteresis
         self.direction = 1
 
     def set_k_ratio(self, k: float):
@@ -28,16 +30,19 @@ class Solver(metaclass=ABCMeta):
 
     def reached_set_temperature(self) -> bool:
         if self.direction_positive():
-            return self.temperature > self.set_temperature
+            return self.temperature > self.setpoint
         else:
-            return self.temperature < self.set_temperature
+            return self.temperature < self.setpoint
 
     def set_set_temperature(self, temperature: float):
         self.reset_start_temperature()
-        self.set_temperature = temperature
+        self.setpoint = temperature
 
     def reset_start_temperature(self):
         self.start_temperature = self.temperature
+
+    def set_hysteresis(self, hysteresis: float):
+        self.hysteresis = hysteresis
 
     @abstractmethod
     def calculate_temperature(self, time: float) -> float:
@@ -47,11 +52,11 @@ class Solver(metaclass=ABCMeta):
 class LinearSolver(Solver):
 
     def calculate_temperature(self, time: float) -> float:
-        self.direction = int(math.copysign(1, self.set_temperature - self.temperature))
+        self.direction = int(math.copysign(1, self.setpoint - self.temperature))
         self.temperature = self.start_temperature + self.k * time * self.direction
 
         if self.reached_set_temperature():
-            self.temperature = self.set_temperature
+            self.temperature = self.setpoint
 
         return self.temperature
 

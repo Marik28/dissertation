@@ -73,7 +73,7 @@ class UnifiedAnalogSignalManager(SensorManager):
         try:
             self._mcp4725.send_code(code)
         except Exception as e:
-            logger.error(e)
+            logger.exception(str(e))
 
     def _calculate_code(self, voltage: float) -> int:
         row = self._df[self._df["voltage"] == find_nearest(self._df["voltage"], voltage)]

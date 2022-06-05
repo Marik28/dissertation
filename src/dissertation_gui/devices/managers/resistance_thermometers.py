@@ -47,4 +47,4 @@ class ResistanceThermometerManager(SensorManager):
             try:
                 digipot.send_code(code)
             except Exception as e:
-                logger.error(e)
+                logger.exception(str(e))

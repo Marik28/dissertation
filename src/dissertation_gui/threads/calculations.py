@@ -68,10 +68,13 @@ class TemperatureCalculationThread(QThread):
 
     def set_temperature(self, temperature: float) -> None:
         """Слот для изменения заданной температуры"""
-        if temperature == self._solver.set_temperature:
+        if temperature == self._solver.setpoint:
             return
         self._solver.set_set_temperature(temperature)
         self._defer_reset_time()
+
+    def set_hysteresis(self, hysteresis: float):
+        self._solver.set_hysteresis(hysteresis)
 
     def run(self) -> None:
         self._reset_start_time()
