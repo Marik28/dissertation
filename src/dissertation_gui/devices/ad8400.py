@@ -18,9 +18,11 @@ class AD8400(Device):
     def __init__(self,
                  spi: SPI,
                  cs: str,
-                 baudrate: int = 100_000):
+                 baudrate: int = 100_000,
+                 address: int = 0):
         super().__init__()
         self._cs = get_pin(cs)
+        self._address = address
         self._spidev = SPIDevice(spi,
                                  chip_select=digitalio.DigitalInOut(self._cs),
                                  baudrate=baudrate)
@@ -34,7 +36,7 @@ class AD8400(Device):
 
     def send_code(self, code: int) -> None:
         validated_code = self.validate_code(code)
-        data = bytes([validated_code])
+        data = bytes([self._address, validated_code])  # TODO: протестировать
         with self._spidev as spi:
             spi.write(data)
         logger.debug(f"На {self} отправлен код {validated_code}")
