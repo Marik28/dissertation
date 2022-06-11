@@ -91,7 +91,9 @@ if not settings.test_gui:
                              baudrate=settings.baudrate,
                              timeout=settings.port_timeout,
                              address=settings.trm_address)
-    trm_thread = TRMParametersReadThread(owen_client, update_period=settings.trm_update_period)
+    trm_thread = TRMParametersReadThread(owen_client,
+                                         update_period=settings.trm_update_period,
+                                         request_delay=settings.request_delay)
 
     resistance_thermometer_manager = ResistanceThermometerManager([ad8400_1, ad8400_2], relays)
     thermocouple_manager = ThermocoupleManager(mcp4725, relays)

@@ -38,13 +38,15 @@ class TRMParametersReadThread(QThread):
         {"name": "HYS", "index": 0, "type_": Type.FLOAT24},
     ]
 
-    def __init__(self, client: OwenClient, update_period: float, parent=None):
+    def __init__(self, client: OwenClient, update_period: float, parent=None, request_delay: float = 0.01):
         """
         :param update_period: Период опроса ТРМ в секундах
+        :param request_delay: Задержка между запросами параметров в секундах
         """
         super().__init__(parent)
         self.client = client
         self.update_period = update_period
+        self.request_delay = request_delay
 
     def read_parameters(self) -> List[TRMParameter]:
         read_parameters = []
@@ -58,6 +60,7 @@ class TRMParametersReadThread(QThread):
                 logger.exception(str(e))
             else:
                 read_parameters.append(TRMParameter(param["name"], value))
+            self.msleep(int(self.request_delay * 1000))
         return read_parameters
 
     def emit_parameter(self,

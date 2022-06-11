@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     trm_address: int
     trm_update_period: float
     port_timeout: float
+    request_delay: float
 
     # настройки протокола I2C
     mcp4725_address: int
