@@ -53,15 +53,11 @@ class TRMParametersReadThread(QThread):
             try:
                 value = self.client.get_parameter(**param)
             except OwenUnpackError:
-                try:
-                    value = self.client.get_last_error()
-                except Exception as e:  # fixme: да да я
-                    logger.exception(str(e))
-                    value = 0.0
+                logger.exception(str(f"Не удалось распаковать параметр {param['name']}"))
             except Exception as e:
                 logger.exception(str(e))
-                value = 0.0
-            read_parameters.append(TRMParameter(param["name"], value))
+            else:
+                read_parameters.append(TRMParameter(param["name"], value))
         return read_parameters
 
     def emit_parameter(self,
