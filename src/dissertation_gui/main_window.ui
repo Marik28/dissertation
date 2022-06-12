@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tab_menu_2">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -265,7 +265,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="uas_max_temp"/>
+               <widget class="QComboBox" name="uas_max_temp"/>
               </item>
              </layout>
             </item>
@@ -279,7 +279,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="uas_min_temp"/>
+               <widget class="QComboBox" name="uas_min_temp"/>
               </item>
              </layout>
             </item>
@@ -310,20 +310,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="interference_amplitude_spin_box">
-                <property name="minimum">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>10.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
+               <widget class="QComboBox" name="interference_amplitude_combo_box"/>
               </item>
              </layout>
             </item>
@@ -340,20 +327,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="interference_frequency_spin_box">
-                <property name="minimum">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>10.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
+               <widget class="QComboBox" name="interference_frequency_combo_box"/>
               </item>
              </layout>
             </item>

@@ -5,9 +5,8 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
-    QSpinBox,
-    QDoubleSpinBox,
-    QPushButton, QComboBox,
+    QPushButton,
+    QComboBox,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
@@ -145,17 +144,18 @@ sensor_info_table: SensorInfoTable = ui.sensor_info_table
 trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
 
 # вкладка Настройки датчика
-uas_max_temp: QSpinBox = ui.uas_max_temp
-uas_min_temp: QSpinBox = ui.uas_min_temp
-uas_max_temp.setMaximum(100)
-uas_max_temp.setMinimum(-50)
-uas_min_temp.setMaximum(100)
-uas_min_temp.setMinimum(-50)
+uas_max_temp: QComboBox = ui.uas_max_temp
+uas_max_temp.addItems([str(i) for i in range(-50, 101, 10)])
+uas_min_temp: QComboBox = ui.uas_min_temp
+uas_min_temp.addItems([str(i) for i in range(-50, 101, 10)])
 sensors_combo_box_2: SensorsComboBox = ui.sensors_combo_box_2  # fixme: :)
 k_combo_box: QComboBox = ui.k_combo_box
 k_combo_box.addItems([str(i) for i in range(1, 11)])
-interference_frequency_spin_box: QDoubleSpinBox = ui.interference_frequency_spin_box
-interference_amplitude_spin_box: QDoubleSpinBox = ui.interference_amplitude_spin_box
+interference_frequency_combo_box: QComboBox = ui.interference_frequency_combo_box
+interference_frequency_combo_box.addItems([str(round(i / 10, 2)) for i in range(10, 26, 5)])
+interference_amplitude_combo_box: QComboBox = ui.interference_amplitude_combo_box
+interference_amplitude_combo_box.addItems([str(round(i / 10, 2)) for i in range(10, 51, 5)])
+
 interference_combo_box: InterferenceModesComboBox = ui.interference_combo_box
 
 # БД
@@ -181,10 +181,16 @@ sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)
 sensors_combo_box_2.set_sensors(sensor_list)
 sensors_combo_box_2.sensor_changed.connect(sensor_worker.set_sensor)
-interference_frequency_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_frequency)
-interference_amplitude_spin_box.valueChanged.connect(temperature_calculation_thread.set_interference_amplitude)
+interference_frequency_combo_box.currentTextChanged.connect(
+    lambda x: temperature_calculation_thread.set_interference_frequency(float(x))
+)
+interference_amplitude_combo_box.currentTextChanged.connect(
+    lambda x: temperature_calculation_thread.set_interference_amplitude(float(x))
+)
 interference_combo_box.mode_changed.connect(temperature_calculation_thread.set_interference_mode)
 k_combo_box.currentTextChanged.connect(lambda x: temperature_calculation_thread.set_k_ratio(int(x)))
+uas_min_temp.currentTextChanged.connect(lambda x: unified_analog_signal_manager.set_min_temperature(int(x)))
+uas_max_temp.currentTextChanged.connect(lambda x: unified_analog_signal_manager.set_max_temperature(int(x)))
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
 
@@ -194,10 +200,11 @@ trm_thread.parameters_signal.connect(trm_parameters_table.update_info)
 trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 trm_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
 trm_thread.hysteresis_signal.connect(plot_manager.update_hys_curve)
-trm_thread.hysteresis_signal.connect(temperature_calculation_thread.set_hysteresis)
 trm_thread.control_logic_signal.connect(temperature_calculation_thread.set_control_logic)
-trm_thread.setpoint_signal.connect(temperature_calculation_thread.set_temperature)
+trm_thread.output_signal.connect(temperature_calculation_thread.set_output_signal)
 
+uas_max_temp.setCurrentText("100")
+uas_min_temp.setCurrentText("-50")
 temperature_calculation_thread.start(priority=QThread.Priority.HighPriority)
 trm_thread.start(priority=QThread.Priority.NormalPriority)
 

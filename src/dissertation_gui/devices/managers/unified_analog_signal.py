@@ -39,6 +39,9 @@ class UnifiedAnalogSignalManager(SensorManager):
         self._resistor_value = 100
         """Сопротивление резистора, преобразующего ток в напряжение, Ом"""
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"
+
     def _get_range(self) -> Tuple[float, float]:
         """
 
@@ -68,7 +71,7 @@ class UnifiedAnalogSignalManager(SensorManager):
         out_min, out_max = self._get_range()
         voltage = remap(temperature, self._min_temperature, self._max_temperature, out_min, out_max)
         code = self._calculate_code(voltage)
-        logger.debug(f"{voltage}")
+        logger.debug(f"{self} отправляет {voltage}")
 
         try:
             self._mcp4725.send_code(code)
