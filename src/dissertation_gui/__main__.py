@@ -67,19 +67,10 @@ else:
 if not settings.test_gui:
     # пины и протоколы
     spi = SPI(clock=board.SCLK, MOSI=board.MOSI, MISO=None)
-    ad8400_1 = AD8400(
-        spi,
-        settings.cs0_pin,
-    )
-    ad8400_2 = AD8400(
-        spi,
-        settings.cs1_pin,
-    )
+    ad8400_1 = AD8400(spi, settings.cs0_pin)
+    ad8400_2 = AD8400(spi, settings.cs1_pin)
     i2c = I2C(get_pin(settings.i2c_scl_pin), get_pin(settings.i2c_sda_pin))
-    mcp4725 = MCP4725(
-        i2c,
-        settings.mcp4725_address,
-    )
+    mcp4725 = MCP4725(i2c, settings.mcp4725_address)
     relay_1 = DigitalIORelay(settings.relay_1_pin)
     relay_2 = DigitalIORelay(settings.relay_2_pin)
     relay_3 = DigitalIORelay(settings.relay_3_pin)
