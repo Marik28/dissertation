@@ -21,6 +21,10 @@ class Solver(metaclass=ABCMeta):
         self.hysteresis = hysteresis
         self.direction = 1
 
+    def set_direction(self, direction: int):
+        self.direction = direction
+        self.reset_start_temperature()
+
     def set_k_ratio(self, k: float):
         self.k = k
         self.start_temperature = self.temperature
@@ -52,13 +56,13 @@ class Solver(metaclass=ABCMeta):
 class LinearSolver(Solver):
 
     def calculate_temperature(self, time: float) -> float:
-        self.direction = int(math.copysign(1, self.setpoint - self.temperature))
         self.temperature = self.start_temperature + self.k * time * self.direction
-
-        if self.reached_set_temperature():
-            self.temperature = self.setpoint
-
         return self.temperature
+
+
+class SquareSolver(LinearSolver):
+    def calculate_temperature(self, time: float) -> float:
+        return super().calculate_temperature(time) ** 2
 
 
 class InterferenceSolver(metaclass=ABCMeta):
@@ -89,8 +93,15 @@ class SinusoidalInterferenceSolver(InterferenceSolver):
 
 
 class BurstInterferenceSolver(InterferenceSolver):
+
+    def __init__(self):
+        super().__init__()
+
     def calculate_interference(self, time: float) -> float:
-        return 0.0  # TODO: реализовать
+        interference = self._amplitude * math.sin(2 * math.pi * self._frequency * time)
+        if abs(self._amplitude - interference) <= (0.05 * self._amplitude):
+            return interference
+        return 0.0
 
 
 class ControlLogic(metaclass=ABCMeta):
@@ -103,40 +114,40 @@ class ControlLogic(metaclass=ABCMeta):
         self._output = output
 
     @abstractmethod
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         pass
 
 
 class NoControlLogic(ControlLogic):
     """Отсутствие управления"""
 
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         return 0.
 
 
 class ReversedControlLogic(ControlLogic):
-    """Обратное управление"""
+    """Обратное управление (холодильник)"""
 
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         return -1.
 
 
 class DirectControlLogic(ControlLogic):
-    """Прямое управление"""
+    """Прямое управление - (нагреватель)"""
 
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         return 1.
 
 
 class PShapedControlLogic(ControlLogic):
     """П-образная"""
 
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         return 0.
 
 
 class UShapedControlLogic(ControlLogic):
     """U-образная"""
 
-    def calculate_control_signal(self, time: float) -> float:
+    def calculate_direction(self) -> float:
         return 0.
