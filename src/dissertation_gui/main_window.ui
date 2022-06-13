@@ -14,7 +14,7 @@
    <string>ТРМ201</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_12">
     <item>
      <widget class="QTabWidget" name="tab_menu_2">
       <property name="currentIndex">
@@ -24,42 +24,52 @@
        <attribute name="title">
         <string>График</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_13">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <widget class="PlotWidget" name="trm_plot" native="true"/>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="PlotWidget" name="trm_plot" native="true"/>
+           <widget class="QPushButton" name="reset_plot_button">
+            <property name="text">
+             <string>Сбросить диапазон</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <widget class="QPushButton" name="clear_plot_button">
+            <property name="text">
+             <string>Очистить график</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QPushButton" name="reset_plot_button">
+             <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Сбросить диапазон</string>
+               <string>Состояние ВУ</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="clear_plot_button">
-              <property name="text">
-               <string>Очистить график</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
+             <widget class="Led" name="led" native="true"/>
             </item>
            </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -431,6 +441,12 @@
    <class>InterferenceModesComboBox</class>
    <extends>QComboBox</extends>
    <header>dissertation_gui.widgets.combo_boxes.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Led</class>
+   <extends>QWidget</extends>
+   <header>pyqt_led</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

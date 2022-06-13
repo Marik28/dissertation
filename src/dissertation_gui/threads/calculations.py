@@ -43,6 +43,9 @@ class TemperatureCalculationThread(QThread):
         self._reset = False
         """Флаг, сигнализирущий о том, что необходимо сбросить начальное время"""
 
+    def set_setpoint(self, temperature: float):
+        self._solver.set_setpoint(temperature)
+
     def set_k_ratio(self, k: float) -> None:
         """Слот для изменения коэффициента, задающего быстроту изменения температуры"""
         self._solver.set_k_ratio(k)
@@ -59,12 +62,17 @@ class TemperatureCalculationThread(QThread):
     def set_output_signal(self, output: int):
         for control_logic in self._control_logic_dict.values():
             control_logic.set_output(output)
+        self._control_logic.calculate_direction(self._solver)
 
     def now(self):
         """Время со старта нового процесса симуляции"""
         return time.time() - self._start_time
 
     def set_control_logic(self, code: int):
+        if code in [0, 3, 4]:
+            self._solver.set_self_oscillations(True)
+        else:
+            self._solver.set_self_oscillations(False)
         self._control_logic = self._control_logic_dict[code]
 
     def set_interference_mode(self, mode: InterferenceMode):
@@ -77,6 +85,9 @@ class TemperatureCalculationThread(QThread):
                 self._reset_start_time()
             now = self.now()
             temperature = self._solver.calculate_temperature(now)
+            if self._solver.self_oscillations_enabled and self._solver.reached_set_temperature():
+                self._defer_reset_time()
+                self._solver.set_direction(-self._solver.direction)
             interference = self._interference.calculate_interference(now)
             self.temperature_signal.emit(temperature + interference)  # noqa
             time.sleep(self._update_period)

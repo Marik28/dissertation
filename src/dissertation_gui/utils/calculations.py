@@ -20,6 +20,10 @@ class Solver(metaclass=ABCMeta):
         self.setpoint = setpoint
         self.hysteresis = hysteresis
         self.direction = 1
+        self.self_oscillations_enabled = True
+
+    def set_self_oscillations(self, mode: bool):
+        self.self_oscillations_enabled = mode
 
     def set_direction(self, direction: int):
         self.direction = direction
@@ -38,7 +42,9 @@ class Solver(metaclass=ABCMeta):
         else:
             return self.temperature < self.setpoint
 
-    def set_set_temperature(self, temperature: float):
+    def set_setpoint(self, temperature: float):
+        if temperature == self.setpoint:
+            return
         self.reset_start_temperature()
         self.setpoint = temperature
 
@@ -54,6 +60,12 @@ class Solver(metaclass=ABCMeta):
 
 
 class LinearSolver(Solver):
+
+    def reached_set_temperature(self) -> bool:
+        if self.direction_positive():
+            return self.temperature > self.setpoint + self.hysteresis + self.k
+        else:
+            return self.temperature < self.setpoint - self.hysteresis - self.k
 
     def calculate_temperature(self, time: float) -> float:
         self.temperature = self.start_temperature + self.k * time * self.direction
@@ -114,40 +126,46 @@ class ControlLogic(metaclass=ABCMeta):
         self._output = output
 
     @abstractmethod
-    def calculate_direction(self) -> float:
+    def calculate_direction(self, solver: "Solver") -> None:
         pass
 
 
 class NoControlLogic(ControlLogic):
     """Отсутствие управления"""
 
-    def calculate_direction(self) -> float:
-        return 0.
+    def calculate_direction(self, solver: "Solver") -> None:
+        pass
 
 
 class ReversedControlLogic(ControlLogic):
     """Обратное управление (холодильник)"""
 
-    def calculate_direction(self) -> float:
-        return -1.
+    def calculate_direction(self, solver: "Solver") -> None:
+        direction = -1 if self._output else 1
+        if direction == solver.direction:
+            return
+        solver.set_direction(direction)
 
 
 class DirectControlLogic(ControlLogic):
     """Прямое управление - (нагреватель)"""
 
-    def calculate_direction(self) -> float:
-        return 1.
+    def calculate_direction(self, solver: "Solver") -> None:
+        direction = 1 if self._output else -1
+        if direction == solver.direction:
+            return
+        solver.set_direction(direction)
 
 
 class PShapedControlLogic(ControlLogic):
     """П-образная"""
 
-    def calculate_direction(self) -> float:
-        return 0.
+    def calculate_direction(self, solver: "Solver") -> None:
+        pass
 
 
 class UShapedControlLogic(ControlLogic):
     """U-образная"""
 
-    def calculate_direction(self) -> float:
-        return 0.
+    def calculate_direction(self, solver: "Solver") -> None:
+        pass

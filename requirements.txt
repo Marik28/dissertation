@@ -9,6 +9,7 @@ pyqt5
 pyqt5-tools
 PyQtWebEngine
 pyqtgraph
+pyqt_led
 pydantic
 pydantic[dotenv]
 pyserial
