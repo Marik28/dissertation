@@ -201,12 +201,13 @@ trm_thread.start(priority=QThread.Priority.NormalPriority)
 
 
 def on_shutdown():
-    session.close()
     try:
+        session.close()
+        owen_client.close()
         spi.deinit()
         i2c.deinit()
     except Exception:
-        pass
+        logger.exception("Не удалось совершить graceful shutdown")
     logger.info(f"Завершение работы приложения")
 
 

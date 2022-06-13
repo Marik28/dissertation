@@ -177,3 +177,6 @@ class OwenClient:
         parameter_hash - Хэш параметра, при запросе которого произошла ошибка
         """
         return self.get_parameter("N.err", Type.NERR)
+
+    def close(self):
+        self._serial.close()
