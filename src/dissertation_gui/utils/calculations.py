@@ -63,9 +63,10 @@ class LinearSolver(Solver):
 
     def reached_set_temperature(self) -> bool:
         if self.direction_positive():
-            return self.temperature > self.setpoint + self.hysteresis + self.k
+            # для симуляции пусть немного перелетает уставку
+            return self.temperature > self.setpoint + self.hysteresis + self.setpoint * 0.1
         else:
-            return self.temperature < self.setpoint - self.hysteresis - self.k
+            return self.temperature < self.setpoint - self.hysteresis - self.setpoint * 0.1
 
     def calculate_temperature(self, time: float) -> float:
         self.temperature = self.start_temperature + self.k * time * self.direction

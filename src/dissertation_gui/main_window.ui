@@ -31,20 +31,6 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QPushButton" name="reset_plot_button">
-            <property name="text">
-             <string>Сбросить диапазон</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="clear_plot_button">
-            <property name="text">
-             <string>Очистить график</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QLabel" name="label_3">
@@ -57,6 +43,27 @@
              <widget class="Led" name="led" native="true"/>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="show_legend_check_box">
+            <property name="text">
+             <string>Показывать легенду</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="reset_plot_button">
+            <property name="text">
+             <string>Сбросить диапазон</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clear_plot_button">
+            <property name="text">
+             <string>Очистить график</string>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="verticalSpacer_3">

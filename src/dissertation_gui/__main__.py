@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
     QComboBox,
+    QCheckBox,
 )
 from PyQt5.uic import loadUi
 from loguru import logger
@@ -132,6 +133,8 @@ trm_plot.setBackground(settings.plot_background)
 plot_manager = TemperaturePlotManager(trm_plot)
 reset_plot_button: QPushButton = ui.reset_plot_button
 clear_plot_button: QPushButton = ui.clear_plot_button
+show_legend_check_box: QCheckBox = ui.show_legend_check_box
+show_legend_check_box.setChecked(True)
 led: Led = ui.led
 led.set_shape(Led.circle)
 led.set_on_color(Led.red)
@@ -193,6 +196,7 @@ uas_min_temp.currentTextChanged.connect(lambda x: unified_analog_signal_manager.
 uas_max_temp.currentTextChanged.connect(lambda x: unified_analog_signal_manager.set_max_temperature(int(x)))
 temperature_calculation_thread.temperature_signal.connect(plot_manager.update_set_temp_curve)
 temperature_calculation_thread.temperature_signal.connect(sensor_worker.set_temperature)
+show_legend_check_box.stateChanged.connect(lambda x: trm_plot.getPlotItem().legend.setVisible(bool(x)))
 
 reset_plot_button.clicked.connect(lambda: trm_plot.getPlotItem().enableAutoRange())
 clear_plot_button.clicked.connect(lambda: plot_manager.clear())
@@ -201,6 +205,7 @@ trm_thread.temperature_signal.connect(plot_manager.update_measured_temp_curve)
 trm_thread.setpoint_signal.connect(plot_manager.update_setpoint_curve)
 trm_thread.setpoint_signal.connect(temperature_calculation_thread.set_setpoint)
 trm_thread.hysteresis_signal.connect(plot_manager.update_hys_curve)
+trm_thread.hysteresis_signal.connect(temperature_calculation_thread.set_hysteresis)
 trm_thread.control_logic_signal.connect(temperature_calculation_thread.set_control_logic)
 trm_thread.output_signal.connect(temperature_calculation_thread.set_output_signal)
 trm_thread.output_signal.connect(lambda x: led.set_status(bool(x)))

@@ -43,6 +43,9 @@ class TemperatureCalculationThread(QThread):
         self._reset = False
         """Флаг, сигнализирущий о том, что необходимо сбросить начальное время"""
 
+    def set_hysteresis(self, hysteresis: float):
+        self._solver.set_hysteresis(hysteresis)
+
     def set_setpoint(self, temperature: float):
         self._solver.set_setpoint(temperature)
 
@@ -60,9 +63,12 @@ class TemperatureCalculationThread(QThread):
             interference.set_frequency(frequency)
 
     def set_output_signal(self, output: int):
+        previous_direction = self._solver.direction
         for control_logic in self._control_logic_dict.values():
             control_logic.set_output(output)
         self._control_logic.calculate_direction(self._solver)
+        if self._solver.direction != previous_direction:
+            self._defer_reset_time()
 
     def now(self):
         """Время со старта нового процесса симуляции"""
