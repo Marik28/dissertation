@@ -142,6 +142,9 @@ led.set_on_color(Led.red)
 sensors_combo_box: SensorsComboBox = ui.sensors_combo_box
 sensor_characteristics_table: CharacteristicsTableWidget = ui.sensor_characteristics_table
 sensor_info_table: SensorInfoTable = ui.sensor_info_table
+sensor_plot: PlotWidget = ui.sensor_plot
+sensor_plot.plotItem.getViewBox().setMouseMode(ViewBox.RectMode)
+sensor_plot.setBackground(settings.plot_background)
 
 # вкладка Параметры ТРМ
 trm_parameters_table: TRMParametersInfoTable = ui.trm_parameters_table
@@ -179,6 +182,16 @@ sensor_worker.moveToThread(sensor_worker_thread)
 sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
 # сигналы и слоты
+
+
+def plot(x):
+    sensor_plot.clear()
+    temps = [t.temperature for t in x]
+    values = [t.value for t in x]
+    sensor_plot.plot(temps, values, pen="b")
+
+
+sensor_characteristics_table.sensor_characteristics_signal.connect(lambda x: plot(x))
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
 sensors_combo_box.set_sensors(sensor_list)

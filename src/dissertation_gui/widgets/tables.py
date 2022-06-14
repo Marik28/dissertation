@@ -4,6 +4,7 @@ from typing import (
     List,
 )
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QTableWidget,
@@ -20,6 +21,7 @@ from ..services.sensor_characteristics import SensorCharacteristicsService
 
 # TODO: добавить график с характеристикой датчика, а также отображать на нем диапазон температур, используемых в ТРМ
 class CharacteristicsTableWidget(QTableWidget):
+    sensor_characteristics_signal = pyqtSignal(list)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -58,6 +60,7 @@ class CharacteristicsTableWidget(QTableWidget):
             self.clear()
             return
         sensor_characteristics = self.service.get_characteristics_by_sensor_name(sensor.name)
+        self.sensor_characteristics_signal.emit(sensor_characteristics)  # noqa
         neg_chars = [row for row in sensor_characteristics if row.temperature <= 0]
         pos_chars = [row for row in sensor_characteristics if row.temperature >= 0]
 
