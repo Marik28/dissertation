@@ -6,7 +6,9 @@ from PyQt5.QtCore import (
     pyqtSignal,
 )
 
+from ..models import SensorType
 from ..models.interference import InterferenceMode
+from ..tables import Sensor
 from ..utils.calculations import (
     Solver,
     ControlLogic,
@@ -23,6 +25,7 @@ class TemperatureCalculationThread(QThread):
                  solver: Solver,
                  control_logic: Dict[int, ControlLogic],
                  interferences: Dict[InterferenceMode, InterferenceSolver],
+                 sensor: Sensor,
                  frequency: int = 100,
                  parent=None):
         """
@@ -42,6 +45,10 @@ class TemperatureCalculationThread(QThread):
         """Время с начала процесса"""
         self._reset = False
         """Флаг, сигнализирущий о том, что необходимо сбросить начальное время"""
+        self._sensor = sensor
+
+    def set_sensor(self, sensor: Sensor):
+        self._sensor = sensor
 
     def set_hysteresis(self, hysteresis: float):
         self._solver.set_hysteresis(hysteresis)
@@ -96,7 +103,10 @@ class TemperatureCalculationThread(QThread):
                 self._solver.set_direction(-self._solver.direction)
             interference = self._interference.calculate_interference(now)
             self.temperature_signal.emit(temperature + interference)  # noqa
-            time.sleep(self._update_period)
+            if self._sensor.type == SensorType.RESISTANCE_THERMOMETER:
+                time.sleep(self._update_period * 10)
+            else:
+                time.sleep(self._update_period)
 
     def _defer_reset_time(self):
         self._reset = True

@@ -1,9 +1,6 @@
 import sys
 import traceback
 
-from pyqt_led import Led
-
-
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,6 +11,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.uic import loadUi
 from loguru import logger
+from pyqt_led import Led
 from pyqtgraph import (
     ViewBox,
     PlotWidget,
@@ -181,6 +179,7 @@ sensor_worker = SensorWorker({
 sensor_worker.moveToThread(sensor_worker_thread)
 sensor_worker_thread.start(priority=QThread.Priority.NormalPriority)
 
+
 # сигналы и слоты
 
 
@@ -194,6 +193,7 @@ def plot(x):
 sensor_characteristics_table.sensor_characteristics_signal.connect(lambda x: plot(x))
 sensors_combo_box.sensor_changed.connect(sensor_characteristics_table.display_characteristics)
 sensors_combo_box.sensor_changed.connect(sensor_info_table.update_info)
+sensors_combo_box.sensor_changed.connect(temperature_calculation_thread.set_sensor)
 sensors_combo_box.set_sensors(sensor_list)
 sensors_combo_box_2.set_sensors(sensor_list)
 sensors_combo_box_2.sensor_changed.connect(sensor_worker.set_sensor)
