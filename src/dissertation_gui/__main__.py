@@ -121,6 +121,7 @@ temperature_calculation_thread = TemperatureCalculationThread(
         InterferenceMode.SINUSOIDAL: SinusoidalInterferenceSolver(),
         InterferenceMode.BURST: BurstInterferenceSolver(),
     },
+    None,
     frequency=settings.plot_update_frequency,
 )
 
