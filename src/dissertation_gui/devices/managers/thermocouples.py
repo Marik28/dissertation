@@ -29,7 +29,7 @@ class ThermocoupleManager(SensorManager):  # TODO: ТПР(B) не симулир
             row = self._df.loc[_temperature]
         except LookupError:
             logger.exception(f"Температуры {_temperature} нет в таблице датчика")
-            closest = self._df.loc[find_nearest(self._df.index, _temperature)]
+            closest = find_nearest(self._df.index, _temperature)
             row = self._df.loc[closest]
         code = row["code"]
         return code
