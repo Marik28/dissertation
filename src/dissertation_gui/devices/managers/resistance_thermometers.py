@@ -3,6 +3,7 @@ from typing import List, Tuple, Optional
 import pandas as pd
 from loguru import logger
 
+from utils.utils import find_nearest
 from .base import SensorManager
 from ..relay import RelaysController
 from ... import tables
@@ -33,7 +34,12 @@ class ResistanceThermometerManager(SensorManager):
         if self._df is None:
             raise RuntimeError("Сенсор для симуляции не установлен")
         # находим строку по температуре
-        row = self._df.iloc[_temperature]
+        try:
+            row = self._df.loc[_temperature]
+        except LookupError:
+            logger.exception(f"Температуры {_temperature} нет в таблице датчика")
+            closest = self._df.loc[find_nearest(self._df.index, _temperature)]
+            row = self._df.loc[closest]
         codes = []
         # в датафрейме код для i-того резистора лежит в колонке под названием 'R{i}_code'
         for index, digipot in enumerate(self._digipots, start=1):

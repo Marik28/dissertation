@@ -5,6 +5,7 @@ from typing import (
 import pandas as pd
 from loguru import logger
 
+from utils.utils import find_nearest
 from .base import SensorManager
 from ..mcp_4725 import MCP4725
 from ..relay import RelaysController
@@ -24,7 +25,12 @@ class ThermocoupleManager(SensorManager):  # TODO: ТПР(B) не симулир
         _temperature = round(temperature)
         if self._df is None:
             raise RuntimeError("Сенсор для симуляции не установлен")
-        row = self._df.iloc[_temperature]
+        try:
+            row = self._df.loc[_temperature]
+        except LookupError:
+            logger.exception(f"Температуры {_temperature} нет в таблице датчика")
+            closest = self._df.loc[find_nearest(self._df.index, _temperature)]
+            row = self._df.loc[closest]
         code = row["code"]
         return code
 
