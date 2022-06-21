@@ -5,6 +5,8 @@ from abc import (
 )
 
 
+# TODO: все писалось на скорую руку, в идеале нужно отрефакторить
+
 class Solver(metaclass=ABCMeta):
 
     def __init__(

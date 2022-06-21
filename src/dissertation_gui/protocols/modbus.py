@@ -130,6 +130,4 @@ class Thread(QThread):
             self.sleep(self.period)
 
 
-# __main__
-thread = Thread(...)
-thread.read_signal.connect(lambda x: print(f"Отрисовал регистры {x}"))
+raise NotImplementedError("This module is not implemented!")

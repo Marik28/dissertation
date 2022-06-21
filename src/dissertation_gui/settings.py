@@ -12,14 +12,16 @@ class Settings(BaseSettings):
     db_url = f'sqlite:///{base_dir / "dissertation_gui" / "db.sqlite3"}'
 
     test_gui: bool
+    """Если True, то используются моки вместо внешних устройств, чтобы можно было протестировать GUI"""
 
     # логи
     log_level: str = "DEBUG"
+    """Уровень логирования"""
 
     plot_update_frequency: int
     plot_points: int
 
-    # настройки протокола OWEN
+    # настройки протокола ОВЕН
     port: str
     baudrate: int
     trm_address: int
@@ -40,12 +42,14 @@ class Settings(BaseSettings):
     i2c_sda_pin: str
     i2c_scl_pin: str
 
-    # файлы для генерации датафреймов
+    # название файлов относительно директории `data/ad8400`
+    # для генерации датафреймов с кодами для термометров сопротивления.
     ad8400_1: str
     ad8400_2: str
 
     # графики
     plot_background: str
+    """Цвет фона графиков"""
 
 
 settings = Settings(_env_file=base_dir.parent / ".env")

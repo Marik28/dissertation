@@ -7,7 +7,6 @@ notebook
 loguru
 pyqt5
 pyqt5-tools
-PyQtWebEngine
 pyqtgraph
 pyqt_led
 pydantic
@@ -16,7 +15,6 @@ pyserial
 sqlalchemy
 alembic
 adafruit-blinka
-adafruit-extended-bus
 adafruit-circuitpython-mcp4725
 pymodbus
 typing_extensions
